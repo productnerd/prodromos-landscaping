@@ -19,6 +19,7 @@ interface GardenState {
   pixelsPerMeter: number;
   currentMonth: number;
   selectedId: string | null;
+  selectedVertex: { plotId: string; index: number } | null;
   buildingMode: boolean;
   drawPlotMode: boolean;
   undoStack: UndoEntry[];
@@ -41,6 +42,8 @@ interface GardenState {
   cancelPlot: () => void;
   moveVertex: (plotId: string, vertexIndex: number, x: number, y: number) => void;
   removePlot: (plotId: string) => void;
+  setSelectedVertex: (v: { plotId: string; index: number } | null) => void;
+  removeVertex: (plotId: string, index: number) => void;
   undo: () => void;
 }
 
@@ -55,6 +58,7 @@ export const useGardenStore = create<GardenState>()(
       pixelsPerMeter: DEFAULT_PIXELS_PER_METER,
       currentMonth: new Date().getMonth() + 1,
       selectedId: null,
+      selectedVertex: null,
       buildingMode: false,
       drawPlotMode: false,
       undoStack: [],
@@ -167,7 +171,30 @@ export const useGardenStore = create<GardenState>()(
       removePlot: (plotId: string) =>
         set((s: GardenState) => ({
           plotPolygons: s.plotPolygons.filter((p: PlotPolygon) => p.id !== plotId),
+          selectedVertex: s.selectedVertex?.plotId === plotId ? null : s.selectedVertex,
         })),
+
+      setSelectedVertex: (v: { plotId: string; index: number } | null) =>
+        set({ selectedVertex: v }),
+
+      removeVertex: (plotId: string, index: number) =>
+        set((s: GardenState) => {
+          const plot = s.plotPolygons.find((p: PlotPolygon) => p.id === plotId);
+          if (!plot) return {};
+          const newVerts = plot.vertices.filter((_: PlotVertex, i: number) => i !== index);
+          if (newVerts.length < 2) {
+            return {
+              plotPolygons: s.plotPolygons.filter((p: PlotPolygon) => p.id !== plotId),
+              selectedVertex: null,
+            };
+          }
+          return {
+            plotPolygons: s.plotPolygons.map((p: PlotPolygon) =>
+              p.id === plotId ? { ...p, vertices: newVerts } : p,
+            ),
+            selectedVertex: null,
+          };
+        }),
 
       undo: () =>
         set((s: GardenState) => {

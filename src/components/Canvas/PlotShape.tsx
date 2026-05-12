@@ -11,6 +11,8 @@ interface Props {
 export default function PlotShape({ plot, pixelsPerMeter, stageScale }: Props) {
   const moveVertex = useGardenStore((s) => s.moveVertex);
   const drawingPlotId = useGardenStore((s) => s.drawingPlotId);
+  const selectedVertex = useGardenStore((s) => s.selectedVertex);
+  const setSelectedVertex = useGardenStore((s) => s.setSelectedVertex);
   const verts = plot.vertices;
   if (verts.length === 0) return null;
 
@@ -93,18 +95,25 @@ export default function PlotShape({ plot, pixelsPerMeter, stageScale }: Props) {
       {/* Draggable vertex handles */}
       {verts.map((v, i) => {
         const isFirst = i === 0 && isDrawing && verts.length >= 3;
+        const isSelected = selectedVertex?.plotId === plot.id && selectedVertex?.index === i;
         return (
           <Circle
             key={`vh-${plot.id}-${i}`}
             x={v.x}
             y={v.y}
-            radius={isFirst ? handleSize * 2 : handleSize}
-            fill={isFirst ? '#10B981' : '#2563EB'}
+            radius={isFirst ? handleSize * 2 : (isSelected ? handleSize * 1.5 : handleSize)}
+            fill={isFirst ? '#10B981' : (isSelected ? '#DC2626' : '#2563EB')}
             stroke="white"
             strokeWidth={2 / stageScale}
             draggable={plot.closed}
             onDragMove={(e) => {
               moveVertex(plot.id, i, e.target.x(), e.target.y());
+            }}
+            onClick={(e) => {
+              if (plot.closed) {
+                e.cancelBubble = true;
+                setSelectedVertex(isSelected ? null : { plotId: plot.id, index: i });
+              }
             }}
             onMouseEnter={(e) => {
               const container = e.target.getStage()?.container();

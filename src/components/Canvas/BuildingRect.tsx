@@ -1,4 +1,4 @@
-import { Group, Rect, Text } from 'react-konva';
+import { Group, Rect, Text, Circle } from 'react-konva';
 import type { PlacedBuilding } from '../../types/canvas';
 import { useGardenStore } from '../../stores/gardenStore';
 
@@ -17,10 +17,14 @@ export default function BuildingRect({
 }: BuildingRectProps) {
   const moveElement = useGardenStore((s) => s.moveElement);
   const setSelectedId = useGardenStore((s) => s.setSelectedId);
+  const resizeBuilding = useGardenStore((s) => s.resizeBuilding);
 
   const w = building.widthM * pixelsPerMeter;
   const h = building.heightM * pixelsPerMeter;
   const fontSize = Math.max(10, 12 / stageScale);
+  const handleR = 5 / stageScale;
+
+  const dimLabel = `${building.widthM.toFixed(1)}×${building.heightM.toFixed(1)}m`;
 
   return (
     <Group
@@ -61,6 +65,48 @@ export default function BuildingRect({
         width={w}
         listening={false}
       />
+      {isSelected && (
+        <Text
+          text={dimLabel}
+          fontSize={fontSize * 0.85}
+          fill="#2563EB"
+          align="center"
+          offsetX={w / 2}
+          y={h / 2 + 4 / stageScale}
+          width={w}
+          listening={false}
+        />
+      )}
+      {isSelected && (
+        <Circle
+          x={w / 2}
+          y={h / 2}
+          radius={handleR}
+          fill="#2563EB"
+          stroke="white"
+          strokeWidth={2 / stageScale}
+          draggable
+          onDragMove={(e) => {
+            const nx = e.target.x();
+            const ny = e.target.y();
+            const newW = Math.max(0.5, (nx * 2) / pixelsPerMeter);
+            const newH = Math.max(0.5, (ny * 2) / pixelsPerMeter);
+            resizeBuilding(building.id, newW, newH);
+          }}
+          onDragEnd={(e) => {
+            e.target.x(w / 2);
+            e.target.y(h / 2);
+          }}
+          onMouseEnter={(e) => {
+            const container = e.target.getStage()?.container();
+            if (container) container.style.cursor = 'nwse-resize';
+          }}
+          onMouseLeave={(e) => {
+            const container = e.target.getStage()?.container();
+            if (container) container.style.cursor = 'default';
+          }}
+        />
+      )}
     </Group>
   );
 }
