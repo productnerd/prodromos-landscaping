@@ -44,6 +44,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   const [stageScale, setStageScale] = useState(1);
   const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null);
+  const [hoveredWarning, setHoveredWarning] = useState<number | null>(null);
 
   // Escape key cancels drawing
   useEffect(() => {
@@ -355,7 +356,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         </Layer>
 
         {/* Layer 3: Preview line + compatibility warning lines */}
-        <Layer listening={false}>
+        <Layer>
           {previewLine && previewLine.lengthM > 0.05 && (() => {
             const { from, to, lengthM } = previewLine;
             const midX = (from.x + to.x) / 2;
@@ -407,16 +408,67 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
             const posA = plantPosMap.get(w.plantAInstanceId);
             const posB = plantPosMap.get(w.plantBInstanceId);
             if (!posA || !posB) return null;
+            const lineColor = w.rule.type === 'beneficial' ? '#16A34A' : (w.rule.severity === 'critical' ? '#DC2626' : '#F59E0B');
             return (
               <Line
                 key={`warn-${idx}`}
                 points={[posA.x, posA.y, posB.x, posB.y]}
-                stroke={w.rule.severity === 'critical' ? '#DC2626' : '#F59E0B'}
-                strokeWidth={2 / stageScale}
+                stroke={lineColor}
+                strokeWidth={(hoveredWarning === idx ? 4 : 2) / stageScale}
                 dash={[6, 4]}
+                hitStrokeWidth={12 / stageScale}
+                listening
+                onMouseEnter={(e) => {
+                  setHoveredWarning(idx);
+                  const c = e.target.getStage()?.container();
+                  if (c) c.style.cursor = 'help';
+                }}
+                onMouseLeave={(e) => {
+                  setHoveredWarning(null);
+                  const c = e.target.getStage()?.container();
+                  if (c) c.style.cursor = 'default';
+                }}
               />
             );
           })}
+          {hoveredWarning !== null && (() => {
+            const w = warnings[hoveredWarning];
+            if (!w) return null;
+            const posA = plantPosMap.get(w.plantAInstanceId);
+            const posB = plantPosMap.get(w.plantBInstanceId);
+            if (!posA || !posB) return null;
+            const midX = (posA.x + posB.x) / 2;
+            const midY = (posA.y + posB.y) / 2;
+            const fontSize = 11 / stageScale;
+            const text = w.rule.reason;
+            const tooltipW = Math.min(text.length * fontSize * 0.52, 250 / stageScale);
+            const lines = Math.ceil(text.length * fontSize * 0.52 / tooltipW);
+            const tooltipH = fontSize * 1.4 * lines + 8 / stageScale;
+            const bgColor = w.rule.type === 'beneficial' ? '#16A34A' : (w.rule.severity === 'critical' ? '#DC2626' : '#F59E0B');
+            return (
+              <Group listening={false}>
+                <Rect
+                  x={midX - tooltipW / 2 - 6 / stageScale}
+                  y={midY - tooltipH - 10 / stageScale}
+                  width={tooltipW + 12 / stageScale}
+                  height={tooltipH}
+                  fill={bgColor}
+                  cornerRadius={4 / stageScale}
+                  opacity={0.95}
+                />
+                <Text
+                  x={midX - tooltipW / 2}
+                  y={midY - tooltipH - 10 / stageScale + 4 / stageScale}
+                  text={text}
+                  fontSize={fontSize}
+                  fill="white"
+                  fontStyle="bold"
+                  width={tooltipW}
+                  wrap="word"
+                />
+              </Group>
+            );
+          })()}
         </Layer>
       </Stage>
     </div>

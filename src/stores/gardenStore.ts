@@ -23,6 +23,8 @@ interface GardenState {
   buildingMode: boolean;
   drawPlotMode: boolean;
   undoStack: UndoEntry[];
+  overlayWater: boolean;
+  overlaySoil: boolean;
 
   importDxf: (shapes: DxfShape[]) => void;
   clearDxf: () => void;
@@ -45,6 +47,8 @@ interface GardenState {
   removePlot: (plotId: string) => void;
   setSelectedVertex: (v: { plotId: string; index: number } | null) => void;
   removeVertex: (plotId: string, index: number) => void;
+  setOverlayWater: (on: boolean) => void;
+  setOverlaySoil: (on: boolean) => void;
   undo: () => void;
 }
 
@@ -63,6 +67,8 @@ export const useGardenStore = create<GardenState>()(
       buildingMode: false,
       drawPlotMode: false,
       undoStack: [],
+      overlayWater: false,
+      overlaySoil: false,
 
       importDxf: (shapes: DxfShape[]) => set({ dxfShapes: shapes }),
       clearDxf: () => set({ dxfShapes: [] }),
@@ -123,6 +129,8 @@ export const useGardenStore = create<GardenState>()(
       setPixelsPerMeter: (ppm: number) => set({ pixelsPerMeter: ppm }),
       setBuildingMode: (on: boolean) => set({ buildingMode: on }),
       setDrawPlotMode: (on: boolean) => set({ drawPlotMode: on, buildingMode: false }),
+      setOverlayWater: (on: boolean) => set({ overlayWater: on }),
+      setOverlaySoil: (on: boolean) => set({ overlaySoil: on }),
 
       startPlot: () => {
         const id = uuid();

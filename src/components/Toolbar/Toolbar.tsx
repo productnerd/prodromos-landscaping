@@ -19,6 +19,8 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
     drawingPlotId,
     pixelsPerMeter,
     undoStack,
+    overlayWater,
+    overlaySoil,
     importDxf,
     removeElement,
     setBuildingMode,
@@ -26,6 +28,8 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
     cancelPlot,
     setPixelsPerMeter,
     undo,
+    setOverlayWater,
+    setOverlaySoil,
   } = useGardenStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -146,6 +150,27 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
       >
         Planting Plan
       </button>
+
+      <div className="flex items-center gap-1 text-xs ml-2 border-l border-gray-600 pl-3">
+        <button
+          className={`px-2 py-1 rounded text-[10px] ${
+            overlayWater ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+          }`}
+          onClick={() => setOverlayWater(!overlayWater)}
+          title="Show water requirements"
+        >
+          Water
+        </button>
+        <button
+          className={`px-2 py-1 rounded text-[10px] ${
+            overlaySoil ? 'bg-green-600' : 'bg-gray-700 hover:bg-gray-600'
+          }`}
+          onClick={() => setOverlaySoil(!overlaySoil)}
+          title="Show soil drainage"
+        >
+          Soil
+        </button>
+      </div>
 
       <div className="flex items-center gap-1 text-xs ml-2">
         <button
