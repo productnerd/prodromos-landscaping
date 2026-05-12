@@ -77,33 +77,63 @@ export default function BuildingRect({
           listening={false}
         />
       )}
+      {/* Right edge handle — width only */}
       {isSelected && (
-        <Circle
-          x={w / 2}
-          y={h / 2}
-          radius={handleR}
+        <Rect
+          x={w / 2 - handleR}
+          y={-handleR}
+          width={handleR * 2}
+          height={handleR * 2}
           fill="#2563EB"
           stroke="white"
           strokeWidth={2 / stageScale}
+          cornerRadius={2 / stageScale}
           draggable
           onDragMove={(e) => {
-            const nx = e.target.x();
-            const ny = e.target.y();
-            const newW = Math.max(0.5, (nx * 2) / pixelsPerMeter);
-            const newH = Math.max(0.5, (ny * 2) / pixelsPerMeter);
-            resizeBuilding(building.id, newW, newH);
+            const newW = Math.max(0.5, (e.target.x() + handleR) * 2 / pixelsPerMeter);
+            resizeBuilding(building.id, newW, building.heightM);
           }}
           onDragEnd={(e) => {
-            e.target.x(w / 2);
-            e.target.y(h / 2);
+            e.target.x(w / 2 - handleR);
+            e.target.y(-handleR);
           }}
           onMouseEnter={(e) => {
-            const container = e.target.getStage()?.container();
-            if (container) container.style.cursor = 'nwse-resize';
+            const c = e.target.getStage()?.container();
+            if (c) c.style.cursor = 'ew-resize';
           }}
           onMouseLeave={(e) => {
-            const container = e.target.getStage()?.container();
-            if (container) container.style.cursor = 'default';
+            const c = e.target.getStage()?.container();
+            if (c) c.style.cursor = 'default';
+          }}
+        />
+      )}
+      {/* Bottom edge handle — height only */}
+      {isSelected && (
+        <Rect
+          x={-handleR}
+          y={h / 2 - handleR}
+          width={handleR * 2}
+          height={handleR * 2}
+          fill="#2563EB"
+          stroke="white"
+          strokeWidth={2 / stageScale}
+          cornerRadius={2 / stageScale}
+          draggable
+          onDragMove={(e) => {
+            const newH = Math.max(0.5, (e.target.y() + handleR) * 2 / pixelsPerMeter);
+            resizeBuilding(building.id, building.widthM, newH);
+          }}
+          onDragEnd={(e) => {
+            e.target.x(-handleR);
+            e.target.y(h / 2 - handleR);
+          }}
+          onMouseEnter={(e) => {
+            const c = e.target.getStage()?.container();
+            if (c) c.style.cursor = 'ns-resize';
+          }}
+          onMouseLeave={(e) => {
+            const c = e.target.getStage()?.container();
+            if (c) c.style.cursor = 'default';
           }}
         />
       )}
