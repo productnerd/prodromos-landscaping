@@ -37,6 +37,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   const undo = useGardenStore((s) => s.undo);
   const selectedVertex = useGardenStore((s) => s.selectedVertex);
   const removeVertex = useGardenStore((s) => s.removeVertex);
+  const removeElement = useGardenStore((s) => s.removeElement);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -54,14 +55,19 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         e.preventDefault();
         undo();
       }
-      if ((e.key === 'Backspace' || e.key === 'Delete') && selectedVertex) {
-        e.preventDefault();
-        removeVertex(selectedVertex.plotId, selectedVertex.index);
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        if (selectedVertex) {
+          e.preventDefault();
+          removeVertex(selectedVertex.plotId, selectedVertex.index);
+        } else if (selectedId) {
+          e.preventDefault();
+          removeElement(selectedId);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [drawPlotMode, cancelPlot, undo, selectedVertex, removeVertex]);
+  }, [drawPlotMode, cancelPlot, undo, selectedVertex, removeVertex, selectedId, removeElement]);
 
   // Measure container size
   useEffect(() => {

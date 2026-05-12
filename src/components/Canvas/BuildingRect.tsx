@@ -1,4 +1,4 @@
-import { Group, Rect, Text, Circle } from 'react-konva';
+import { Group, Rect, Text, Circle, Line } from 'react-konva';
 import type { PlacedBuilding } from '../../types/canvas';
 import { useGardenStore } from '../../stores/gardenStore';
 
@@ -18,11 +18,14 @@ export default function BuildingRect({
   const moveElement = useGardenStore((s) => s.moveElement);
   const setSelectedId = useGardenStore((s) => s.setSelectedId);
   const resizeBuilding = useGardenStore((s) => s.resizeBuilding);
+  const rotateBuilding = useGardenStore((s) => s.rotateBuilding);
 
   const w = building.widthM * pixelsPerMeter;
   const h = building.heightM * pixelsPerMeter;
+  const rotation = building.rotation ?? 0;
   const fontSize = Math.max(10, 12 / stageScale);
   const handleR = 5 / stageScale;
+  const rotateArmLen = 20 / stageScale;
 
   const dimLabel = `${building.widthM.toFixed(1)}×${building.heightM.toFixed(1)}m`;
 
@@ -30,6 +33,7 @@ export default function BuildingRect({
     <Group
       x={building.x}
       y={building.y}
+      rotation={rotation}
       draggable
       onDragEnd={(e) => {
         moveElement(building.id, e.target.x(), e.target.y());
@@ -136,6 +140,51 @@ export default function BuildingRect({
             if (c) c.style.cursor = 'default';
           }}
         />
+      )}
+      {/* Rotation handle — arm + circle above top edge */}
+      {isSelected && (
+        <>
+          <Line
+            points={[0, -h / 2, 0, -h / 2 - rotateArmLen]}
+            stroke="#2563EB"
+            strokeWidth={1.5 / stageScale}
+            listening={false}
+          />
+          <Circle
+            x={0}
+            y={-h / 2 - rotateArmLen}
+            radius={handleR}
+            fill="#10B981"
+            stroke="white"
+            strokeWidth={2 / stageScale}
+            draggable
+            onDragMove={(e) => {
+              const stage = e.target.getStage();
+              if (!stage) return;
+              const pointer = stage.getPointerPosition();
+              if (!pointer) return;
+              const groupX = building.x;
+              const groupY = building.y;
+              const stageTransform = stage.getAbsoluteTransform();
+              const inverted = stageTransform.copy().invert();
+              const canvasPointer = inverted.point(pointer);
+              const angle = Math.atan2(canvasPointer.x - groupX, -(canvasPointer.y - groupY)) * (180 / Math.PI);
+              rotateBuilding(building.id, angle);
+            }}
+            onDragEnd={(e) => {
+              e.target.x(0);
+              e.target.y(-h / 2 - rotateArmLen);
+            }}
+            onMouseEnter={(e) => {
+              const c = e.target.getStage()?.container();
+              if (c) c.style.cursor = 'grab';
+            }}
+            onMouseLeave={(e) => {
+              const c = e.target.getStage()?.container();
+              if (c) c.style.cursor = 'default';
+            }}
+          />
+        </>
       )}
     </Group>
   );

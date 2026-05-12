@@ -30,6 +30,7 @@ interface GardenState {
   addBuilding: (x: number, y: number, widthM: number, heightM: number, label: string) => void;
   moveElement: (id: string, x: number, y: number) => void;
   resizeBuilding: (id: string, widthM: number, heightM: number) => void;
+  rotateBuilding: (id: string, rotation: number) => void;
   removeElement: (id: string) => void;
   setMonth: (month: number) => void;
   setSelectedId: (id: string | null) => void;
@@ -100,6 +101,13 @@ export const useGardenStore = create<GardenState>()(
         set((s: GardenState) => ({
           placedBuildings: s.placedBuildings.map((b: PlacedBuilding) =>
             b.id === id ? { ...b, widthM, heightM } : b,
+          ),
+        })),
+
+      rotateBuilding: (id: string, rotation: number) =>
+        set((s: GardenState) => ({
+          placedBuildings: s.placedBuildings.map((b: PlacedBuilding) =>
+            b.id === id ? { ...b, rotation } : b,
           ),
         })),
 

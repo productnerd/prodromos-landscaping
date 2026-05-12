@@ -12,6 +12,7 @@ export interface PlacedBuilding {
   widthM: number;
   heightM: number;
   label: string;
+  rotation?: number;
 }
 
 export interface PlotVertex {
