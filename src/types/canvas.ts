@@ -14,6 +14,17 @@ export interface PlacedBuilding {
   label: string;
 }
 
+export interface PlotVertex {
+  x: number;
+  y: number;
+}
+
+export interface PlotPolygon {
+  id: string;
+  vertices: PlotVertex[];
+  closed: boolean;
+}
+
 export interface DxfShape {
   type: 'line' | 'polyline' | 'circle' | 'arc' | 'text';
   points?: number[];

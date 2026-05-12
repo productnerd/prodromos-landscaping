@@ -5,6 +5,7 @@ import { useGardenStore } from '../../stores/gardenStore';
 import { checkCompatibility } from '../../utils/compatibility-checker';
 import PlantCircle from './PlantCircle';
 import BuildingRect from './BuildingRect';
+import PlotShape from './PlotShape';
 
 interface GardenCanvasProps {
   stageRef: React.RefObject<Konva.Stage | null>;
@@ -17,19 +18,38 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     dxfShapes,
     placedPlants,
     placedBuildings,
+    plotPolygons,
+    drawingPlotId,
     pixelsPerMeter,
     currentMonth,
     selectedId,
     buildingMode,
+    drawPlotMode,
     addPlant,
     addBuilding,
     setSelectedId,
+    startPlot,
+    addPlotVertex,
+    closePlot,
   } = useGardenStore();
+
+  const cancelPlot = useGardenStore.getState().cancelPlot;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [stageScale, setStageScale] = useState(1);
   const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
+
+  // Escape key cancels drawing
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && drawPlotMode) {
+        cancelPlot();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [drawPlotMode, cancelPlot]);
 
   // Measure container size
   useEffect(() => {
@@ -109,25 +129,56 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     e.preventDefault();
   }, []);
 
-  // Click on stage: building mode -> add building, else deselect
+  // Get canvas coordinates from pointer
+  const getCanvasPos = useCallback(() => {
+    const stage = stageRef.current;
+    if (!stage) return null;
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return null;
+    return {
+      x: (pointer.x - stage.x()) / stageScale,
+      y: (pointer.y - stage.y()) / stageScale,
+    };
+  }, [stageRef, stageScale]);
+
+  // Click on stage: draw plot / building mode / deselect
   const handleStageClick = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent>) => {
-      // Only fire on clicks directly on the stage (empty area)
+      const pos = getCanvasPos();
+      if (!pos) return;
+
+      if (drawPlotMode) {
+        if (!drawingPlotId) {
+          startPlot();
+          setTimeout(() => addPlotVertex(pos.x, pos.y), 0);
+        } else {
+          const currentPlot = plotPolygons.find((p) => p.id === drawingPlotId);
+          if (currentPlot && currentPlot.vertices.length >= 3) {
+            const first = currentPlot.vertices[0];
+            const dx = pos.x - first.x;
+            const dy = pos.y - first.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const closeThreshold = 15 / stageScale;
+            if (dist < closeThreshold) {
+              closePlot();
+              return;
+            }
+          }
+          addPlotVertex(pos.x, pos.y);
+        }
+        return;
+      }
+
+      // Non-drawing modes: only fire on clicks directly on the stage (empty area)
       if (e.target !== e.target.getStage()) return;
 
       if (buildingMode) {
-        const stage = stageRef.current;
-        if (!stage) return;
-        const pointer = stage.getPointerPosition();
-        if (!pointer) return;
-        const x = (pointer.x - stage.x()) / stageScale;
-        const y = (pointer.y - stage.y()) / stageScale;
-        addBuilding(x, y, 5, 3, 'Building');
+        addBuilding(pos.x, pos.y, 5, 3, 'Building');
       } else {
         setSelectedId(null);
       }
     },
-    [buildingMode, stageRef, stageScale, addBuilding, setSelectedId],
+    [drawPlotMode, buildingMode, drawingPlotId, plotPolygons, stageScale, getCanvasPos, startPlot, addPlotVertex, closePlot, addBuilding, setSelectedId],
   );
 
   const handleDragEnd = useCallback((e: Konva.KonvaEventObject<DragEvent>) => {
@@ -149,10 +200,11 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         scaleY={stageScale}
         x={stagePos.x}
         y={stagePos.y}
-        draggable
+        draggable={!drawPlotMode}
         onWheel={handleWheel}
         onClick={handleStageClick}
         onDragEnd={handleDragEnd}
+        style={{ cursor: drawPlotMode ? 'crosshair' : undefined }}
       >
         {/* Layer 1: DXF base shapes + grid */}
         <Layer listening={false}>
@@ -230,8 +282,16 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
           })}
         </Layer>
 
-        {/* Layer 2: Interactive plants and buildings */}
+        {/* Layer 2: Interactive plots, plants, and buildings */}
         <Layer>
+          {plotPolygons.map((plot) => (
+            <PlotShape
+              key={plot.id}
+              plot={plot}
+              pixelsPerMeter={pixelsPerMeter}
+              stageScale={stageScale}
+            />
+          ))}
           {placedPlants.map((p) => (
             <PlantCircle
               key={p.id}

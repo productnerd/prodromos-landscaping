@@ -15,10 +15,14 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
   const {
     selectedId,
     buildingMode,
+    drawPlotMode,
+    drawingPlotId,
     pixelsPerMeter,
     importDxf,
     removeElement,
     setBuildingMode,
+    setDrawPlotMode,
+    cancelPlot,
     setPixelsPerMeter,
   } = useGardenStore();
 
@@ -79,6 +83,27 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
       >
         Import DXF
       </button>
+
+      <button
+        className={`px-3 py-1 text-xs rounded ${
+          drawPlotMode ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+        }`}
+        onClick={() => {
+          if (drawPlotMode) {
+            cancelPlot();
+          } else {
+            setDrawPlotMode(true);
+          }
+        }}
+      >
+        {drawPlotMode ? (drawingPlotId ? 'Cancel Drawing' : 'Draw Plot ✏️') : 'Draw Plot ✏️'}
+      </button>
+
+      {drawPlotMode && (
+        <span className="text-[10px] text-blue-300 max-w-32">
+          Click to place vertices. Click first point to close.
+        </span>
+      )}
 
       <button
         className={`px-3 py-1 text-xs rounded ${
