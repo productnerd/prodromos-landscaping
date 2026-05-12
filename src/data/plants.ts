@@ -1373,8 +1373,8 @@ export const PLANTS: PlantDefinition[] = [
     botanicalName: 'Pinus brutia',
     category: 'tree',
     tags: ['evergreen', 'ornamental'],
-    matureRadiusM: 4,
-    heightM: 20,
+    matureRadiusM: 2.5,
+    heightM: 12,
     sun: 'full',
     water: 'low',
     soil: 'rocky, sandy, or poor soils',
@@ -1434,6 +1434,41 @@ export const PLANTS: PlantDefinition[] = [
     foliageColor: '#2E7D32',
     cyprusNotes:
       'Endemic Cyprus golden oak — the national tree. Leaves have distinctive golden underside. Thrives on igneous rock of Troodos range at Prodromos elevation. Slow-growing, very long-lived. Drought-resistant once established. Produces acorns in autumn.',
+  },
+
+  // ─── 42. Autumn Blaze Maple ────────────────────────────────────────
+  {
+    id: 'maple-autumn-blaze',
+    name: 'Maple - Autumn Blaze',
+    botanicalName: 'Acer × freemanii',
+    category: 'tree',
+    tags: ['ornamental', 'deciduous'],
+    matureRadiusM: 5,
+    heightM: 15,
+    sun: 'full',
+    water: 'medium',
+    soil: 'adaptable, well-drained loam',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'dormant',
+      2: 'dormant',
+      3: 'sprouting',
+      4: 'leafing',
+      5: 'leafing',
+      6: 'leafing',
+      7: 'leafing',
+      8: 'leafing',
+      9: 'autumn-color',
+      10: 'autumn-color',
+      11: 'dormant',
+      12: 'dormant',
+    },
+    plantingMonths: [11, 12, 1, 2],
+    flowerColor: '#CC3333',
+    fruitColor: '#8B4513',
+    foliageColor: '#4CAF50',
+    cyprusNotes:
+      'Hybrid of red maple and silver maple. Known for spectacular orange-red autumn foliage. Fast-growing, drought-tolerant once established. Adapts well to Mediterranean climates with cold winters like Prodromos. Needs some irrigation in summer.',
   },
 ];
 
