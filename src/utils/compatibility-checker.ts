@@ -1,6 +1,6 @@
 import type { PlacedPlant } from '../types/canvas';
 import type { CompatibilityWarning } from '../types/compatibility';
-import { COMPATIBILITY_RULES, WALNUT_TOLERANT } from '../data/compatibility-rules';
+import { COMPATIBILITY_RULES, WALNUT_TOLERANT, NORWAY_MAPLE_TOLERANT, WISTERIA_TOLERANT } from '../data/compatibility-rules';
 import { PLANTS_MAP } from '../data/plants';
 import { distance } from './geometry';
 
@@ -47,10 +47,13 @@ function findApplicableRules(idA: string, idB: string) {
 
     if (!matchForward && !matchReverse) return false;
 
-    // Walnut wildcard: skip if the other plant is walnut-tolerant
-    if (rule.plantA === 'walnut' && rule.plantB === '*') {
-      const otherPlantId = idA === 'walnut' ? idB : idA;
-      if (WALNUT_TOLERANT.has(otherPlantId)) return false;
+    // Wildcard rules: skip if the other plant is in the tolerant set
+    if (rule.plantB === '*') {
+      const sourceId = matchForward ? rule.plantA : idA;
+      const otherPlantId = sourceId === idA ? idB : idA;
+      if (rule.plantA === 'walnut' && WALNUT_TOLERANT.has(otherPlantId)) return false;
+      if (rule.plantA === 'maple-norway' && NORWAY_MAPLE_TOLERANT.has(otherPlantId)) return false;
+      if (rule.plantA === 'wisteria' && WISTERIA_TOLERANT.has(otherPlantId)) return false;
     }
 
     return true;
