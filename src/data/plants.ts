@@ -1365,6 +1365,76 @@ export const PLANTS: PlantDefinition[] = [
     cyprusNotes:
       'Spectacular cascading blooms appear BEFORE leaves in Apr-May. Needs very strong support — can damage weak structures. Prune twice yearly (summer and winter).',
   },
+
+  // ─── 40. Pine ──────────────────────────────────────────────────────
+  {
+    id: 'pine',
+    name: 'Pine',
+    botanicalName: 'Pinus brutia',
+    category: 'tree',
+    tags: ['evergreen', 'ornamental'],
+    matureRadiusM: 4,
+    heightM: 20,
+    sun: 'full',
+    water: 'low',
+    soil: 'rocky, sandy, or poor soils',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'evergreen-foliage',
+      2: 'evergreen-foliage',
+      3: 'evergreen-foliage',
+      4: 'flowering',
+      5: 'flowering',
+      6: 'evergreen-foliage',
+      7: 'evergreen-foliage',
+      8: 'evergreen-foliage',
+      9: 'evergreen-foliage',
+      10: 'evergreen-foliage',
+      11: 'evergreen-foliage',
+      12: 'evergreen-foliage',
+    },
+    plantingMonths: [11, 12, 1, 2],
+    flowerColor: '#D4A843',
+    fruitColor: '#8B6914',
+    foliageColor: '#1B5E20',
+    cyprusNotes:
+      'Pinus brutia (Turkish/Calabrian pine) is the dominant native pine of Cyprus, covering the Troodos foothills including the Prodromos area. Extremely drought-tolerant and hardy. Fast-growing, aromatic resin. Provides excellent windbreak and shade.',
+  },
+
+  // ─── 41. Golden Oak ────────────────────────────────────────────────
+  {
+    id: 'golden-oak',
+    name: 'Golden Oak',
+    botanicalName: 'Quercus alnifolia',
+    category: 'tree',
+    tags: ['evergreen', 'ornamental'],
+    matureRadiusM: 3,
+    heightM: 8,
+    sun: 'full',
+    water: 'low',
+    soil: 'rocky, igneous, well-drained',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'evergreen-foliage',
+      2: 'evergreen-foliage',
+      3: 'evergreen-foliage',
+      4: 'flowering',
+      5: 'flowering',
+      6: 'evergreen-foliage',
+      7: 'evergreen-foliage',
+      8: 'evergreen-foliage',
+      9: 'fruiting',
+      10: 'fruit-ripe',
+      11: 'evergreen-foliage',
+      12: 'evergreen-foliage',
+    },
+    plantingMonths: [11, 12, 1, 2],
+    flowerColor: '#C5B358',
+    fruitColor: '#6B4226',
+    foliageColor: '#2E7D32',
+    cyprusNotes:
+      'Endemic Cyprus golden oak — the national tree. Leaves have distinctive golden underside. Thrives on igneous rock of Troodos range at Prodromos elevation. Slow-growing, very long-lived. Drought-resistant once established. Produces acorns in autumn.',
+  },
 ];
 
 export const PLANTS_MAP: Record<string, PlantDefinition> = Object.fromEntries(
