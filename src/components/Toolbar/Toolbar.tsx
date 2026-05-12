@@ -18,12 +18,14 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
     drawPlotMode,
     drawingPlotId,
     pixelsPerMeter,
+    undoStack,
     importDxf,
     removeElement,
     setBuildingMode,
     setDrawPlotMode,
     cancelPlot,
     setPixelsPerMeter,
+    undo,
   } = useGardenStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -120,6 +122,15 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
         onClick={() => selectedId && removeElement(selectedId)}
       >
         Delete Selected
+      </button>
+
+      <button
+        className="px-3 py-1 text-xs rounded bg-gray-700 hover:bg-gray-600 disabled:opacity-40"
+        disabled={undoStack.length === 0}
+        onClick={undo}
+        title="Undo (⌘Z)"
+      >
+        Undo
       </button>
 
       <button

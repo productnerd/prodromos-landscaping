@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
-import { Stage, Layer, Line, Circle, Arc, Text } from 'react-konva';
+import { Stage, Layer, Line, Circle, Arc, Text, Rect, Group } from 'react-konva';
 import type Konva from 'konva';
 import { useGardenStore } from '../../stores/gardenStore';
 import { checkCompatibility } from '../../utils/compatibility-checker';
@@ -34,11 +34,13 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   } = useGardenStore();
 
   const cancelPlot = useGardenStore.getState().cancelPlot;
+  const undo = useGardenStore((s) => s.undo);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [stageScale, setStageScale] = useState(1);
   const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
+  const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null);
 
   // Escape key cancels drawing
   useEffect(() => {
@@ -46,10 +48,14 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
       if (e.key === 'Escape' && drawPlotMode) {
         cancelPlot();
       }
+      if (e.key === 'z' && (e.metaKey || e.ctrlKey) && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [drawPlotMode, cancelPlot]);
+  }, [drawPlotMode, cancelPlot, undo]);
 
   // Measure container size
   useEffect(() => {
@@ -182,13 +188,35 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   );
 
   const handleDragEnd = useCallback((e: Konva.KonvaEventObject<DragEvent>) => {
+    if (e.target !== e.target.getStage()) return;
     setStagePos({ x: e.target.x(), y: e.target.y() });
   }, []);
+
+  const handleMouseMove = useCallback(() => {
+    if (!drawPlotMode || !drawingPlotId) {
+      setCursorPos(null);
+      return;
+    }
+    const pos = getCanvasPos();
+    if (pos) setCursorPos(pos);
+  }, [drawPlotMode, drawingPlotId, getCanvasPos]);
+
+  const previewLine = useMemo(() => {
+    if (!cursorPos || !drawingPlotId) return null;
+    const plot = plotPolygons.find((p) => p.id === drawingPlotId);
+    if (!plot || plot.vertices.length === 0) return null;
+    const last = plot.vertices[plot.vertices.length - 1];
+    const dx = cursorPos.x - last.x;
+    const dy = cursorPos.y - last.y;
+    const lengthPx = Math.sqrt(dx * dx + dy * dy);
+    const lengthM = lengthPx / pixelsPerMeter;
+    return { from: last, to: cursorPos, lengthM };
+  }, [cursorPos, drawingPlotId, plotPolygons, pixelsPerMeter]);
 
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-hidden bg-gray-100"
+      className="h-full w-full overflow-hidden bg-gray-100"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
@@ -204,6 +232,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         onWheel={handleWheel}
         onClick={handleStageClick}
         onDragEnd={handleDragEnd}
+        onMouseMove={handleMouseMove}
         style={{ cursor: drawPlotMode ? 'crosshair' : undefined }}
       >
         {/* Layer 1: DXF base shapes + grid */}
@@ -313,8 +342,55 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
           ))}
         </Layer>
 
-        {/* Layer 3: Compatibility warning lines */}
+        {/* Layer 3: Preview line + compatibility warning lines */}
         <Layer listening={false}>
+          {previewLine && previewLine.lengthM > 0.05 && (() => {
+            const { from, to, lengthM } = previewLine;
+            const midX = (from.x + to.x) / 2;
+            const midY = (from.y + to.y) / 2;
+            const angle = Math.atan2(to.y - from.y, to.x - from.x);
+            const offsetX = -Math.sin(angle) * (16 / stageScale);
+            const offsetY = Math.cos(angle) * (16 / stageScale);
+            const fontSize = 11 / stageScale;
+            const label = `${lengthM.toFixed(1)}m`;
+            const labelW = label.length * fontSize * 0.65;
+            const labelH = fontSize * 1.6;
+            return (
+              <Group>
+                <Line
+                  points={[from.x, from.y, to.x, to.y]}
+                  stroke="#2563EB"
+                  strokeWidth={2 / stageScale}
+                  dash={[6 / stageScale, 4 / stageScale]}
+                />
+                <Rect
+                  x={midX + offsetX - labelW / 2}
+                  y={midY + offsetY - labelH / 2}
+                  width={labelW}
+                  height={labelH}
+                  fill="white"
+                  cornerRadius={3 / stageScale}
+                  stroke="#2563EB"
+                  strokeWidth={1 / stageScale}
+                  opacity={0.9}
+                />
+                <Text
+                  x={midX + offsetX}
+                  y={midY + offsetY}
+                  text={label}
+                  fontSize={fontSize}
+                  fontStyle="bold"
+                  fill="#1E40AF"
+                  align="center"
+                  verticalAlign="middle"
+                  offsetX={labelW / 2}
+                  offsetY={labelH / 2}
+                  width={labelW}
+                  height={labelH}
+                />
+              </Group>
+            );
+          })()}
           {warnings.map((w, idx) => {
             const posA = plantPosMap.get(w.plantAInstanceId);
             const posB = plantPosMap.get(w.plantBInstanceId);

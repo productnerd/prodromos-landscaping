@@ -15,8 +15,8 @@ export default function App() {
         stageRef={stageRef}
         onShowPlantingPlan={() => setShowPlantingPlan(true)}
       />
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 relative">
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        <div className="flex-1 relative min-h-0">
           <GardenCanvas stageRef={stageRef} />
         </div>
         <PlantSidebar />
