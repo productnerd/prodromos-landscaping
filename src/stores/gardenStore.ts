@@ -37,16 +37,16 @@ export const useGardenStore = create<GardenState>()(
       selectedId: null,
       buildingMode: false,
 
-      importDxf: (shapes) => set({ dxfShapes: shapes }),
+      importDxf: (shapes: DxfShape[]) => set({ dxfShapes: shapes }),
       clearDxf: () => set({ dxfShapes: [] }),
 
-      addPlant: (plantId, x, y) =>
-        set((s) => ({
+      addPlant: (plantId: string, x: number, y: number) =>
+        set((s: GardenState) => ({
           placedPlants: [...s.placedPlants, { id: uuid(), plantId, x, y }],
         })),
 
-      addBuilding: (x, y, widthM, heightM, label) =>
-        set((s) => ({
+      addBuilding: (x: number, y: number, widthM: number, heightM: number, label: string) =>
+        set((s: GardenState) => ({
           placedBuildings: [
             ...s.placedBuildings,
             { id: uuid(), x, y, widthM, heightM, label },
@@ -54,38 +54,38 @@ export const useGardenStore = create<GardenState>()(
           buildingMode: false,
         })),
 
-      moveElement: (id, x, y) =>
-        set((s) => ({
-          placedPlants: s.placedPlants.map((p) =>
+      moveElement: (id: string, x: number, y: number) =>
+        set((s: GardenState) => ({
+          placedPlants: s.placedPlants.map((p: PlacedPlant) =>
             p.id === id ? { ...p, x, y } : p,
           ),
-          placedBuildings: s.placedBuildings.map((b) =>
+          placedBuildings: s.placedBuildings.map((b: PlacedBuilding) =>
             b.id === id ? { ...b, x, y } : b,
           ),
         })),
 
-      resizeBuilding: (id, widthM, heightM) =>
-        set((s) => ({
-          placedBuildings: s.placedBuildings.map((b) =>
+      resizeBuilding: (id: string, widthM: number, heightM: number) =>
+        set((s: GardenState) => ({
+          placedBuildings: s.placedBuildings.map((b: PlacedBuilding) =>
             b.id === id ? { ...b, widthM, heightM } : b,
           ),
         })),
 
-      removeElement: (id) =>
-        set((s) => ({
-          placedPlants: s.placedPlants.filter((p) => p.id !== id),
-          placedBuildings: s.placedBuildings.filter((b) => b.id !== id),
+      removeElement: (id: string) =>
+        set((s: GardenState) => ({
+          placedPlants: s.placedPlants.filter((p: PlacedPlant) => p.id !== id),
+          placedBuildings: s.placedBuildings.filter((b: PlacedBuilding) => b.id !== id),
           selectedId: s.selectedId === id ? null : s.selectedId,
         })),
 
-      setMonth: (month) => set({ currentMonth: month }),
-      setSelectedId: (id) => set({ selectedId: id }),
-      setPixelsPerMeter: (ppm) => set({ pixelsPerMeter: ppm }),
-      setBuildingMode: (on) => set({ buildingMode: on }),
+      setMonth: (month: number) => set({ currentMonth: month }),
+      setSelectedId: (id: string | null) => set({ selectedId: id }),
+      setPixelsPerMeter: (ppm: number) => set({ pixelsPerMeter: ppm }),
+      setBuildingMode: (on: boolean) => set({ buildingMode: on }),
     }),
     {
       name: 'garden-planner-state',
-      partialize: (state) => ({
+      partialize: (state: GardenState) => ({
         placedPlants: state.placedPlants,
         placedBuildings: state.placedBuildings,
         pixelsPerMeter: state.pixelsPerMeter,
