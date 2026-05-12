@@ -8,7 +8,22 @@ import { PlantInfoPanel } from '../InfoPanel/PlantInfoPanel';
 const ALL_CATEGORIES = Object.keys(CATEGORY_LABELS) as PlantCategory[];
 const ALL_TAGS: PlantTag[] = ['herb', 'fruit', 'flower', 'fence', 'ornamental', 'evergreen', 'deciduous', 'edible'];
 
+function getBrandColor(plant: PlantDefinition): string {
+  if (plant.tags.includes('fruit')) return plant.fruitColor;
+  if (plant.tags.includes('flower')) return plant.flowerColor;
+  return plant.foliageColor;
+}
+
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 function PlantCard({ plant }: { plant: PlantDefinition }) {
+  const brandColor = getBrandColor(plant);
+
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('plantId', plant.id);
     e.dataTransfer.effectAllowed = 'copy';
@@ -18,23 +33,37 @@ function PlantCard({ plant }: { plant: PlantDefinition }) {
     <div
       draggable="true"
       onDragStart={handleDragStart}
-      className="flex items-start gap-3 py-2 px-3 border-b border-gray-100 cursor-grab hover:bg-gray-50"
+      className="flex items-start gap-3 py-2 px-3 border-b cursor-grab"
+      style={{
+        backgroundColor: hexToRgba(brandColor, 0.08),
+        borderBottomColor: hexToRgba(brandColor, 0.2),
+      }}
     >
       <div
-        className="w-4 h-4 rounded-full flex-shrink-0 mt-1"
-        style={{ backgroundColor: plant.foliageColor }}
+        className="w-5 h-5 rounded-full flex-shrink-0 mt-1 ring-2"
+        style={{
+          backgroundColor: brandColor,
+          ['--tw-ring-color' as string]: hexToRgba(brandColor, 0.35),
+        }}
       />
       <div className="min-w-0 flex-1">
         <div className="font-bold text-sm text-gray-900 truncate">{plant.name}</div>
         <div className="text-xs italic text-gray-500 truncate">{plant.botanicalName}</div>
         <div className="flex flex-wrap gap-1 mt-1">
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-200 text-gray-700">
+          <span
+            className="text-[10px] px-1.5 py-0.5 rounded font-medium text-white"
+            style={{ backgroundColor: hexToRgba(brandColor, 0.7) }}
+          >
             {CATEGORY_LABELS[plant.category]}
           </span>
           {plant.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-800"
+              className="text-[10px] px-1.5 py-0.5 rounded"
+              style={{
+                backgroundColor: hexToRgba(brandColor, 0.12),
+                color: brandColor,
+              }}
             >
               {tag}
             </span>
