@@ -364,6 +364,8 @@ footer {
   .plant-table thead th { position: static; background: #fff; }
   .section-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .plant-table tbody tr { page-break-inside: avoid; }
+  .plant-table tbody tr.print-hide { display: none !important; }
+  .section-group.print-hide { display: none !important; }
   body { background: #fff; font-size: 11px; }
   main { padding: 0; max-width: 100%; }
   .print-show { display: table-cell !important; }
@@ -659,7 +661,18 @@ document.getElementById('app').addEventListener('change', e => {
 
 document.getElementById('filterToggle').addEventListener('change', render);
 document.getElementById('searchBox').addEventListener('input', render);
-document.getElementById('btnPrint').addEventListener('click', () => window.print());
+document.getElementById('btnPrint').addEventListener('click', () => {
+  document.querySelectorAll('tbody tr').forEach(tr => {
+    const cb = tr.querySelector('input[type="checkbox"][data-id]');
+    if (cb && !cb.checked) tr.classList.add('print-hide');
+  });
+  document.querySelectorAll('.section-group').forEach(sg => {
+    const visible = sg.querySelectorAll('tbody tr:not(.print-hide)');
+    if (visible.length === 0) sg.classList.add('print-hide');
+  });
+  window.print();
+  document.querySelectorAll('.print-hide').forEach(el => el.classList.remove('print-hide'));
+});
 document.getElementById('btnCSV').addEventListener('click', exportCSV);
 
 loadState().then(render);
