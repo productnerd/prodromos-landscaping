@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prodromos Planting Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #F5F0E8;
+  --paper: #FAF7F2;
+  --sage: #8B9E7E;
+  --sage-light: #C5D1BC;
+  --forest: #3D5A3E;
+  --forest-deep: #2A3F2B;
+  --terracotta: #C17849;
+  --terracotta-light: #E8C4A8;
+  --ink: #3B3228;
+  --ink-light: #6B5E52;
+  --warm-gray: #A89E94;
+  --divider: #D9D0C5;
+  --section-trees: #5C7A52;
+  --section-shrubs: #7B8E6B;
+  --section-climbers: #8E7B6B;
+  --section-cane: #9B6B7B;
+  --section-perennials: #6B8E8B;
+  --section-bulbs: #8B7B6B;
+  --section-grasses: #6B7B5C;
+  --section-seasonal: #B8956B;
+}
+
+body {
+  font-family: 'Spectral', Georgia, serif;
+  background-color: var(--cream);
+  color: var(--ink);
+  line-height: 1.5;
+  font-size: 15px;
+  min-height: 100vh;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+header {
+  text-align: center;
+  padding: 2.5rem 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--divider);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%);
+}
+
+header h1 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--forest-deep);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+header .subtitle {
+  font-family: 'Spectral', Georgia, serif;
+  font-style: italic;
+  color: var(--ink-light);
+  font-size: 0.95rem;
+  font-weight: 300;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: var(--paper);
+  border-bottom: 1px solid var(--divider);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.counter {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--forest);
+  white-space: nowrap;
+}
+
+.counter span {
+  color: var(--terracotta);
+  font-weight: 700;
+}
+
+.toolbar-spacer { flex: 1; }
+
+.btn {
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn:hover { background: var(--cream); border-color: var(--warm-gray); }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--forest);
+  color: var(--paper);
+  border-color: var(--forest);
+}
+.btn-primary:hover { background: var(--forest-deep); }
+
+.btn-accent {
+  background: var(--terracotta);
+  color: var(--paper);
+  border-color: var(--terracotta);
+}
+.btn-accent:hover { background: #A8623A; }
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-wrap input[type="checkbox"] {
+  accent-color: var(--forest);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.search-box {
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  width: 180px;
+  outline: none;
+}
+.search-box:focus { border-color: var(--sage); }
+.search-box::placeholder { color: var(--warm-gray); }
+
+main { padding: 0 1.5rem 3rem; max-width: 1400px; margin: 0 auto; }
+
+.section-group { margin-top: 1.5rem; }
+
+.section-banner {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.15rem;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-banner .section-count {
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.8;
+  margin-left: auto;
+}
+
+.plant-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+}
+
+.plant-table thead th {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-light);
+  padding: 0.5rem 0.6rem;
+  border-bottom: 2px solid var(--divider);
+  text-align: left;
+  position: sticky;
+  top: 52px;
+  background: var(--cream);
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.plant-table tbody tr {
+  transition: background 0.1s;
+}
+
+.plant-table tbody tr:hover {
+  background: rgba(139, 158, 126, 0.08);
+}
+
+.plant-table tbody tr.is-annual {
+  border-left: 3px solid var(--terracotta);
+}
+
+.plant-table tbody td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--divider);
+  vertical-align: top;
+  line-height: 1.45;
+}
+
+.plant-table tbody tr.is-annual td:first-child {
+  padding-left: calc(0.6rem - 3px);
+}
+
+.cell-plant {
+  font-weight: 500;
+  color: var(--forest-deep);
+  min-width: 140px;
+}
+
+.cell-notes {
+  min-width: 140px;
+}
+
+.cell-notes textarea {
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 0.82rem;
+  width: 100%;
+  min-height: 28px;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink);
+  resize: vertical;
+  line-height: 1.4;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cell-notes textarea:hover { border-color: var(--divider); background: var(--paper); }
+.cell-notes textarea:focus { border-color: var(--sage); background: var(--paper); outline: none; }
+
+.cell-check {
+  text-align: center;
+  width: 40px;
+}
+
+.cell-check input[type="checkbox"] {
+  accent-color: var(--forest);
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.annual-badge {
+  display: inline-block;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  background: var(--terracotta-light);
+  color: var(--terracotta);
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.season-dot {
+  display: inline-block;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--warm-gray);
+  font-style: italic;
+}
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  border-top: 1px solid var(--divider);
+  color: var(--warm-gray);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+/* Card layout for mobile */
+@media (max-width: 900px) {
+  .toolbar { padding: 0.75rem 1rem; gap: 0.5rem; }
+  main { padding: 0 0.75rem 2rem; }
+
+  .plant-table, .plant-table thead, .plant-table tbody,
+  .plant-table th, .plant-table tr, .plant-table td {
+    display: block;
+  }
+  .plant-table thead { display: none; }
+  .plant-table tbody tr {
+    background: var(--paper);
+    border: 1px solid var(--divider);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .plant-table tbody tr:hover { background: var(--paper); }
+  .plant-table tbody tr.is-annual { border-left: 3px solid var(--terracotta); }
+  .plant-table tbody td { border: none; padding: 0.2rem 0; }
+  .plant-table tbody td::before {
+    content: attr(data-label);
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--warm-gray);
+    display: block;
+    margin-bottom: 1px;
+  }
+  .cell-check { text-align: left; width: auto; }
+  .cell-notes textarea { min-height: 36px; }
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  header { padding: 1rem; }
+  .toolbar, .btn, .toggle-wrap, .search-box, footer, .cell-notes, .cell-check { display: none !important; }
+  .plant-table thead th { position: static; background: #fff; }
+  .section-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .plant-table tbody tr { page-break-inside: avoid; }
+  body { background: #fff; font-size: 11px; }
+  main { padding: 0; max-width: 100%; }
+  .print-show { display: table-cell !important; }
+}
+
+.hidden { display: none !important; }
+
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--forest-deep);
+  color: var(--paper);
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Prodromos Planting Plan</h1>
+  <p class="subtitle">Mountain village, Cyprus &middot; 1,400 m elevation</p>
+</header>
+
+<div class="toolbar">
+  <div class="counter">Selected: <span id="counter">0</span> / <span id="total">0</span></div>
+  <label class="toggle-wrap">
+    <input type="checkbox" id="filterToggle"> Show only final picks
+  </label>
+  <input type="text" class="search-box" id="searchBox" placeholder="Search plants...">
+  <div class="toolbar-spacer"></div>
+  <button class="btn" id="btnPrint" title="Print clean sheet">Print</button>
+  <button class="btn" id="btnCSV" title="Export checked rows as CSV">Export CSV</button>
+  <button class="btn btn-primary" id="btnLink" title="Copy shareable link with your picks and notes">Copy link</button>
+</div>
+
+<main id="app"></main>
+
+<footer>Prodromos Planting Plan &middot; Mountain garden at 1,400 m</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PLANTS = [
+{"section":"🌳 TREES  (fruit, nut & ornamental, grouped together)","sectionKey":"trees","plants":[
+{"id":"walnut","plant":"🌰 Walnut","type":"Tree (deciduous)","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"8-10 m","depth":"50-70 cm","watering":"Weekly (deep soak)","tips":"Deep soil; hates transplanting; mulch heavily."},
+{"id":"hazelnut","plant":"🌰 Hazelnut","type":"Tree / large shrub","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"4-5 m","depth":"40-50 cm","watering":"Weekly","tips":"Plant two for pollination; prune lightly; hardy in cold. Note: hazelnut is propagated by seed, suckers or layering, not by grafting (boliasma) onto trikoukkia/hawthorn (different genus)."},
+{"id":"mulberry","plant":"🌳 Mulberry (Vavatsinia)","type":"Tree (deciduous)","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"6-8 m","depth":"40-60 cm","watering":"Weekly","tips":"Fast grower; large canopy; prune for shape; mulch."},
+{"id":"cherry","plant":"🍒 Cherry","type":"Tree (deciduous)","lifecycle":"Perennial","autumn":"","winter":"✔✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"4-6 m","depth":"Graft above soil","watering":"Weekly","tips":"Needs 2 varieties for pollination; avoid frost pockets. Loves cold winters at altitude."},
+{"id":"almond","plant":"🌰 Amigdalies (Almond)","type":"Tree (deciduous)","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"5-6 m","depth":"Graft above soil","watering":"Weekly (drought-tolerant once set)","tips":"Earliest bloomer so blossom is vulnerable to late frost; pick a late-flowering variety at altitude; needs a cross-pollinator."},
+{"id":"apple","plant":"🍎 Apple (Mila)","type":"Tree (deciduous)","lifecycle":"Perennial","autumn":"","winter":"✔✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"3-4 m","depth":"Graft above soil","watering":"Weekly","tips":"Needs cross-pollinator; remove first-year flowers; thrives on cold winters."},
+{"id":"peach","plant":"🍑 Peach","type":"Tree (deciduous)","lifecycle":"Perennial","autumn":"","winter":"✔✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"3-4 m","depth":"Graft above soil","watering":"Weekly","tips":"Frost-sensitive blooms; wrap trunk/buds in Feb."},
+{"id":"apricot","plant":"🍑 Apricot","type":"Tree (deciduous)","lifecycle":"Perennial","autumn":"","winter":"✔✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"3-4 m","depth":"Graft above soil","watering":"Weekly","tips":"Early bloomer; protect from late frost."},
+{"id":"plum","plant":"🍑 Damaskina (Plum)","type":"Tree (deciduous)","lifecycle":"Perennial","autumn":"","winter":"✔✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"3-4 m","depth":"Graft above soil","watering":"Weekly","tips":"Cold-tolerant; prune lightly after harvest."},
+{"id":"lotus","plant":"🍈 Lotus Fruit (Diospyros lotus)","type":"Tree (deciduous)","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"4-6 m","depth":"Graft above soil","watering":"Weekly","tips":"Cold-hardy persimmon relative; late harvest; mulch base."},
+{"id":"cedar","plant":"🌲 Lebanese Cedar","type":"Tree (evergreen)","lifecycle":"Perennial / evergreen","autumn":"✔✔","winter":"✔✔","spring":"","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"4-6 m","depth":"Root ball depth","watering":"Weekly (deep soak)","tips":"Hardy evergreen; mulch base; deep watering first summer."},
+{"id":"maple","plant":"🍁 Maple (Acer pseudoplatanus / platanoides / campestre)","type":"Tree (deciduous, ornamental)","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun to 🌤 Part Shade","location":"🌍 Ground","spacing":"6-10 m (field maple 4-6 m)","depth":"Root ball depth","watering":"Weekly until established","tips":"Very cold-hardy shade / windbreak trees; plant dormant. Field maple (campestre) is smallest, good for hedging."},
+{"id":"silktree","plant":"🌸 Akakia Constantinoupoleos (Albizia julibrissin, Persian silk tree)","type":"Tree (deciduous, ornamental)","lifecycle":"Perennial","autumn":"✔","winter":"✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"5-7 m","depth":"Root ball depth","watering":"Weekly, then drought-tolerant","tips":"Fast umbrella canopy; pink silky summer flowers; hardy once established but protect young trees from hard frost at altitude; self-seeds."},
+{"id":"japanesemaple","plant":"🍁 Japanese Maple (Acer palmatum)","type":"Small ornamental tree","lifecycle":"Perennial","autumn":"","winter":"","spring":"✔✔","sun":"🌤 Partial Shade","location":"🪴 Pot","spacing":"2-3 m","depth":"Same as pot","watering":"Twice weekly (light)","tips":"Shade from N wind; frost-protect young leaves; mulch."}
+]},
+{"section":"🌿 SHRUBS & WOODY PERENNIALS","sectionKey":"shrubs","plants":[
+{"id":"lilac","plant":"🌸 Lilac","type":"Shrub (deciduous)","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Sun","location":"🌍 Ground","spacing":"2-3 m","depth":"Root ball depth","watering":"Weekly","tips":"Cold-hardy; prune after flowering; loves sun."},
+{"id":"rhododendron","plant":"🌺 Rhododendron","type":"Shrub (evergreen)","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Shade","location":"🪴 Pot / acidic ground","spacing":"1-1.5 m","depth":"Root ball depth, crown at surface","watering":"2x weekly","tips":"Acidic soil (pH 4.5-6); shelter from wind and harsh sun; pine mulch; keep moist."},
+{"id":"wildroses","plant":"🌹 Wild Roses (Rosa canina, etc.)","type":"Shrub (deciduous)","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"1-2 m","depth":"Root crown / bud union level","watering":"Weekly until established","tips":"Extremely hardy; tolerates poor soil; great hedge / wildlife; rosehips in autumn; prune lightly after bloom."},
+{"id":"hortensia","plant":"🌸 Hortensia (Hydrangea)","type":"Shrub (deciduous)","lifecycle":"Perennial","autumn":"✔","winter":"","spring":"✔✔","sun":"🌤 Partial Shade","location":"🪴 Pot","spacing":"1-1.5 m","depth":"Root ball depth","watering":"2-3x weekly","tips":"Partial shade; acidic soil; avoid wind."},
+{"id":"blueberry","plant":"🫐 Blueberry","type":"Shrub (deciduous)","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Sun","location":"🪴 Pot","spacing":"1 m","depth":"5-10 cm","watering":"2x weekly","tips":"Acidic soil (pH 4.5-5.5); peat moss + pine mulch."},
+{"id":"lavender","plant":"💜 English Lavender","type":"Sub-shrub (evergreen)","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"30-45 cm","depth":"Root ball level","watering":"Every 10-14 days","tips":"Full sun; well-drained soil; drought-tolerant."}
+]},
+{"section":"🍇 CLIMBERS & VINES","sectionKey":"climbers","plants":[
+{"id":"grapevine","plant":"🍇 Grapevine","type":"Climber (deciduous)","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"1.5-2 m","depth":"20-30 cm","watering":"Weekly","tips":"Full sun; trellis; prune in dormancy."},
+{"id":"wisteria","plant":"🌸 Wisteria","type":"Woody climber (deciduous)","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"3-4 m","depth":"Root ball depth / graft above soil","watering":"Weekly until established","tips":"Vigorous; needs a strong pergola or support; prune twice yearly (summer + winter); cold-hardy; may take years to flower."}
+]},
+{"section":"🫐 CANE & BERRY FRUIT","sectionKey":"cane","plants":[
+{"id":"raspberry","plant":"🌿 Raspberry","type":"Cane fruit","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"0.5-1 m","depth":"Root crown level","watering":"2x weekly","tips":"Needs support; prune spent canes."},
+{"id":"blackberry","plant":"🌿 Blackberry","type":"Cane fruit","lifecycle":"Perennial","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"1 m","depth":"Root crown level","watering":"2x weekly","tips":"Hardy; needs support; prune old canes yearly."},
+{"id":"strawberries","plant":"🍓 Strawberries","type":"Ground fruit","lifecycle":"Perennial (replace every 2-3 yrs)","autumn":"✔✔","winter":"✔✔","spring":"✔✔","sun":"🌤 Partial Sun","location":"🪴 Pot","spacing":"30 cm","depth":"Crown level","watering":"2x weekly","tips":"Replace every 2-3 yrs; mulch for frost."}
+]},
+{"section":"🌼 PERENNIALS & HERBS","sectionKey":"perennials","plants":[
+{"id":"peonies","plant":"🌸 Peonies","type":"Perennial (herbaceous)","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Sun","location":"🌍 Ground","spacing":"0.8-1 m","depth":"Eyes 5 cm below soil","watering":"Weekly","tips":"Thrive on cold winters; long-lived; avoid moving once planted."},
+{"id":"mint","plant":"🌿 Mint","type":"Herb","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Shade","location":"🪴 Pot","spacing":"30 cm","depth":"5 cm","watering":"2x weekly","tips":"Very invasive; keep contained; moist soil."},
+{"id":"spearmint","plant":"🌿 Spearmint","type":"Herb","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Shade","location":"🪴 Pot","spacing":"30 cm","depth":"5 cm","watering":"2x weekly","tips":"Same as mint; cut before flowering."},
+{"id":"lemonbalm","plant":"🌿 Lemon Balm","type":"Herb","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Shade","location":"🪴 Pot","spacing":"30 cm","depth":"5 cm","watering":"Weekly","tips":"Lemon scent; self-seeds; deadhead to control."}
+]},
+{"section":"🌷 BULBS  (perennial, return each year)","sectionKey":"bulbs","plants":[
+{"id":"iris","plant":"🌷 Iris / Daffodils","type":"Bulb / rhizome","lifecycle":"Perennial bulb","autumn":"✔✔","winter":"","spring":"","sun":"🌤 Partial Sun","location":"🌍 Ground","spacing":"10-15 cm apart","depth":"Bulb depth 2-3x height","watering":"Weekly until bloom","tips":"Plant in groups; well-drained soil; spring bloom; naturalise well."},
+{"id":"tulips","plant":"🌷 Tulips","type":"Bulb","lifecycle":"Perennial bulb (often treated as seasonal in warm spots; altitude chill helps it return)","autumn":"✔","winter":"✔✔","spring":"","sun":"☀️ Sun","location":"🌍 Ground","spacing":"10-15 cm apart","depth":"2-3x bulb height (~15 cm)","watering":"Weekly until bloom","tips":"Plant in autumn; needs the winter chill that Prodromos provides; spring bloom."}
+]},
+{"section":"🌾 GRASSES, FERNS & GROUND COVER","sectionKey":"grasses","plants":[
+{"id":"silvergrass","plant":"🌾 Japanese Silver Grass (Miscanthus sinensis)","type":"Ornamental grass","lifecycle":"Perennial","autumn":"✔","winter":"","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"1.2-1.8 m","depth":"Root ball level","watering":"Weekly until established","tips":"Cut back in late winter; drought-tolerant once mature."},
+{"id":"ferns","plant":"🌿 Ferns (Pteridium aquilinum, Asplenium adiantum-nigrum)","type":"Fern","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌑 Shade","location":"🌍 Ground","spacing":"40-60 cm","depth":"Root ball depth","watering":"2x weekly","tips":"Prefer moist, shaded spots; mulch well; ideal under trees."},
+{"id":"groundcover","plant":"🌿 Small crawlers / ground covers","type":"Ground cover","lifecycle":"Perennial","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Shade","location":"🌍 Ground","spacing":"30-50 cm","depth":"Root ball depth","watering":"Weekly","tips":"Water until rooted; easy."}
+]},
+{"section":"🍂 SEASONAL  (annuals: you plant them and they die; resow each year)","sectionKey":"seasonal","plants":[
+{"id":"beans","plant":"🌱 Beans","type":"Vegetable","lifecycle":"🍂 Annual (seasonal)","autumn":"","winter":"","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"20-30 cm","depth":"3-5 cm","watering":"2x weekly","tips":"Sow after frost; steady moisture. Dies back at season end, resow each year."},
+{"id":"pumpkins","plant":"🎃 Pumpkins","type":"Vegetable","lifecycle":"🍂 Annual (seasonal)","autumn":"","winter":"","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"1 m+","depth":"2-3 cm","watering":"2x weekly","tips":"Rich composted soil; mulch; full sun. Resow each year."},
+{"id":"chamomile","plant":"🌼 Chamomile","type":"Herb / flower","lifecycle":"🍂 Annual (German type self-seeds)","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Sun","location":"🪴 Pot","spacing":"20-30 cm","depth":"Shallow (surface)","watering":"2x weekly","tips":"Self-seeds; light sun; gentle watering. German chamomile is annual; Roman type is perennial."}
+]}
+];
+
+const SECTION_COLORS = {
+  trees: 'var(--section-trees)',
+  shrubs: 'var(--section-shrubs)',
+  climbers: 'var(--section-climbers)',
+  cane: 'var(--section-cane)',
+  perennials: 'var(--section-perennials)',
+  bulbs: 'var(--section-bulbs)',
+  grasses: 'var(--section-grasses)',
+  seasonal: 'var(--section-seasonal)'
+};
+
+const COLUMNS = [
+  {key:'plant', label:'Plant'},
+  {key:'type', label:'Type'},
+  {key:'lifecycle', label:'Lifecycle'},
+  {key:'autumn', label:'🌦 Autumn'},
+  {key:'winter', label:'❄️ Winter'},
+  {key:'spring', label:'🌸 Spring'},
+  {key:'sun', label:'Sun / Shade'},
+  {key:'location', label:'Location'},
+  {key:'spacing', label:'Spacing'},
+  {key:'depth', label:'Depth'},
+  {key:'watering', label:'Watering'},
+  {key:'tips', label:'Tips'}
+];
+
+let state = { notes: {}, checked: {} };
+
+function loadState() {
+  // Hash first, then localStorage
+  if (window.location.hash.startsWith('#data=')) {
+    try {
+      const json = atob(window.location.hash.slice(6));
+      const parsed = JSON.parse(json);
+      if (parsed.notes) state.notes = parsed.notes;
+      if (parsed.checked) state.checked = parsed.checked;
+      return;
+    } catch(e) {}
+  }
+  try {
+    const saved = localStorage.getItem('prodromos-planting');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.notes) state.notes = parsed.notes;
+      if (parsed.checked) state.checked = parsed.checked;
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  try { localStorage.setItem('prodromos-planting', JSON.stringify(state)); } catch(e) {}
+}
+
+function isAnnual(lifecycle) {
+  return lifecycle && lifecycle.toLowerCase().includes('annual');
+}
+
+function updateCounter() {
+  const total = PLANTS.reduce((n, s) => n + s.plants.length, 0);
+  const checked = Object.values(state.checked).filter(Boolean).length;
+  document.getElementById('counter').textContent = checked;
+  document.getElementById('total').textContent = total;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  const filterOnly = document.getElementById('filterToggle').checked;
+  const search = document.getElementById('searchBox').value.toLowerCase().trim();
+  let html = '';
+
+  for (const section of PLANTS) {
+    let plantRows = section.plants;
+    if (filterOnly) plantRows = plantRows.filter(p => state.checked[p.id]);
+    if (search) plantRows = plantRows.filter(p =>
+      p.plant.toLowerCase().includes(search) ||
+      p.type.toLowerCase().includes(search) ||
+      p.tips.toLowerCase().includes(search) ||
+      (state.notes[p.id] || '').toLowerCase().includes(search)
+    );
+    if (plantRows.length === 0) continue;
+
+    const color = SECTION_COLORS[section.sectionKey];
+    html += `<div class="section-group">`;
+    html += `<div class="section-banner" style="background:${color}">${section.section}<span class="section-count">${plantRows.length} plant${plantRows.length !== 1 ? 's' : ''}</span></div>`;
+    html += `<table class="plant-table"><thead><tr>`;
+    html += `<th>Notes</th><th style="width:40px">Pick</th>`;
+    for (const col of COLUMNS) html += `<th>${col.label}</th>`;
+    html += `</tr></thead><tbody>`;
+
+    for (const p of plantRows) {
+      const annual = isAnnual(p.lifecycle);
+      const noteVal = (state.notes[p.id] || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+      const isChecked = state.checked[p.id] ? 'checked' : '';
+
+      html += `<tr class="${annual ? 'is-annual' : ''}">`;
+      html += `<td class="cell-notes" data-label="Notes"><textarea data-id="${p.id}" placeholder="Add notes...">${noteVal}</textarea></td>`;
+      html += `<td class="cell-check" data-label="Final pick"><input type="checkbox" data-id="${p.id}" ${isChecked}></td>`;
+      html += `<td class="cell-plant" data-label="Plant">${p.plant}${annual ? '<span class="annual-badge">Annual</span>' : ''}</td>`;
+      html += `<td data-label="Type">${p.type}</td>`;
+      html += `<td data-label="Lifecycle">${p.lifecycle}</td>`;
+      html += `<td data-label="Autumn" class="season-dot">${p.autumn}</td>`;
+      html += `<td data-label="Winter" class="season-dot">${p.winter}</td>`;
+      html += `<td data-label="Spring" class="season-dot">${p.spring}</td>`;
+      html += `<td data-label="Sun / Shade">${p.sun}</td>`;
+      html += `<td data-label="Location">${p.location}</td>`;
+      html += `<td data-label="Spacing">${p.spacing}</td>`;
+      html += `<td data-label="Depth">${p.depth}</td>`;
+      html += `<td data-label="Watering">${p.watering}</td>`;
+      html += `<td data-label="Tips">${p.tips}</td>`;
+      html += `</tr>`;
+    }
+    html += `</tbody></table></div>`;
+  }
+
+  if (!html) html = '<div class="empty-state">No plants match your current filters.</div>';
+  app.innerHTML = html;
+  updateCounter();
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function exportCSV() {
+  const checkedPlants = [];
+  for (const section of PLANTS) {
+    for (const p of section.plants) {
+      if (!state.checked[p.id]) continue;
+      checkedPlants.push({section: section.section, ...p});
+    }
+  }
+  if (checkedPlants.length === 0) { toast('No plants selected for export'); return; }
+
+  const headers = ['Section','Notes','Plant','Type','Lifecycle','Autumn','Winter','Spring','Sun / Shade','Location','Spacing','Planting Depth','Watering','Planting Tips'];
+  const esc = v => `"${String(v||'').replace(/"/g,'""')}"`;
+  let csv = headers.map(esc).join(',') + '\n';
+  for (const p of checkedPlants) {
+    csv += [p.section, state.notes[p.id]||'', p.plant, p.type, p.lifecycle, p.autumn, p.winter, p.spring, p.sun, p.location, p.spacing, p.depth, p.watering, p.tips].map(esc).join(',') + '\n';
+  }
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'prodromos-planting-final.csv';
+  a.click();
+  toast('CSV exported');
+}
+
+function copyLink() {
+  const data = JSON.stringify({notes: state.notes, checked: state.checked});
+  const encoded = btoa(unescape(encodeURIComponent(data)));
+  const url = window.location.origin + window.location.pathname + '#data=' + encoded;
+  navigator.clipboard.writeText(url).then(() => toast('Link copied to clipboard'));
+}
+
+// Event delegation
+document.getElementById('app').addEventListener('input', e => {
+  if (e.target.matches('textarea[data-id]')) {
+    state.notes[e.target.dataset.id] = e.target.value;
+    saveState();
+  }
+});
+
+document.getElementById('app').addEventListener('change', e => {
+  if (e.target.matches('input[type="checkbox"][data-id]')) {
+    state.checked[e.target.dataset.id] = e.target.checked;
+    saveState();
+    updateCounter();
+    if (document.getElementById('filterToggle').checked) render();
+  }
+});
+
+document.getElementById('filterToggle').addEventListener('change', render);
+document.getElementById('searchBox').addEventListener('input', render);
+document.getElementById('btnPrint').addEventListener('click', () => window.print());
+document.getElementById('btnCSV').addEventListener('click', exportCSV);
+document.getElementById('btnLink').addEventListener('click', copyLink);
+
+loadState();
+render();
+</script>
+</body>
+</html>
