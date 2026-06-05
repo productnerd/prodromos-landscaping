@@ -486,8 +486,6 @@ const SECTION_COLORS = {
 
 const COLUMNS = [
   {key:'plant', label:'🌱 Plant'},
-  {key:'type', label:'🪴 Type'},
-  {key:'lifecycle', label:'♻️ Lifecycle'},
   {key:'growth', label:'📈 Growth'},
   {key:'autumn', label:'🌦 Autumn'},
   {key:'winter', label:'❄️ Winter'},
@@ -591,8 +589,6 @@ function render() {
       html += `<td class="cell-notes" data-label="Notes"><textarea data-id="${p.id}" placeholder="Add notes...">${noteVal}</textarea></td>`;
       html += `<td class="cell-check" data-label="Final pick"><input type="checkbox" data-id="${p.id}" ${isChecked}></td>`;
       html += `<td class="cell-plant" data-label="Plant">${p.plant}${annual ? '<span class="annual-badge">Annual</span>' : ''}</td>`;
-      html += `<td data-label="Type">${p.type}</td>`;
-      html += `<td data-label="Lifecycle">${p.lifecycle}</td>`;
       html += `<td data-label="Growth">${p.growth}</td>`;
       html += `<td data-label="Autumn" class="season-dot season-first">${p.autumn}</td>`;
       html += `<td data-label="Winter" class="season-dot">${p.winter}</td>`;
@@ -630,11 +626,11 @@ function exportCSV() {
   }
   if (checkedPlants.length === 0) { toast('No plants selected for export'); return; }
 
-  const headers = ['Section','Notes','Plant','Type','Lifecycle','Growth Rate','Autumn','Winter','Spring','Sun / Shade','Location','Spacing','Planting Depth','Watering','Planting Tips'];
+  const headers = ['Section','Notes','Plant','Growth Rate','Autumn','Winter','Spring','Sun / Shade','Location','Spacing','Planting Depth','Watering','Planting Tips'];
   const esc = v => `"${String(v||'').replace(/"/g,'""')}"`;
   let csv = headers.map(esc).join(',') + '\n';
   for (const p of checkedPlants) {
-    csv += [p.section, state.notes[p.id]||'', p.plant, p.type, p.lifecycle, p.growth, p.autumn, p.winter, p.spring, p.sun, p.location, p.spacing, p.depth, p.watering, p.tips].map(esc).join(',') + '\n';
+    csv += [p.section, state.notes[p.id]||'', p.plant, p.growth, p.autumn, p.winter, p.spring, p.sun, p.location, p.spacing, p.depth, p.watering, p.tips].map(esc).join(',') + '\n';
   }
   const blob = new Blob([csv], {type:'text/csv'});
   const a = document.createElement('a');
