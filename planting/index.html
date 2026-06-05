@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prodromos Planting Plan</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -391,20 +392,20 @@ footer {
 <body>
 
 <header>
-  <h1>Prodromos Planting Plan</h1>
-  <p class="subtitle">Mountain village, Cyprus &middot; 1,400 m elevation</p>
+  <h1>🌿 Prodromos Planting Plan</h1>
+  <p class="subtitle">🏔️ Mountain village, Cyprus &middot; 1,400 m elevation</p>
 </header>
 
 <div class="toolbar">
-  <div class="counter">Selected: <span id="counter">0</span> / <span id="total">0</span></div>
+  <div class="counter">✅ Selected: <span id="counter">0</span> / <span id="total">0</span></div>
   <label class="toggle-wrap">
-    <input type="checkbox" id="filterToggle"> Show only final picks
+    <input type="checkbox" id="filterToggle"> 🎯 Show only final picks
   </label>
-  <input type="text" class="search-box" id="searchBox" placeholder="Search plants...">
+  <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search plants...">
   <div class="toolbar-spacer"></div>
-  <button class="btn" id="btnPrint" title="Print clean sheet">Print</button>
-  <button class="btn" id="btnCSV" title="Export checked rows as CSV">Export CSV</button>
-  <button class="btn btn-primary" id="btnLink" title="Copy shareable link with your picks and notes">Copy link</button>
+  <button class="btn" id="btnPrint" title="Print clean sheet">🖨️ Print</button>
+  <button class="btn" id="btnCSV" title="Export checked rows as CSV">📥 Export CSV</button>
+  <button class="btn btn-primary" id="btnLink" title="Copy shareable link with your picks and notes">🔗 Copy link</button>
 </div>
 
 <main id="app"></main>
@@ -483,18 +484,18 @@ const SECTION_COLORS = {
 };
 
 const COLUMNS = [
-  {key:'plant', label:'Plant'},
-  {key:'type', label:'Type'},
-  {key:'lifecycle', label:'Lifecycle'},
+  {key:'plant', label:'🌱 Plant'},
+  {key:'type', label:'🪴 Type'},
+  {key:'lifecycle', label:'♻️ Lifecycle'},
   {key:'autumn', label:'🌦 Autumn'},
   {key:'winter', label:'❄️ Winter'},
   {key:'spring', label:'🌸 Spring'},
-  {key:'sun', label:'Sun / Shade'},
-  {key:'location', label:'Location'},
-  {key:'spacing', label:'Spacing'},
-  {key:'depth', label:'Depth'},
-  {key:'watering', label:'Watering'},
-  {key:'tips', label:'Tips'}
+  {key:'sun', label:'☀️ Sun / Shade'},
+  {key:'location', label:'📍 Location'},
+  {key:'spacing', label:'↔️ Spacing'},
+  {key:'depth', label:'⬇️ Depth'},
+  {key:'watering', label:'💧 Watering'},
+  {key:'tips', label:'📝 Tips'}
 ];
 
 const SB_URL = 'https://knftyqkhampkqchoncel.supabase.co';
@@ -589,7 +590,7 @@ function render() {
     html += `<div class="section-group">`;
     html += `<div class="section-banner" style="background:${color}">${section.section}<span class="section-count">${plantRows.length} plant${plantRows.length !== 1 ? 's' : ''}</span></div>`;
     html += `<table class="plant-table"><thead><tr>`;
-    html += `<th>Notes</th><th style="width:40px">Pick</th>`;
+    html += `<th>📝 Notes</th><th style="width:40px">✅ Pick</th>`;
     for (const col of COLUMNS) {
       const cls = col.key === 'autumn' ? ' class="season-first"' : col.key === 'spring' ? ' class="season-last"' : '';
       html += `<th${cls}>${col.label}</th>`;
