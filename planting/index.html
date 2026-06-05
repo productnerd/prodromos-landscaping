@@ -284,9 +284,19 @@ main { padding: 0 1.5rem 3rem; max-width: 1400px; margin: 0 auto; }
 }
 
 .season-dot {
-  display: inline-block;
   text-align: center;
   font-size: 0.8rem;
+  background: rgba(139, 158, 126, 0.06);
+  width: 55px;
+  min-width: 55px;
+}
+
+.season-first {
+  border-left: 2px solid var(--sage-light);
+}
+
+.season-last {
+  border-right: 2px solid var(--sage-light);
 }
 
 .empty-state {
@@ -546,7 +556,10 @@ function render() {
     html += `<div class="section-banner" style="background:${color}">${section.section}<span class="section-count">${plantRows.length} plant${plantRows.length !== 1 ? 's' : ''}</span></div>`;
     html += `<table class="plant-table"><thead><tr>`;
     html += `<th>Notes</th><th style="width:40px">Pick</th>`;
-    for (const col of COLUMNS) html += `<th>${col.label}</th>`;
+    for (const col of COLUMNS) {
+      const cls = col.key === 'autumn' ? ' class="season-first"' : col.key === 'spring' ? ' class="season-last"' : '';
+      html += `<th${cls}>${col.label}</th>`;
+    }
     html += `</tr></thead><tbody>`;
 
     for (const p of plantRows) {
@@ -560,9 +573,9 @@ function render() {
       html += `<td class="cell-plant" data-label="Plant">${p.plant}${annual ? '<span class="annual-badge">Annual</span>' : ''}</td>`;
       html += `<td data-label="Type">${p.type}</td>`;
       html += `<td data-label="Lifecycle">${p.lifecycle}</td>`;
-      html += `<td data-label="Autumn" class="season-dot">${p.autumn}</td>`;
+      html += `<td data-label="Autumn" class="season-dot season-first">${p.autumn}</td>`;
       html += `<td data-label="Winter" class="season-dot">${p.winter}</td>`;
-      html += `<td data-label="Spring" class="season-dot">${p.spring}</td>`;
+      html += `<td data-label="Spring" class="season-dot season-last">${p.spring}</td>`;
       html += `<td data-label="Sun / Shade">${p.sun}</td>`;
       html += `<td data-label="Location">${p.location}</td>`;
       html += `<td data-label="Spacing">${p.spacing}</td>`;
