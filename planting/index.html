@@ -405,7 +405,6 @@ footer {
   <div class="toolbar-spacer"></div>
   <button class="btn" id="btnPrint" title="Print clean sheet">🖨️ Print</button>
   <button class="btn" id="btnCSV" title="Export checked rows as CSV">📥 Export CSV</button>
-  <button class="btn btn-primary" id="btnLink" title="Copy shareable link with your picks and notes">🔗 Copy link</button>
 </div>
 
 <main id="app"></main>
@@ -502,35 +501,21 @@ const SB_URL = 'https://knftyqkhampkqchoncel.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtuZnR5cWtoYW1wa3FjaG9uY2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0NDg4MzYsImV4cCI6MjA2NzAyNDgzNn0.fugiTRvgoD3YqAZPQMV3R6Eu0Wx_9vgE6ZK8zjqFutg';
 const SB_HEADERS = {'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation'};
 
+const PLAN_ID = 'prodromos-main';
 let state = { notes: {}, checked: {} };
-let planId = null;
 let saveTimer = null;
 
 async function loadState() {
-  const hash = window.location.hash;
-  if (hash.startsWith('#plan=')) {
-    planId = hash.slice(6);
-    try {
-      const res = await fetch(`${SB_URL}/rest/v1/prodromos_plans?id=eq.${planId}&select=notes,checked`, {headers: SB_HEADERS});
-      const rows = await res.json();
-      if (rows.length && rows[0].notes) {
-        state.notes = rows[0].notes;
-        state.checked = rows[0].checked || {};
-        try { localStorage.setItem('prodromos-planting', JSON.stringify(state)); } catch(e) {}
-        return;
-      }
-    } catch(e) {}
-  }
-  // Legacy base64 links
-  if (hash.startsWith('#data=')) {
-    try {
-      const json = atob(hash.slice(6));
-      const parsed = JSON.parse(json);
-      if (parsed.notes) state.notes = parsed.notes;
-      if (parsed.checked) state.checked = parsed.checked;
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/prodromos_plans?id=eq.${PLAN_ID}&select=notes,checked`, {headers: SB_HEADERS});
+    const rows = await res.json();
+    if (rows.length && rows[0].notes) {
+      state.notes = rows[0].notes;
+      state.checked = rows[0].checked || {};
+      try { localStorage.setItem('prodromos-planting', JSON.stringify(state)); } catch(e) {}
       return;
-    } catch(e) {}
-  }
+    }
+  } catch(e) {}
   try {
     const saved = localStorage.getItem('prodromos-planting');
     if (saved) {
@@ -543,18 +528,15 @@ async function loadState() {
 
 function saveState() {
   try { localStorage.setItem('prodromos-planting', JSON.stringify(state)); } catch(e) {}
-  if (planId) {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => syncToSupabase(), 1500);
-  }
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => syncToSupabase(), 1500);
 }
 
 function syncToSupabase() {
-  if (!planId) return;
-  fetch(`${SB_URL}/rest/v1/prodromos_plans?id=eq.${planId}`, {
-    method: 'PATCH',
-    headers: SB_HEADERS,
-    body: JSON.stringify({notes: state.notes, checked: state.checked, updated_at: new Date().toISOString()})
+  fetch(`${SB_URL}/rest/v1/prodromos_plans`, {
+    method: 'POST',
+    headers: {...SB_HEADERS, 'Prefer': 'return=representation,resolution=merge-duplicates'},
+    body: JSON.stringify({id: PLAN_ID, notes: state.notes, checked: state.checked, updated_at: new Date().toISOString()})
   }).catch(() => {});
 }
 
@@ -658,30 +640,6 @@ function exportCSV() {
   toast('CSV exported');
 }
 
-async function copyLink() {
-  const id = planId || Math.random().toString(36).slice(2, 10);
-  const body = {id, notes: state.notes, checked: state.checked, updated_at: new Date().toISOString()};
-  try {
-    const res = await fetch(`${SB_URL}/rest/v1/prodromos_plans`, {
-      method: 'POST',
-      headers: {...SB_HEADERS, 'Prefer': 'return=representation,resolution=merge-duplicates'},
-      body: JSON.stringify(body)
-    });
-    if (!res.ok) throw new Error(res.statusText);
-    planId = id;
-    window.location.hash = 'plan=' + id;
-    const url = window.location.origin + window.location.pathname + '#plan=' + id;
-    await navigator.clipboard.writeText(url);
-    toast('Link copied (syncs live)');
-  } catch(e) {
-    const data = JSON.stringify({notes: state.notes, checked: state.checked});
-    const encoded = btoa(unescape(encodeURIComponent(data)));
-    const url = window.location.origin + window.location.pathname + '#data=' + encoded;
-    await navigator.clipboard.writeText(url);
-    toast('Link copied (offline fallback)');
-  }
-}
-
 // Event delegation
 document.getElementById('app').addEventListener('input', e => {
   if (e.target.matches('textarea[data-id]')) {
@@ -703,7 +661,6 @@ document.getElementById('filterToggle').addEventListener('change', render);
 document.getElementById('searchBox').addEventListener('input', render);
 document.getElementById('btnPrint').addEventListener('click', () => window.print());
 document.getElementById('btnCSV').addEventListener('click', exportCSV);
-document.getElementById('btnLink').addEventListener('click', copyLink);
 
 loadState().then(render);
 </script>
