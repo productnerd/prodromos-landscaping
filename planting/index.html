@@ -371,6 +371,39 @@ footer {
   .print-show { display: table-cell !important; }
 }
 
+.row-selected {
+  background: rgba(139, 158, 126, 0.15) !important;
+  box-shadow: inset 3px 0 0 var(--forest);
+}
+
+.row-good {
+  background: rgba(139, 158, 126, 0.12) !important;
+}
+
+.row-good td:first-child::before {
+  content: '🤝';
+  margin-right: 4px;
+}
+
+.row-bad {
+  background: rgba(193, 120, 73, 0.1) !important;
+}
+
+.row-bad td:first-child::before {
+  content: '⚠️';
+  margin-right: 4px;
+}
+
+.companion-hint {
+  display: none;
+  font-size: 0.8rem;
+  color: var(--ink-light);
+  font-style: italic;
+  padding: 0.4rem 1rem;
+}
+
+.companion-hint.show { display: block; }
+
 .hidden { display: none !important; }
 
 .toast {
@@ -472,6 +505,49 @@ const PLANTS = [
 {"id":"chamomile","plant":"🌼 Chamomile","type":"Herb / flower","lifecycle":"🍂 Annual (German type self-seeds)","growth":"🚀 Fast","autumn":"✔✔","winter":"","spring":"✔✔","sun":"🌤 Partial Sun","location":"🪴 Pot","spacing":"20-30 cm","depth":"Shallow (surface)","watering":"2x weekly","tips":"Self-seeds; light sun; gentle watering. German chamomile is annual; Roman type is perennial."}
 ]}
 ];
+
+const COMPANIONS = {
+  walnut:{good:["cherry","plum","peach","hazelnut","mulberry","beans","mint","spearmint","ferns","groundcover","silvergrass"],bad:["apple","blueberry","blackberry","rhododendron","hortensia","lilac","peonies","iris","tulips","raspberry","strawberries","cedar","grapevine","apricot"]},
+  hazelnut:{good:["walnut","lavender","strawberries","groundcover","beans","chamomile","silktree","mulberry"],bad:["grapevine"]},
+  mulberry:{good:["lavender","hazelnut","silktree","groundcover","chamomile","beans","mint","spearmint"],bad:[]},
+  cherry:{good:["walnut","chamomile","lavender","mint","spearmint","silktree","beans","groundcover"],bad:["peach","apricot","plum","grapevine"]},
+  almond:{good:["lavender","chamomile","beans","silktree","groundcover"],bad:["walnut","peach","apricot","plum","cherry"]},
+  apple:{good:["chamomile","lavender","mint","spearmint","lemonbalm","beans","silktree","groundcover"],bad:["walnut","grapevine"]},
+  peach:{good:["walnut","lavender","chamomile","beans","silktree","mint","spearmint","groundcover"],bad:["cherry","apricot","plum","almond"]},
+  apricot:{good:["walnut","lavender","chamomile","beans","silktree","groundcover"],bad:["cherry","peach","plum","almond"]},
+  plum:{good:["walnut","lavender","chamomile","beans","silktree","groundcover"],bad:["cherry","peach","apricot","almond"]},
+  lotus:{good:["silktree","beans","groundcover","lavender","chamomile"],bad:["walnut"]},
+  cedar:{good:["ferns","groundcover"],bad:["peonies","strawberries","tulips"]},
+  maple:{good:["hortensia","ferns","groundcover","silktree"],bad:["peonies"]},
+  silktree:{good:["walnut","cherry","apple","peach","apricot","plum","almond","mulberry","hazelnut","lotus","maple","japanesemaple","grapevine","raspberry","blackberry","blueberry","strawberries","beans","pumpkins","groundcover","lavender"],bad:[]},
+  japanesemaple:{good:["hortensia","rhododendron","ferns","groundcover","silktree","climbingmaple"],bad:[]},
+  lilac:{good:["iris","peonies","tulips"],bad:["walnut"]},
+  rhododendron:{good:["blueberry","japanesemaple","ferns","hortensia","wisteria","groundcover"],bad:["walnut","peonies","lavender"]},
+  wildroses:{good:["lavender","chamomile","mint","spearmint","iris","groundcover","grapevine"],bad:["walnut","strawberries"]},
+  hortensia:{good:["japanesemaple","maple","rhododendron","ferns","peonies","groundcover"],bad:["walnut","lavender"]},
+  lavender:{good:["wildroses","grapevine","apple","cherry","peach","apricot","plum","almond","hazelnut","mulberry","strawberries","raspberry","blackberry","silktree","chamomile","lotus"],bad:["walnut","hortensia","rhododendron","mint","spearmint"]},
+  grapevine:{good:["lavender","beans","chamomile","wildroses","mint","spearmint","lemonbalm","silktree","groundcover"],bad:["blackberry","raspberry","cherry","apple"]},
+  climbingmaple:{good:["japanesemaple","ferns","hortensia","groundcover"],bad:[]},
+  wisteria:{good:["rhododendron","silktree","beans"],bad:["strawberries","tulips","peonies","iris"]},
+  raspberry:{good:["beans","lavender","chamomile","mint","spearmint","silktree","strawberries","groundcover"],bad:["walnut","blackberry","blueberry","grapevine"]},
+  blackberry:{good:["beans","strawberries","lavender","mint","spearmint","silktree","groundcover","chamomile"],bad:["walnut","raspberry","grapevine"]},
+  blueberry:{good:["rhododendron","strawberries","ferns","groundcover","silktree"],bad:["walnut","raspberry","mint","spearmint"]},
+  strawberries:{good:["beans","lavender","chamomile","hazelnut","blackberry","raspberry","blueberry","silktree","lemonbalm","groundcover"],bad:["walnut","wildroses","mint","spearmint","wisteria","pumpkins","cedar"]},
+  peonies:{good:["iris","tulips","hortensia","lilac"],bad:["walnut","mint","spearmint","lemonbalm","rhododendron","cedar","maple","wisteria","silvergrass"]},
+  mint:{good:["apple","cherry","peach","mulberry","grapevine","raspberry","blackberry","wildroses","chamomile","beans","pumpkins"],bad:["lavender","peonies","strawberries","spearmint","lemonbalm","blueberry"]},
+  spearmint:{good:["apple","cherry","peach","mulberry","grapevine","raspberry","blackberry","wildroses","chamomile","beans","pumpkins"],bad:["lavender","peonies","strawberries","mint","lemonbalm","blueberry"]},
+  lemonbalm:{good:["apple","raspberry","blackberry","blueberry","strawberries","grapevine","chamomile","beans","pumpkins"],bad:["mint","spearmint","peonies","lavender"]},
+  iris:{good:["peonies","lilac","tulips","wildroses","groundcover"],bad:["walnut","wisteria"]},
+  tulips:{good:["peonies","iris","lilac","groundcover"],bad:["walnut","wisteria","cedar"]},
+  silvergrass:{good:["walnut","groundcover"],bad:["peonies","strawberries"]},
+  ferns:{good:["japanesemaple","maple","rhododendron","hortensia","blueberry","cedar","climbingmaple","groundcover"],bad:[]},
+  groundcover:{good:["walnut","hazelnut","mulberry","cherry","apple","peach","apricot","plum","silktree","japanesemaple","maple","cedar","ferns","grapevine","raspberry","blackberry","blueberry","strawberries","iris","tulips","silvergrass"],bad:[]},
+  beans:{good:["walnut","cherry","apple","peach","apricot","plum","almond","mulberry","silktree","grapevine","raspberry","blackberry","strawberries","pumpkins","mint","spearmint","lemonbalm","chamomile","hazelnut","lotus"],bad:[]},
+  pumpkins:{good:["beans","chamomile","mint","spearmint","lemonbalm","silktree"],bad:["strawberries"]},
+  chamomile:{good:["apple","cherry","peach","apricot","plum","almond","mulberry","hazelnut","lavender","wildroses","grapevine","raspberry","blackberry","strawberries","mint","spearmint","lemonbalm","beans","pumpkins","lotus","silktree"],bad:[]}
+};
+
+let selectedPlantId = null;
 
 const SECTION_COLORS = {
   trees: 'var(--section-trees)',
@@ -585,10 +661,11 @@ function render() {
       const noteVal = (state.notes[p.id] || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
       const isChecked = state.checked[p.id] ? 'checked' : '';
 
-      html += `<tr class="${annual ? 'is-annual' : ''}">`;
+      const rowCls = [annual ? 'is-annual' : '', selectedPlantId && selectedPlantId === p.id ? 'row-selected' : '', selectedPlantId && COMPANIONS[selectedPlantId]?.good.includes(p.id) ? 'row-good' : '', selectedPlantId && COMPANIONS[selectedPlantId]?.bad.includes(p.id) ? 'row-bad' : ''].filter(Boolean).join(' ');
+      html += `<tr class="${rowCls}" data-plant-id="${p.id}">`;
       html += `<td class="cell-notes" data-label="Notes"><textarea data-id="${p.id}" placeholder="Add notes...">${noteVal}</textarea></td>`;
       html += `<td class="cell-check" data-label="Final pick"><input type="checkbox" data-id="${p.id}" ${isChecked}></td>`;
-      html += `<td class="cell-plant" data-label="Plant">${p.plant}${annual ? '<span class="annual-badge">Annual</span>' : ''}</td>`;
+      html += `<td class="cell-plant" data-label="Plant" style="cursor:pointer">${p.plant}${annual ? '<span class="annual-badge">Annual</span>' : ''}</td>`;
       html += `<td data-label="Growth">${p.growth}</td>`;
       html += `<td data-label="Autumn" class="season-dot season-first">${p.autumn}</td>`;
       html += `<td data-label="Winter" class="season-dot">${p.winter}</td>`;
@@ -655,6 +732,16 @@ document.getElementById('app').addEventListener('change', e => {
     updateCounter();
     if (document.getElementById('filterToggle').checked) render();
   }
+});
+
+document.getElementById('app').addEventListener('click', e => {
+  const plantCell = e.target.closest('.cell-plant');
+  if (!plantCell) return;
+  const row = plantCell.closest('tr');
+  const id = row?.dataset.plantId;
+  if (!id) return;
+  selectedPlantId = selectedPlantId === id ? null : id;
+  render();
 });
 
 document.getElementById('filterToggle').addEventListener('change', render);
