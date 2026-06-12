@@ -476,6 +476,7 @@ const PLANTS = [
 {"section":"🍇 CLIMBERS & VINES","sectionKey":"climbers","plants":[
 {"id":"grapevine","plant":"🍇 Grapevine","type":"Climber (deciduous)","lifecycle":"Perennial","growth":"🚀 Fast","autumn":"✔✔","winter":"✔✔","spring":"","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"1.5-2 m","depth":"20-30 cm","watering":"Weekly","tips":"Full sun; trellis; prune in dormancy."},
 {"id":"climbingmaple","plant":"🍁 Climbing Maple (Schizophragma hydrangeoides)","type":"Woody climber (deciduous)","lifecycle":"Perennial","growth":"🐢 Slow","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"🌤 Partial Shade","location":"🌍 Ground","spacing":"2-3 m","depth":"Root ball depth","watering":"Weekly","tips":"Self-clinging via aerial roots; slow to establish then vigorous; needs wall or large tree; tolerates cold well; prune after flowering; maple-shaped leaves with autumn colour."},
+{"id":"climbingrose","plant":"🌹 Climbing Wild Rose (Rosa arvensis)","type":"Rambling climber (deciduous)","lifecycle":"Perennial","growth":"🚀 Fast","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun to 🌤 Part Shade","location":"🌍 Ground","spacing":"2-3 m","depth":"Root crown / bud union level","watering":"Weekly until established","tips":"European native rambler; very cold-hardy; white single flowers in summer; tolerates poor soil and shade; train onto pergola, fence or wall; prune after flowering; rosehips in autumn."},
 {"id":"wisteria","plant":"🌸 Wisteria","type":"Woody climber (deciduous)","lifecycle":"Perennial","growth":"🚀 Fast","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"3-4 m","depth":"Root ball depth / graft above soil","watering":"Weekly until established","tips":"Vigorous; needs a strong pergola or support; prune twice yearly (summer + winter); cold-hardy; may take years to flower."}
 ]},
 {"section":"🫐 CANE & BERRY FRUIT","sectionKey":"cane","plants":[
@@ -525,8 +526,9 @@ const COMPANIONS = {
   rhododendron:{good:["blueberry","japanesemaple","ferns","hortensia","wisteria","groundcover"],bad:["walnut","peonies","lavender"]},
   wildroses:{good:["lavender","chamomile","mint","spearmint","iris","groundcover","grapevine"],bad:["walnut","strawberries"]},
   hortensia:{good:["japanesemaple","maple","rhododendron","ferns","peonies","groundcover"],bad:["walnut","lavender"]},
-  lavender:{good:["wildroses","grapevine","apple","cherry","peach","apricot","plum","almond","hazelnut","mulberry","strawberries","raspberry","blackberry","silktree","chamomile","lotus"],bad:["walnut","hortensia","rhododendron","mint","spearmint"]},
+  lavender:{good:["wildroses","climbingrose","grapevine","apple","cherry","peach","apricot","plum","almond","hazelnut","mulberry","strawberries","raspberry","blackberry","silktree","chamomile","lotus"],bad:["walnut","hortensia","rhododendron","mint","spearmint"]},
   grapevine:{good:["lavender","beans","chamomile","wildroses","mint","spearmint","lemonbalm","silktree","groundcover"],bad:["blackberry","raspberry","cherry","apple"]},
+  climbingrose:{good:["lavender","chamomile","mint","spearmint","iris","groundcover","grapevine"],bad:["walnut","strawberries"]},
   climbingmaple:{good:["japanesemaple","ferns","hortensia","groundcover"],bad:[]},
   wisteria:{good:["rhododendron","silktree","beans"],bad:["strawberries","tulips","peonies","iris"]},
   raspberry:{good:["beans","lavender","chamomile","mint","spearmint","silktree","strawberries","groundcover"],bad:["walnut","blackberry","blueberry","grapevine"]},
@@ -544,7 +546,7 @@ const COMPANIONS = {
   groundcover:{good:["walnut","hazelnut","mulberry","cherry","apple","peach","apricot","plum","silktree","japanesemaple","maple","cedar","ferns","grapevine","raspberry","blackberry","blueberry","strawberries","iris","tulips","silvergrass"],bad:[]},
   beans:{good:["walnut","cherry","apple","peach","apricot","plum","almond","mulberry","silktree","grapevine","raspberry","blackberry","strawberries","pumpkins","mint","spearmint","lemonbalm","chamomile","hazelnut","lotus"],bad:[]},
   pumpkins:{good:["beans","chamomile","mint","spearmint","lemonbalm","silktree"],bad:["strawberries"]},
-  chamomile:{good:["apple","cherry","peach","apricot","plum","almond","mulberry","hazelnut","lavender","wildroses","grapevine","raspberry","blackberry","strawberries","mint","spearmint","lemonbalm","beans","pumpkins","lotus","silktree"],bad:[]}
+  chamomile:{good:["apple","cherry","peach","apricot","plum","almond","mulberry","hazelnut","lavender","wildroses","climbingrose","grapevine","raspberry","blackberry","strawberries","mint","spearmint","lemonbalm","beans","pumpkins","lotus","silktree"],bad:[]}
 };
 
 let selectedPlantId = null;
