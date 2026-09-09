@@ -520,6 +520,140 @@ footer {
 }
 .shop-month ul.shop-plant li { color: var(--ink-light); }
 
+.view-switch { display: flex; gap: 0; }
+.view-switch .btn:first-child { border-radius: 4px 0 0 4px; }
+.view-switch .btn:last-child { border-radius: 0 4px 4px 0; margin-left: -1px; }
+.view-switch .btn[aria-pressed="true"] {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--paper);
+}
+
+#calendar { padding: 0 1.5rem 3rem; max-width: 1400px; margin: 0 auto; }
+
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin: 1.25rem 0 0.75rem;
+  font-size: 0.82rem;
+  color: var(--ink-light);
+}
+.cal-legend span { display: flex; align-items: center; gap: 0.35rem; }
+
+.cal-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+}
+
+.cal-table th {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-light);
+  padding: 0.5rem 0.3rem;
+  border-bottom: 2px solid var(--divider);
+  background: var(--cream);
+  position: sticky;
+  top: 52px;
+  z-index: 10;
+}
+.cal-table th.cal-plant-head { text-align: left; padding-left: 0.6rem; min-width: 190px; }
+.cal-table th.is-now { color: var(--paper); background: var(--forest); border-radius: 4px 4px 0 0; }
+
+.cal-table td {
+  border-bottom: 1px solid var(--divider);
+  padding: 0.3rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.cal-table td.cal-plant {
+  text-align: left;
+  padding-left: 0.6rem;
+  font-weight: 500;
+  color: var(--forest-deep);
+  white-space: nowrap;
+}
+.cal-table td.cal-plant .cal-window {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--warm-gray);
+}
+
+.cal-table tbody tr:hover td { background: rgba(139, 158, 126, 0.08); }
+.cal-table td.is-now { background: rgba(61, 90, 62, 0.07); }
+
+.cal-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+.cal-yes { background: var(--sage-light); color: var(--forest-deep); }
+.cal-no {
+  color: var(--warm-gray);
+  opacity: 0.5;
+  font-size: 0.7rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 3px,
+    rgba(168, 158, 148, 0.16) 3px,
+    rgba(168, 158, 148, 0.16) 5px
+  );
+}
+.cal-best {
+  background: var(--forest);
+  color: var(--paper);
+  font-weight: 700;
+  box-shadow: 0 0 0 2px var(--terracotta-light);
+}
+
+.cal-section-row td {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--paper);
+  text-align: left !important;
+  padding: 0.35rem 0.6rem;
+}
+
+.cal-total-row td {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  color: var(--forest-deep);
+  border-top: 2px solid var(--divider);
+  border-bottom: none;
+  padding-top: 0.5rem;
+}
+.cal-total-row td.cal-plant { color: var(--ink-light); font-size: 0.8rem; }
+.cal-load {
+  display: inline-block;
+  min-width: 22px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--cream);
+}
+.cal-load.busy { background: var(--terracotta-light); color: var(--terracotta); }
+
+.cal-row-unpicked td.cal-plant { color: var(--warm-gray); font-weight: 400; }
+
+@media (max-width: 900px) {
+  #calendar { padding: 0 0.75rem 2rem; overflow-x: auto; }
+  .cal-table { min-width: 720px; }
+}
+
 .shop-qty {
   font-family: 'Fraunces', Georgia, serif;
   font-size: 0.72rem;
@@ -656,10 +790,16 @@ footer {
   </label>
   <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search plants...">
   <button class="btn" id="btnPickAll">✅ Pick all</button>
+  <div class="view-switch">
+    <button class="btn" id="btnViewTable" aria-pressed="true">📋 Table</button>
+    <button class="btn" id="btnViewCalendar" aria-pressed="false">📅 Calendar</button>
+  </div>
   <div class="toolbar-spacer"></div>
   <button class="btn" id="btnPrint" title="Print clean sheet">🖨️ Print</button>
   <button class="btn" id="btnCSV" title="Export checked rows as CSV">📥 Export CSV</button>
 </div>
+
+<main id="calendar" class="hidden"></main>
 
 <section class="shopping hidden" id="shopping">
   <details open>

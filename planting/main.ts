@@ -232,6 +232,7 @@ function render() {
   updateCounter();
   updatePickAllButton(visiblePlants());
   renderShoppingList();
+  if (view === 'calendar') renderCalendar();
 }
 
 // ─── Shopping / planting schedule from the current picks ─────────────
@@ -299,6 +300,104 @@ function renderShoppingList() {
   body.innerHTML = html;
 }
 
+// ─── Calendar view ───────────────────────────────────────────────────
+let view: 'table' | 'calendar' = 'table';
+
+/**
+ * Spread the picked plants across their planting windows so no single month
+ * carries everything. Plants with the least choice are placed first, and each
+ * one goes to its emptiest available month.
+ */
+function suggestedMonths(plants: PlantDefinition[]): Map<string, number> {
+  const load = new Map<number, number>();
+  const chosen = new Map<string, number>();
+  const byFlexibility = [...plants].sort((a, b) => a.plantingMonths.length - b.plantingMonths.length);
+
+  for (const p of byFlexibility) {
+    if (p.plantingMonths.length === 0) continue;
+    let best = p.plantingMonths[0];
+    for (const m of p.plantingMonths) {
+      if ((load.get(m) ?? 0) < (load.get(best) ?? 0)) best = m;
+    }
+    chosen.set(p.id, best);
+    load.set(best, (load.get(best) ?? 0) + 1);
+  }
+  return chosen;
+}
+
+function monthWindowLabel(p: PlantDefinition) {
+  if (p.plantingMonths.length === 0) return 'no window';
+  const order = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
+  const sorted = order.filter((m) => p.plantingMonths.includes(m));
+  return sorted.map((m) => MONTH_ABBR[m - 1]).join(', ');
+}
+
+function renderCalendar() {
+  const el = document.getElementById('calendar')!;
+  const now = new Date().getMonth() + 1;
+  const visible = visiblePlants();
+  const picked = visible.filter((p) => state.checked[p.id]);
+  const scheduleFor = picked.length > 0 ? picked : [];
+  const suggested = suggestedMonths(scheduleFor);
+  const monthOrder = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
+
+  let html = `<div class="cal-legend">
+    <span><i class="cal-cell cal-yes">✓</i> can plant</span>
+    <span><i class="cal-cell cal-no">✕</i> do not plant</span>
+    <span><i class="cal-cell cal-best">★</i> suggested month</span>
+    <span>Season runs Sep &rarr; Aug. ${picked.length ? `Scheduling your ${picked.length} pick${picked.length !== 1 ? 's' : ''}.` : 'Pick plants to get a suggested schedule.'}</span>
+  </div>`;
+
+  html += `<table class="cal-table"><thead><tr><th class="cal-plant-head">🌱 Plant</th>`;
+  for (const m of monthOrder) {
+    html += `<th class="${m === now ? 'is-now' : ''}">${MONTH_ABBR[m - 1]}</th>`;
+  }
+  html += `</tr></thead><tbody>`;
+
+  const perMonth = new Map<number, number>();
+
+  for (const { section, plants } of ORDERED) {
+    const rows = plants.filter((p) => visible.includes(p));
+    if (rows.length === 0) continue;
+    html += `<tr class="cal-section-row"><td colspan="13" style="background:${SECTION_COLORS[section.key]}">${section.label}</td></tr>`;
+
+    for (const p of rows) {
+      const isPicked = !!state.checked[p.id];
+      html += `<tr class="${isPicked ? '' : 'cal-row-unpicked'}">`;
+      html += `<td class="cal-plant">${p.emoji} ${esc(p.name)}<span class="cal-window">${monthWindowLabel(p)}</span></td>`;
+      for (const m of monthOrder) {
+        const can = p.plantingMonths.includes(m);
+        const isBest = suggested.get(p.id) === m;
+        if (isBest) perMonth.set(m, (perMonth.get(m) ?? 0) + 1);
+        const cls = isBest ? 'cal-best' : can ? 'cal-yes' : 'cal-no';
+        const mark = isBest ? '★' : can ? '✓' : '✕';
+        const title = can ? `${p.name} — can plant in ${MONTH_ABBR[m - 1]}` : `${p.name} — do not plant in ${MONTH_ABBR[m - 1]}`;
+        html += `<td class="${m === now ? 'is-now' : ''}"><span class="cal-cell ${cls}" title="${esc(title)}">${mark}</span></td>`;
+      }
+      html += `</tr>`;
+    }
+  }
+
+  html += `<tr class="cal-total-row"><td class="cal-plant">Scheduled that month</td>`;
+  for (const m of monthOrder) {
+    const n = perMonth.get(m) ?? 0;
+    html += `<td class="${m === now ? 'is-now' : ''}"><span class="cal-load${n >= 6 ? ' busy' : ''}">${n || '–'}</span></td>`;
+  }
+  html += `</tr></tbody></table>`;
+
+  el.innerHTML = html;
+}
+
+function setView(next: 'table' | 'calendar') {
+  view = next;
+  document.getElementById('app')!.classList.toggle('hidden', next !== 'table');
+  document.getElementById('calendar')!.classList.toggle('hidden', next !== 'calendar');
+  document.getElementById('btnViewTable')!.setAttribute('aria-pressed', String(next === 'table'));
+  document.getElementById('btnViewCalendar')!.setAttribute('aria-pressed', String(next === 'calendar'));
+  render();
+  window.scrollTo({ top: 0 });
+}
+
 function toast(msg: string) {
   const el = document.getElementById('toast')!;
   el.textContent = msg;
@@ -344,54 +443,186 @@ function exportCSV() {
 }
 
 // ─── Soil preparation checklist ──────────────────────────────────────
-const SOIL_PREP: { title: string; items: { text: string; note?: string }[] }[] = [
+// Ordered so that testing and diagnosis come before any amendment.
+const SOIL_PREP: { title: string; items: { id: string; text: string; note?: string }[] }[] = [
   {
-    title: '1. Clear & Assess',
+    title: '1. Test the soil — before adding anything',
     items: [
-      { text: 'Remove weeds, roots, and any stones or rubble.' },
-      { text: 'Mark where trees and shrubs will go (leave space for tractor access later).' },
-      { text: 'Check drainage: dig a 50 cm test hole — if water sits >24 h, improve drainage with gravel or raised beds.' },
+      {
+        id: 'sample',
+        text: 'Take samples now, before manure or lime goes on.',
+        note: 'Several cores per area, 0–20 cm — plus a separate 20–40 cm sample where trees will go. Testing after amending measures the amendment, not your soil.',
+      },
+      {
+        id: 'test-what',
+        text: 'Ask the lab for pH, salinity (EC), organic matter, P, K, and exchangeable Ca / Mg / Na.',
+        note: 'Add nickel and chromium — the Troodos ophiolite can carry both.',
+      },
+      {
+        id: 'ph-expect',
+        text: 'Expect roughly pH 6.0–7.5 here, not the alkaline lowland default.',
+        note: 'Central Troodos is the one part of Cyprus where topsoil regularly falls below pH 7. Good news for fruit — do not lime on assumption.',
+      },
+      {
+        id: 'ph-correct',
+        text: 'If pH needs correcting, apply lime or elemental sulphur now.',
+        note: 'Both take months to act, so they must go on well before winter planting — not alongside the manure.',
+      },
     ],
   },
   {
-    title: '2. Deep Tilling / Ploughing',
+    title: '2. Rule out serpentine ground',
     items: [
-      { text: 'Use the tractor to till 30–40 cm deep (50 cm for tree zones).' },
-      { text: 'Break compacted layers so roots can spread.' },
-      { text: 'Mix the topsoil and subsoil lightly to avoid creating a hard barrier.' },
+      {
+        id: 'serp-look',
+        text: 'Look for greasy blue-green or black stones, rust-red soil, and sparse or stunted native growth.',
+        note: 'Prodromos sits a few km from the serpentinite core around Chionistra, so downslope colluvium is possible.',
+      },
+      {
+        id: 'serp-confirm',
+        text: 'If suspicious, confirm with a Ca:Mg ratio — below 1 means serpentine.',
+      },
+      {
+        id: 'serp-act',
+        text: 'If it is serpentine, build raised beds with imported soil rather than trying to fix it.',
+        note: 'Gypsum and compost only partly buffer a hostile Ca:Mg ratio.',
+      },
     ],
   },
   {
-    title: '3. Organic Matter Boost',
+    title: '3. Clear & assess',
     items: [
-      { text: 'Add manure or compost.', note: 'Best: well-rotted animal manure (goat, cow, or horse) or mature compost.' },
-      { text: 'Spread 3–5 cm thick over the surface, then mix it in with the tractor.' },
-      { text: 'Do not use fresh manure — it “burns” roots and adds too much nitrogen.' },
-      { text: 'Let it rest 3–4 weeks before planting trees.' },
-      { text: 'Optional: add fertile soil or compost from a healthy garden to inoculate microbes.', note: 'Helpful but not essential if you’re adding manure.' },
+      {
+        id: 'weeds',
+        text: 'Dig perennial weed roots out whole — do not rotavate them.',
+        note: 'Chopping bindweed or couch roots with a tractor multiplies them into new plants.',
+      },
+      {
+        id: 'drainage',
+        text: 'Drainage test: dig a 50 cm hole and fill it. If water sits over 24 h, plan mounds, raised beds or drainage.',
+      },
+      {
+        id: 'frost-map',
+        text: 'Walk the site on a cold morning and mark where cold air pools.',
+        note: 'These frost hollows should drive your tree layout more than the soil does.',
+      },
     ],
   },
   {
-    title: '4. Soil Testing (if possible)',
+    title: '4. Loosen compaction only where it exists',
     items: [
-      { text: 'Quick pH check with a €10 kit.', note: 'Ideal for fruit trees: 6.0–7.0 · Hortensias: slightly acidic 5.0–6.0' },
-      { text: 'If too acidic → add agricultural lime.' },
-      { text: 'If too alkaline → add peat moss or pine mulch.' },
+      {
+        id: 'no-deep-till',
+        text: 'Do NOT deep-till the whole site or mix subsoil into topsoil.',
+        note: 'It destroys soil structure, dilutes the fertile layer, and on a slope invites erosion. Around 40% of trial sites see yields drop after deep tillage.',
+      },
+      {
+        id: 'pits',
+        text: 'Dig inspection pits and check whether a compacted pan actually exists.',
+      },
+      {
+        id: 'subsoil',
+        text: 'If you find a pan, fracture it locally with a subsoiler tine — without inverting the profile.',
+      },
+      {
+        id: 'shallow',
+        text: 'Otherwise work only the top 10–15 cm.',
+      },
     ],
   },
   {
-    title: '5. Layout Planning',
+    title: '5. Organic matter — spread it, never bury it',
     items: [
-      { text: 'Mark tree positions with stakes (respect spacing from the table below).' },
-      { text: 'Plan irrigation lines (drip system preferred).' },
-      { text: 'Think water flow — sloped land can drain too fast; contour planting helps retain moisture.' },
+      {
+        id: 'manure-rate',
+        text: 'Spread 3–5 cm of well-rotted manure or mature compost across the whole bed and mix in shallowly.',
+        note: 'Let the soil test set the rate rather than applying blind.',
+      },
+      {
+        id: 'no-fresh',
+        text: 'Never use fresh manure — it needs 4–6 months to rot down.',
+      },
+      {
+        id: 'salt',
+        text: 'Check the salt content, and go easy on poultry manure.',
+        note: 'Manure is often salty and alkaline. Winter rain will leach it before spring.',
+      },
+      {
+        id: 'no-hole-amend',
+        text: 'Do NOT put manure or compost in the planting holes.',
+        note: 'Rich backfill makes roots circle inside the pocket and turns a heavy soil into a sump. Feed the surface instead.',
+      },
+      { id: 'rest', text: 'Let it settle 3–4 weeks before planting trees.' },
     ],
   },
   {
-    title: '6. Mulch & Rest',
+    title: '6. Plan the layout',
     items: [
-      { text: 'Cover bare areas with straw, dry leaves, or wood chips.', note: 'Prevents weeds · Retains moisture · Slowly adds humus over winter' },
-      { text: 'Let the soil rest until your first winter planting (Dec–Feb).' },
+      {
+        id: 'stakes',
+        text: 'Mark tree positions with stakes at full mature spacing (see the table).',
+      },
+      {
+        id: 'contour',
+        text: 'Run rows across the contour, not up and down the slope.',
+      },
+      {
+        id: 'frost-place',
+        text: 'Put the earliest bloomers — almond, apricot, peach — high on the slope, never in a frost hollow.',
+        note: 'At 1,400 m these bloom into frost most years. Late-flowering cultivars and cold-air drainage are the only real defences.',
+      },
+      {
+        id: 'walnut',
+        text: 'Keep juglone-sensitive plants clear of the walnut’s eventual dripline.',
+        note: 'A mature walnut needs 12–15 m anyway, so correct spacing solves this on its own.',
+      },
+      { id: 'irrigation', text: 'Plan drip irrigation lines.' },
+      {
+        id: 'windbreak',
+        text: 'Plan a windbreak now — it takes years to grow.',
+        note: 'Exposure and desiccation are significant at this altitude.',
+      },
+    ],
+  },
+  {
+    title: '7. Protect the ground before the rains',
+    items: [
+      {
+        id: 'cover',
+        text: 'Sow a winter cover crop or leave residue on any disturbed ground.',
+        note: 'Roughly 800 mm/yr falls here, much of it as intense winter rain and snowmelt.',
+      },
+      { id: 'terraces', text: 'Keep and repair the dry-stone terraces.' },
+      {
+        id: 'mulch',
+        text: 'Mulch 5–8 cm deep and wide — but pull it back 10–15 cm clear of every trunk.',
+        note: 'Mulch piled against bark rots it. Never make a volcano around the stem.',
+      },
+    ],
+  },
+  {
+    title: '8. Order plants & prepare to plant',
+    items: [
+      {
+        id: 'order',
+        text: 'Order bare-root stock now for November–December or late February–March.',
+        note: 'Skip January here — the ground can be frozen or under snow. This is zone 8, not the coastal zone 10.',
+      },
+      {
+        id: 'rootstock',
+        text: 'Choose rootstock for cold hardiness and stony ground.',
+        note: 'It matters more to the outcome than the soil prep does.',
+      },
+      {
+        id: 'fence',
+        text: 'Fence against goats and sheep, and fit mesh guards against voles.',
+        note: 'Rodents girdle young trunks under snow cover; tree tubes alone will not stop a goat.',
+      },
+      {
+        id: 'hole',
+        text: 'When planting: dig 2–3× as wide as the root ball but no deeper, and backfill with native soil.',
+        note: 'Keep the root flare at or just above grade. Roughen the sides of the hole so roots can escape.',
+      },
     ],
   },
 ];
@@ -404,22 +635,24 @@ try {
   /* storage blocked */
 }
 
+function updateSoilCount() {
+  const all = SOIL_PREP.flatMap((s) => s.items);
+  const done = all.filter((i) => soilDone[i.id]).length;
+  document.getElementById('soilCount')!.textContent = `${done} / ${all.length} done`;
+}
+
 function renderSoilPrep() {
   let html = '';
-  let total = 0;
-  let done = 0;
-  SOIL_PREP.forEach((step, si) => {
+  SOIL_PREP.forEach((step) => {
     html += `<div class="soil-step"><h3>${step.title}</h3>`;
-    step.items.forEach((item, ii) => {
-      const id = `${si}-${ii}`;
-      total++;
-      if (soilDone[id]) done++;
+    step.items.forEach((item) => {
+      const id = item.id;
       html += `<label class="soil-item${soilDone[id] ? ' done' : ''}"><input type="checkbox" data-soil="${id}" ${soilDone[id] ? 'checked' : ''}><span>${item.text}${item.note ? `<span class="soil-note">${item.note}</span>` : ''}</span></label>`;
     });
     html += `</div>`;
   });
   document.getElementById('soilBody')!.innerHTML = html;
-  document.getElementById('soilCount')!.textContent = `${done} / ${total} done`;
+  updateSoilCount();
 }
 
 // ─── Wiring ──────────────────────────────────────────────────────────
@@ -462,7 +695,8 @@ document.getElementById('soilBody')!.addEventListener('change', (e) => {
   } catch {
     /* storage blocked */
   }
-  renderSoilPrep();
+  t.closest('.soil-item')!.classList.toggle('done', t.checked);
+  updateSoilCount();
 });
 
 document.getElementById('btnPickAll')!.addEventListener('click', () => {
@@ -474,6 +708,9 @@ document.getElementById('btnPickAll')!.addEventListener('click', () => {
   render();
   toast(allPicked ? 'Cleared all shown' : `Picked ${visible.length} plants`);
 });
+
+document.getElementById('btnViewTable')!.addEventListener('click', () => setView('table'));
+document.getElementById('btnViewCalendar')!.addEventListener('click', () => setView('calendar'));
 
 document.getElementById('filterToggle')!.addEventListener('change', render);
 document.getElementById('searchBox')!.addEventListener('input', render);
