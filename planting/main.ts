@@ -154,24 +154,40 @@ function updateCounter() {
   document.getElementById('total')!.textContent = String(PLANTS.length);
 }
 
-function render() {
-  const app = document.getElementById('app')!;
+/** Plants passing the current search and "final picks only" filters. */
+function visiblePlants(): PlantDefinition[] {
   const filterOnly = (document.getElementById('filterToggle') as HTMLInputElement).checked;
   const search = (document.getElementById('searchBox') as HTMLInputElement).value.toLowerCase().trim();
+  return PLANTS.filter((p) => {
+    if (filterOnly && !state.checked[p.id]) return false;
+    if (!search) return true;
+    return (
+      p.name.toLowerCase().includes(search) ||
+      p.botanicalName.toLowerCase().includes(search) ||
+      p.cyprusNotes.toLowerCase().includes(search) ||
+      (state.notes[p.id] || '').toLowerCase().includes(search)
+    );
+  });
+}
+
+function updatePickAllButton(visible: PlantDefinition[]) {
+  const btn = document.getElementById('btnPickAll') as HTMLButtonElement;
+  const allPicked = visible.length > 0 && visible.every((p) => state.checked[p.id]);
+  btn.disabled = visible.length === 0;
+  btn.textContent = allPicked ? '✖️ Clear all' : '✅ Pick all';
+  btn.title = allPicked
+    ? `Unpick the ${visible.length} plant${visible.length !== 1 ? 's' : ''} shown`
+    : `Pick all ${visible.length} plant${visible.length !== 1 ? 's' : ''} shown`;
+}
+
+function render() {
+  const app = document.getElementById('app')!;
   const companions = selectedPlantId ? companionsFor(selectedPlantId) : null;
+  const visible = new Set(visiblePlants().map((p) => p.id));
   let html = '';
 
   for (const { section, plants } of ORDERED) {
-    let rows = plants;
-    if (filterOnly) rows = rows.filter((p) => state.checked[p.id]);
-    if (search)
-      rows = rows.filter(
-        (p) =>
-          p.name.toLowerCase().includes(search) ||
-          p.botanicalName.toLowerCase().includes(search) ||
-          p.cyprusNotes.toLowerCase().includes(search) ||
-          (state.notes[p.id] || '').toLowerCase().includes(search),
-      );
+    const rows = plants.filter((p) => visible.has(p.id));
     if (rows.length === 0) continue;
 
     html += `<div class="section-group">`;
@@ -214,6 +230,7 @@ function render() {
 
   app.innerHTML = html || '<div class="empty-state">No plants match your current filters.</div>';
   updateCounter();
+  updatePickAllButton(visiblePlants());
   renderShoppingList();
 }
 
@@ -446,6 +463,16 @@ document.getElementById('soilBody')!.addEventListener('change', (e) => {
     /* storage blocked */
   }
   renderSoilPrep();
+});
+
+document.getElementById('btnPickAll')!.addEventListener('click', () => {
+  const visible = visiblePlants();
+  if (visible.length === 0) return;
+  const allPicked = visible.every((p) => state.checked[p.id]);
+  for (const p of visible) state.checked[p.id] = !allPicked;
+  saveState();
+  render();
+  toast(allPicked ? 'Cleared all shown' : `Picked ${visible.length} plants`);
 });
 
 document.getElementById('filterToggle')!.addEventListener('change', render);
