@@ -360,7 +360,7 @@ footer {
 /* Print styles */
 @media print {
   header { padding: 1rem; }
-  .toolbar, .btn, .toggle-wrap, .search-box, footer, .cell-notes, .cell-check { display: none !important; }
+  .toolbar, .btn, .toggle-wrap, .search-box, footer, .cell-notes, .cell-check, .soil-prep { display: none !important; }
   .plant-table thead th { position: static; background: #fff; }
   .section-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .plant-table tbody tr { page-break-inside: avoid; }
@@ -406,6 +406,96 @@ footer {
 
 .hidden { display: none !important; }
 
+.soil-prep {
+  max-width: 1400px;
+  margin: 1.5rem auto 0;
+  padding: 0 1.5rem;
+}
+
+.soil-prep details {
+  background: var(--paper);
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+}
+
+.soil-prep summary {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.15rem;
+  color: var(--paper);
+  background: var(--terracotta);
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.soil-prep summary::-webkit-details-marker { display: none; }
+.soil-prep summary::before { content: '▸'; font-size: 0.9rem; transition: transform 0.15s; }
+.soil-prep details[open] summary::before { transform: rotate(90deg); }
+.soil-prep details[open] summary { border-radius: 6px 6px 0 0; }
+
+.soil-prep .soil-count {
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.85;
+  margin-left: auto;
+}
+
+.soil-body {
+  padding: 1rem 1.25rem 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem 2rem;
+}
+
+.soil-step h3 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--forest-deep);
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--divider);
+}
+
+.soil-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.3rem 0;
+  font-size: 0.88rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.soil-item input[type="checkbox"] {
+  accent-color: var(--forest);
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.soil-item.done { color: var(--warm-gray); text-decoration: line-through; }
+.soil-item .soil-note {
+  display: block;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ink-light);
+  margin-top: 2px;
+}
+.soil-item.done .soil-note { color: var(--warm-gray); }
+
+@media (max-width: 900px) {
+  .soil-prep { padding: 0 0.75rem; }
+}
+
 .toast {
   position: fixed;
   bottom: 1.5rem;
@@ -442,6 +532,13 @@ footer {
   <button class="btn" id="btnCSV" title="Export checked rows as CSV">📥 Export CSV</button>
 </div>
 
+<section class="soil-prep">
+  <details open>
+    <summary>🌍 Soil Preparation — October (Pre-Planting)<span class="soil-count" id="soilCount"></span></summary>
+    <div class="soil-body" id="soilBody"></div>
+  </details>
+</section>
+
 <main id="app"></main>
 
 <footer>Prodromos Planting Plan &middot; Mountain garden at 1,400 m</footer>
@@ -461,6 +558,7 @@ const PLANTS = [
 {"id":"apricot","plant":"🍑 Apricot","type":"Tree (deciduous)","lifecycle":"Perennial","growth":"🌱 Medium","autumn":"","winter":"✔✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"3-4 m","depth":"Graft above soil","watering":"Weekly","tips":"Early bloomer; protect from late frost."},
 {"id":"plum","plant":"🍑 Damaskina (Plum)","type":"Tree (deciduous)","lifecycle":"Perennial","growth":"🌱 Medium","autumn":"","winter":"✔✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"3-4 m","depth":"Graft above soil","watering":"Weekly","tips":"Cold-tolerant; prune lightly after harvest."},
 {"id":"lotus","plant":"🍈 Lotus Fruit (Diospyros lotus)","type":"Tree (deciduous)","lifecycle":"Perennial","growth":"🌱 Medium","autumn":"✔✔","winter":"✔✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"4-6 m","depth":"Graft above soil","watering":"Weekly","tips":"Cold-hardy persimmon relative; late harvest; mulch base."},
+{"id":"chestnut","plant":"🌰 Kastania (Sweet Chestnut, Castanea sativa)","type":"Tree (deciduous)","lifecycle":"Perennial","growth":"🌱 Medium","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"8-10 m","depth":"Root ball depth","watering":"Weekly (deep soak) until established","tips":"Traditional Troodos tree; loves cold winters at altitude. Needs deep, well-drained acidic-to-neutral soil — avoid limestone. Large spreading canopy. Plant two varieties for pollination; nuts ripen Oct in spiny husks."},
 {"id":"cedar","plant":"🌲 Lebanese Cedar","type":"Tree (evergreen)","lifecycle":"Perennial / evergreen","growth":"🐢 Slow","autumn":"✔✔","winter":"✔✔","spring":"","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"4-6 m","depth":"Root ball depth","watering":"Weekly (deep soak)","tips":"Hardy evergreen; mulch base; deep watering first summer."},
 {"id":"maple","plant":"🍁 Maple (Acer pseudoplatanus / platanoides / campestre)","type":"Tree (deciduous, ornamental)","lifecycle":"Perennial","growth":"🌱 Medium","autumn":"✔✔","winter":"✔✔","spring":"✔","sun":"☀️ Full Sun to 🌤 Part Shade","location":"🌍 Ground","spacing":"6-10 m (field maple 4-6 m)","depth":"Root ball depth","watering":"Weekly until established","tips":"Very cold-hardy shade / windbreak trees; plant dormant. Field maple (campestre) is smallest, good for hedging."},
 {"id":"silktree","plant":"🌸 Akakia Constantinoupoleos (Albizia julibrissin, Persian silk tree)","type":"Tree (deciduous, ornamental)","lifecycle":"Perennial","growth":"🚀 Fast","autumn":"✔","winter":"✔","spring":"✔✔","sun":"☀️ Full Sun","location":"🌍 Ground","spacing":"5-7 m","depth":"Root ball depth","watering":"Weekly, then drought-tolerant","tips":"Fast umbrella canopy; pink silky summer flowers; hardy once established but protect young trees from hard frost at altitude; self-seeds."},
@@ -518,6 +616,7 @@ const COMPANIONS = {
   apricot:{good:["walnut","lavender","chamomile","beans","silktree","groundcover"],bad:["cherry","peach","plum","almond"]},
   plum:{good:["walnut","lavender","chamomile","beans","silktree","groundcover"],bad:["cherry","peach","apricot","almond"]},
   lotus:{good:["silktree","beans","groundcover","lavender","chamomile"],bad:["walnut"]},
+  chestnut:{good:["ferns","groundcover","beans","chamomile","hazelnut","silktree"],bad:["walnut","peonies","tulips"]},
   cedar:{good:["ferns","groundcover"],bad:["peonies","strawberries","tulips"]},
   maple:{good:["hortensia","ferns","groundcover","silktree"],bad:["peonies"]},
   silktree:{good:["walnut","cherry","apple","peach","apricot","plum","almond","mulberry","hazelnut","lotus","maple","japanesemaple","grapevine","raspberry","blackberry","blueberry","strawberries","beans","pumpkins","groundcover","lavender"],bad:[]},
@@ -761,6 +860,70 @@ document.getElementById('btnPrint').addEventListener('click', () => {
   document.querySelectorAll('.print-hide').forEach(el => el.classList.remove('print-hide'));
 });
 document.getElementById('btnCSV').addEventListener('click', exportCSV);
+
+// ─── Soil preparation checklist (localStorage only) ───
+const SOIL_PREP = [
+  {title:'1. Clear & Assess', items:[
+    {text:'Remove weeds, roots, and any stones or rubble.'},
+    {text:'Mark where trees and shrubs will go (leave space for tractor access later).'},
+    {text:'Check drainage: dig a 50 cm test hole — if water sits >24 h, improve drainage with gravel or raised beds.'}
+  ]},
+  {title:'2. Deep Tilling / Ploughing', items:[
+    {text:'Use the tractor to till 30–40 cm deep (50 cm for tree zones).'},
+    {text:'Break compacted layers so roots can spread.'},
+    {text:'Mix the topsoil and subsoil lightly to avoid creating a hard barrier.'}
+  ]},
+  {title:'3. Organic Matter Boost', items:[
+    {text:'Add manure or compost.', note:'Best: well-rotted animal manure (goat, cow, or horse) or mature compost.'},
+    {text:'Spread 3–5 cm thick over the surface, then mix it in with the tractor.'},
+    {text:'Do not use fresh manure — it “burns” roots and adds too much nitrogen.'},
+    {text:'Let it rest 3–4 weeks before planting trees.'},
+    {text:'Optional: add a bit of fertile soil or compost from a healthy garden to inoculate microbes.', note:'Helpful but not essential if you’re adding manure.'}
+  ]},
+  {title:'4. Soil Testing (if possible)', items:[
+    {text:'Quick pH check with a €10 kit.', note:'Ideal for fruit trees: 6.0–7.0 · Hortensias: slightly acidic 5.0–6.0'},
+    {text:'If too acidic → add agricultural lime.'},
+    {text:'If too alkaline → add peat moss or pine mulch.'}
+  ]},
+  {title:'5. Layout Planning', items:[
+    {text:'Mark tree positions with stakes (respect spacing from the table below).'},
+    {text:'Plan irrigation lines (drip system preferred).'},
+    {text:'Think water flow — sloped land can drain too fast; contour planting helps retain moisture.'}
+  ]},
+  {title:'6. Mulch & Rest', items:[
+    {text:'Cover bare areas with straw, dry leaves, or wood chips.', note:'Prevents weeds · Retains moisture · Slowly adds humus over winter'},
+    {text:'Let the soil rest until your first winter planting (Dec–Feb).'}
+  ]}
+];
+
+let soilDone = {};
+try { soilDone = JSON.parse(localStorage.getItem('prodromos-soil-prep') || '{}'); } catch(e) {}
+
+function renderSoilPrep() {
+  let html = '';
+  let total = 0, done = 0;
+  SOIL_PREP.forEach((step, si) => {
+    html += `<div class="soil-step"><h3>${step.title}</h3>`;
+    step.items.forEach((item, ii) => {
+      const id = `${si}-${ii}`;
+      total++;
+      if (soilDone[id]) done++;
+      html += `<label class="soil-item${soilDone[id] ? ' done' : ''}"><input type="checkbox" data-soil="${id}" ${soilDone[id] ? 'checked' : ''}><span>${item.text}${item.note ? `<span class="soil-note">${item.note}</span>` : ''}</span></label>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('soilBody').innerHTML = html;
+  document.getElementById('soilCount').textContent = `${done} / ${total} done`;
+}
+
+document.getElementById('soilBody').addEventListener('change', e => {
+  if (!e.target.matches('input[data-soil]')) return;
+  soilDone[e.target.dataset.soil] = e.target.checked;
+  try { localStorage.setItem('prodromos-soil-prep', JSON.stringify(soilDone)); } catch(e) {}
+  renderSoilPrep();
+});
+
+renderSoilPrep();
 
 loadState().then(render);
 </script>

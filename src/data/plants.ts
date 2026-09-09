@@ -1436,7 +1436,42 @@ export const PLANTS: PlantDefinition[] = [
       'Endemic Cyprus golden oak — the national tree. Leaves have distinctive golden underside. Thrives on igneous rock of Troodos range at Prodromos elevation. Slow-growing, very long-lived. Drought-resistant once established. Produces acorns in autumn.',
   },
 
-  // ─── 42. Autumn Blaze Maple ────────────────────────────────────────
+  // ─── 42. Sweet Chestnut ─────────────────────────────────────────────
+  {
+    id: 'sweet-chestnut',
+    name: 'Sweet Chestnut',
+    botanicalName: 'Castanea sativa',
+    category: 'tree',
+    tags: ['fruit', 'deciduous', 'edible'],
+    matureRadiusM: 5,
+    heightM: 20,
+    sun: 'full',
+    water: 'medium',
+    soil: 'deep well-drained acidic to neutral',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'dormant',
+      2: 'dormant',
+      3: 'sprouting',
+      4: 'leafing',
+      5: 'leafing',
+      6: 'flowering',
+      7: 'flowering',
+      8: 'fruiting',
+      9: 'fruiting',
+      10: 'fruit-ripe',
+      11: 'autumn-color',
+      12: 'dormant',
+    },
+    plantingMonths: [11, 12, 1, 2],
+    flowerColor: '#F5E6AB',
+    fruitColor: '#6B3A2A',
+    foliageColor: '#2E7D32',
+    cyprusNotes:
+      'Traditional Troodos mountain tree. Thrives at Prodromos elevation with cold winters. Large spreading canopy — allow plenty of space. Chestnuts ripen in Oct and fall in spiny husks. Needs well-drained acidic soil — avoid limestone. Plant at least 2 for cross-pollination.',
+  },
+
+  // ─── 43. Autumn Blaze Maple ────────────────────────────────────────
   {
     id: 'maple-autumn-blaze',
     name: 'Maple - Autumn Blaze',
