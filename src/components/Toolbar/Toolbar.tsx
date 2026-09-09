@@ -1,16 +1,11 @@
-import type Konva from 'konva';
 import { useGardenStore } from '../../stores/gardenStore';
-
-interface ToolbarProps {
-  stageRef: React.RefObject<Konva.Stage | null>;
-}
 
 const BTN =
   'px-3 py-1 text-xs rounded-[4px] border border-[var(--divider)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--cream)] hover:border-[var(--warm-gray)] transition-colors';
 const BTN_ACTIVE =
   'px-3 py-1 text-xs rounded-[4px] border border-[var(--forest)] bg-[var(--forest)] text-[var(--paper)] transition-colors';
 
-export default function Toolbar({ stageRef }: ToolbarProps) {
+export default function Toolbar() {
   const {
     selectedId,
     buildingMode,
@@ -32,16 +27,6 @@ export default function Toolbar({ stageRef }: ToolbarProps) {
     setOverlayWater,
     setOverlaySoil,
   } = useGardenStore();
-
-  const handleExportPng = () => {
-    const stage = stageRef.current;
-    if (!stage) return;
-    const uri = stage.toDataURL({ pixelRatio: 2 });
-    const link = document.createElement('a');
-    link.download = 'garden-plan.png';
-    link.href = uri;
-    link.click();
-  };
 
   return (
     <div className="h-12 bg-[var(--paper)] text-[var(--ink)] border-b border-[var(--divider)] flex items-center px-4 gap-3 shrink-0">
@@ -107,13 +92,6 @@ export default function Toolbar({ stageRef }: ToolbarProps) {
         title="Undo (⌘Z)"
       >
         Undo
-      </button>
-
-      <button
-        className={BTN}
-        onClick={handleExportPng}
-      >
-        Export PNG
       </button>
 
       <a
