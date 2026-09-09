@@ -3,7 +3,6 @@ import { useGardenStore } from '../../stores/gardenStore';
 
 interface ToolbarProps {
   stageRef: React.RefObject<Konva.Stage | null>;
-  onShowPlantingPlan: () => void;
 }
 
 const BTN =
@@ -11,7 +10,7 @@ const BTN =
 const BTN_ACTIVE =
   'px-3 py-1 text-xs rounded-[4px] border border-[var(--forest)] bg-[var(--forest)] text-[var(--paper)] transition-colors';
 
-export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) {
+export default function Toolbar({ stageRef }: ToolbarProps) {
   const {
     selectedId,
     buildingMode,
@@ -115,13 +114,6 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
         onClick={handleExportPng}
       >
         Export PNG
-      </button>
-
-      <button
-        className={BTN}
-        onClick={onShowPlantingPlan}
-      >
-        Planting Plan
       </button>
 
       <a
