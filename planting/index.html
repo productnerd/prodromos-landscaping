@@ -369,8 +369,6 @@ footer {
   .plant-table thead th { position: static; background: #fff; }
   .section-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .plant-table tbody tr { page-break-inside: avoid; }
-  .plant-table tbody tr.print-hide { display: none !important; }
-  .section-group.print-hide { display: none !important; }
   body { background: #fff; font-size: 11px; }
   main { padding: 0; max-width: 100%; }
   .print-show { display: table-cell !important; }
@@ -544,6 +542,102 @@ footer {
   color: var(--ink-light);
 }
 .cal-legend span { display: flex; align-items: center; gap: 0.35rem; }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 63, 43, 0.55);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal {
+  background: var(--cream);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 1180px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(42, 63, 43, 0.3);
+  overflow: hidden;
+}
+
+.modal-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.25rem;
+  background: var(--paper);
+  border-bottom: 1px solid var(--divider);
+}
+
+.modal-head h2 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: var(--forest-deep);
+}
+
+.modal-close {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink-light);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.modal-close:hover { background: var(--cream); color: var(--ink); }
+
+.modal-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.pill-deadline {
+  display: inline-block;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--sage-light);
+  color: var(--forest-deep);
+  white-space: nowrap;
+}
+.pill-deadline.soon { background: var(--terracotta-light); color: var(--terracotta); }
+.pill-deadline.now { background: var(--terracotta); color: var(--paper); }
+
+.dl-month { margin-bottom: 0.4rem; }
+.dl-month.is-empty h3 { color: var(--warm-gray); }
+.dl-month .dl-none {
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--warm-gray);
+  padding: 0.15rem 0 0.35rem;
+}
+
+.dl-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.86rem;
+  padding: 3px 0;
+}
+.dl-item .dl-win {
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--warm-gray);
+  margin-left: auto;
+}
 
 .cal-months {
   display: grid;
@@ -793,16 +887,24 @@ footer {
   </label>
   <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search plants...">
   <button class="btn" id="btnPickAll">✅ Pick all</button>
-  <div class="view-switch">
-    <button class="btn" id="btnViewTable" aria-pressed="true">📋 Table</button>
-    <button class="btn" id="btnViewCalendar" aria-pressed="false">📅 Calendar</button>
-  </div>
+  <button class="btn" id="btnViewCalendar">📅 Calendar</button>
   <div class="toolbar-spacer"></div>
-  <button class="btn" id="btnPrint" title="Print clean sheet">🖨️ Print</button>
   <button class="btn" id="btnCSV" title="Export checked rows as CSV">📥 Export CSV</button>
 </div>
 
-<main id="calendar" class="hidden"></main>
+<div class="modal-backdrop hidden" id="calModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="calTitle">
+    <div class="modal-head">
+      <h2 id="calTitle">📅 Planting Calendar</h2>
+      <div class="view-switch">
+        <button class="btn" id="tabWindows" aria-pressed="true">When I can plant</button>
+        <button class="btn" id="tabDeadlines" aria-pressed="false">⏳ Deadlines</button>
+      </div>
+      <button class="modal-close" id="calClose" aria-label="Close calendar">&times;</button>
+    </div>
+    <div class="modal-body" id="calBody"></div>
+  </div>
+</div>
 
 <section class="shopping hidden" id="shopping">
   <details open>

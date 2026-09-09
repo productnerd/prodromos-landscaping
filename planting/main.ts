@@ -232,7 +232,7 @@ function render() {
   updateCounter();
   updatePickAllButton(visiblePlants());
   renderShoppingList();
-  if (view === 'calendar') renderCalendar();
+  if (isCalendarOpen()) renderCalendar();
 }
 
 // ─── Shopping / planting schedule from the current picks ─────────────
@@ -278,20 +278,22 @@ function renderShoppingList() {
   }
 
   let html = '<div class="shop-grid">';
-  const seasonOrder = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
-  for (const m of seasonOrder) {
+  const thisMonth = new Date().getMonth() + 1;
+  for (const m of SEASON_ORDER) {
     const toBuy = picked.filter((p) => buyMonth.get(p.id) === m);
     const inWindow = byMonth.get(m) ?? [];
     if (toBuy.length === 0 && inWindow.length === 0) continue;
     html += `<div class="shop-month"><h3>${MONTH_ABBR[m - 1]}</h3>`;
     if (toBuy.length) {
       html += `<div class="shop-label">🛒 Buy / order</div><ul>`;
-      for (const p of toBuy) html += `<li>${p.emoji} ${esc(p.name)}${qty(p)} <span class="shop-meta">${esc(p.plantingDepth)} · ${spacing(p)}</span></li>`;
+      for (const p of toBuy)
+        html += `<li>${p.emoji} ${esc(p.name)}${qty(p)}${deadlinePill(p, thisMonth)} <span class="shop-meta">${esc(p.plantingDepth)} · ${spacing(p)}</span></li>`;
       html += `</ul>`;
     }
     if (inWindow.length) {
       html += `<div class="shop-label">🌱 Can plant</div><ul class="shop-plant">`;
       for (const p of inWindow) html += `<li>${p.emoji} ${esc(p.name)}${qty(p)}</li>`;
+
       html += `</ul>`;
     }
     html += `</div>`;
@@ -301,7 +303,59 @@ function renderShoppingList() {
 }
 
 // ─── Calendar view ───────────────────────────────────────────────────
-let view: 'table' | 'calendar' = 'table';
+let calTab: 'windows' | 'deadlines' = 'windows';
+
+/** Months in planting-season order, September first. */
+const SEASON_ORDER = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
+const seasonRank = (m: number) => SEASON_ORDER.indexOf(m);
+
+/**
+ * The last month of the soonest planting window still open to you.
+ *
+ * A plant like lavender has two separate windows (Sep–Oct and Mar–Apr); if you
+ * want it in the ground as early as possible, the date that matters is the end
+ * of the nearer window, not the end of the season.
+ */
+function plantingDeadline(p: PlantDefinition, from: number): number | null {
+  if (p.plantingMonths.length === 0) return null;
+  const ranks = [...new Set(p.plantingMonths.map(seasonRank))].sort((a, b) => a - b);
+
+  const runs: number[][] = [];
+  for (const r of ranks) {
+    const last = runs[runs.length - 1];
+    if (last && r === last[last.length - 1] + 1) last.push(r);
+    else runs.push([r]);
+  }
+  // A window that wraps the end of the season (e.g. Aug→Sep) is one window.
+  if (runs.length > 1) {
+    const first = runs[0];
+    const last = runs[runs.length - 1];
+    if (first[0] === 0 && last[last.length - 1] === SEASON_ORDER.length - 1) {
+      runs[runs.length - 1] = [...last, ...first];
+      runs.shift();
+    }
+  }
+
+  const fromRank = seasonRank(from);
+  const open = runs.find((run) => run[run.length - 1] >= fromRank);
+  const chosen = open ?? runs[0];
+  return SEASON_ORDER[chosen[chosen.length - 1] % SEASON_ORDER.length];
+}
+
+/** How many months from `from` until `month`, wrapping around the season. */
+function monthsUntil(month: number, from: number) {
+  const d = seasonRank(month) - seasonRank(from);
+  return d < 0 ? d + SEASON_ORDER.length : d;
+}
+
+function deadlinePill(p: PlantDefinition, from: number) {
+  const dl = plantingDeadline(p, from);
+  if (dl === null) return '';
+  const away = monthsUntil(dl, from);
+  const cls = away === 0 ? 'now' : away <= 1 ? 'soon' : '';
+  const label = away === 0 ? `by end of ${MONTH_ABBR[dl - 1]}` : `by ${MONTH_ABBR[dl - 1]}`;
+  return ` <span class="pill-deadline ${cls}" title="Last month of the soonest planting window">${label}</span>`;
+}
 
 /**
  * Spread the picked plants across their planting windows so no single month
@@ -332,36 +386,34 @@ function monthWindowLabel(p: PlantDefinition) {
   return sorted.map((m) => MONTH_ABBR[m - 1]).join(', ');
 }
 
-function renderCalendar() {
-  const el = document.getElementById('calendar')!;
-  const now = new Date().getMonth() + 1;
+/** Plants the calendar should show: your picks, or failing that what is on the map. */
+function calendarPlants(): PlantDefinition[] {
   const picked = PLANTS.filter((p) => state.checked[p.id]);
+  if (picked.length > 0) return picked;
   const onMap = placedCounts();
-  const listed = picked.length > 0 ? picked : PLANTS.filter((p) => onMap.has(p.id));
-  const suggested = suggestedMonths(listed);
-  const monthOrder = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
+  return PLANTS.filter((p) => onMap.has(p.id));
+}
 
-  if (listed.length === 0) {
-    el.innerHTML = `<div class="empty-state">Pick some plants in the table view — they will show up here month by month, with the months you cannot plant them crossed off.</div>`;
-    return;
-  }
+function renderCalendarWindows(listed: PlantDefinition[], now: number) {
+  const onMap = placedCounts();
+  const suggested = suggestedMonths(listed);
 
   let html = `<div class="cal-legend">
-    <span><i class="cal-cell cal-yes">✓</i> can plant</span>
-    <span><i class="cal-cell cal-best">★</i> suggested month</span>
-    <span><i class="cal-cell cal-no">✕</i> cannot plant this month</span>
+    <span><i class="cal-cell cal-yes">\u2713</i> can plant</span>
+    <span><i class="cal-cell cal-best">\u2605</i> suggested month</span>
+    <span><i class="cal-cell cal-no">\u2715</i> cannot plant this month</span>
     <span>Season runs Sep &rarr; Aug &middot; showing your ${listed.length} selected plant${listed.length !== 1 ? 's' : ''}.</span>
   </div>`;
 
   html += `<div class="cal-months">`;
-  for (const m of monthOrder) {
+  for (const m of SEASON_ORDER) {
     const canCount = listed.filter((p) => p.plantingMonths.includes(m)).length;
     const dueCount = listed.filter((p) => suggested.get(p.id) === m).length;
 
     html += `<div class="cal-month${m === now ? ' is-now' : ''}">`;
     html += `<h3>${MONTH_ABBR[m - 1]}${m === now ? '<span class="cal-now-tag">this month</span>' : ''}<span class="cal-month-count">${canCount} of ${listed.length}</span></h3>`;
     html += dueCount
-      ? `<div class="cal-due">★ ${dueCount} to plant this month</div>`
+      ? `<div class="cal-due">\u2605 ${dueCount} to plant this month</div>`
       : `<div class="cal-due cal-due-none">nothing scheduled</div>`;
     html += `<ul>`;
 
@@ -369,29 +421,80 @@ function renderCalendar() {
       const can = p.plantingMonths.includes(m);
       const isBest = suggested.get(p.id) === m;
       const cls = isBest ? 'cal-item is-best' : can ? 'cal-item' : 'cal-item cant';
-      const mark = isBest ? '★' : can ? '✓' : '✕';
-      const qty = onMap.has(p.id) ? ` <span class="shop-qty">×${onMap.get(p.id)}</span>` : '';
+      const mark = isBest ? '\u2605' : can ? '\u2713' : '\u2715';
+      const qty = onMap.has(p.id) ? ` <span class="shop-qty">\u00d7${onMap.get(p.id)}</span>` : '';
       const title = can
-        ? `${p.name} — can be planted in ${MONTH_ABBR[m - 1]}`
-        : `${p.name} — do not plant in ${MONTH_ABBR[m - 1]}. Window: ${monthWindowLabel(p)}`;
+        ? `${p.name} \u2014 can be planted in ${MONTH_ABBR[m - 1]}`
+        : `${p.name} \u2014 do not plant in ${MONTH_ABBR[m - 1]}. Window: ${monthWindowLabel(p)}`;
       html += `<li class="${cls}" title="${esc(title)}"><i class="cal-mark">${mark}</i><span>${p.emoji} ${esc(p.name)}${qty}</span></li>`;
     }
-
     html += `</ul></div>`;
   }
-  html += `</div>`;
-
-  el.innerHTML = html;
+  return html + `</div>`;
 }
 
-function setView(next: 'table' | 'calendar') {
-  view = next;
-  document.getElementById('app')!.classList.toggle('hidden', next !== 'table');
-  document.getElementById('calendar')!.classList.toggle('hidden', next !== 'calendar');
-  document.getElementById('btnViewTable')!.setAttribute('aria-pressed', String(next === 'table'));
-  document.getElementById('btnViewCalendar')!.setAttribute('aria-pressed', String(next === 'calendar'));
-  render();
-  window.scrollTo({ top: 0 });
+/** Each month, the plants whose soonest planting window closes then. */
+function renderCalendarDeadlines(listed: PlantDefinition[], now: number) {
+  const byMonth = new Map<number, PlantDefinition[]>();
+  for (const p of listed) {
+    const dl = plantingDeadline(p, now);
+    if (dl === null) continue;
+    if (!byMonth.has(dl)) byMonth.set(dl, []);
+    byMonth.get(dl)!.push(p);
+  }
+
+  let html = `<div class="cal-legend">
+    <span>Last call each month \u2014 plant these before the month ends or you miss the window.</span>
+  </div><div class="cal-months">`;
+
+  for (const m of SEASON_ORDER) {
+    const due = byMonth.get(m) ?? [];
+    html += `<div class="cal-month${m === now ? ' is-now' : ''}${due.length === 0 ? ' dl-month is-empty' : ' dl-month'}">`;
+    html += `<h3>${MONTH_ABBR[m - 1]}${m === now ? '<span class="cal-now-tag">this month</span>' : ''}<span class="cal-month-count">${due.length || ''}</span></h3>`;
+    if (due.length === 0) {
+      html += `<div class="dl-none">nothing due</div>`;
+    } else {
+      html += `<ul>`;
+      for (const p of due) {
+        const away = monthsUntil(m, now);
+        const cls = away === 0 ? 'now' : away <= 1 ? 'soon' : '';
+        html += `<li class="dl-item"><span>${p.emoji} ${esc(p.name)}</span><span class="dl-win">${monthWindowLabel(p)}</span><span class="pill-deadline ${cls}">${away === 0 ? 'this month' : `${away} mo`}</span></li>`;
+      }
+      html += `</ul>`;
+    }
+    html += `</div>`;
+  }
+  return html + `</div>`;
+}
+
+function renderCalendar() {
+  const body = document.getElementById('calBody')!;
+  const now = new Date().getMonth() + 1;
+  const listed = calendarPlants();
+
+  document.getElementById('tabWindows')!.setAttribute('aria-pressed', String(calTab === 'windows'));
+  document.getElementById('tabDeadlines')!.setAttribute('aria-pressed', String(calTab === 'deadlines'));
+
+  if (listed.length === 0) {
+    body.innerHTML = `<div class="empty-state">Pick some plants in the list \u2014 they will show up here month by month, with the months you cannot plant them crossed off.</div>`;
+    return;
+  }
+
+  body.innerHTML =
+    calTab === 'windows' ? renderCalendarWindows(listed, now) : renderCalendarDeadlines(listed, now);
+}
+
+function openCalendar() {
+  document.getElementById('calModal')!.classList.remove('hidden');
+  renderCalendar();
+}
+
+function closeCalendar() {
+  document.getElementById('calModal')!.classList.add('hidden');
+}
+
+function isCalendarOpen() {
+  return !document.getElementById('calModal')!.classList.contains('hidden');
 }
 
 function toast(msg: string) {
@@ -705,23 +808,26 @@ document.getElementById('btnPickAll')!.addEventListener('click', () => {
   toast(allPicked ? 'Cleared all shown' : `Picked ${visible.length} plants`);
 });
 
-document.getElementById('btnViewTable')!.addEventListener('click', () => setView('table'));
-document.getElementById('btnViewCalendar')!.addEventListener('click', () => setView('calendar'));
+document.getElementById('btnViewCalendar')!.addEventListener('click', openCalendar);
+document.getElementById('calClose')!.addEventListener('click', closeCalendar);
+document.getElementById('calModal')!.addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeCalendar();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && isCalendarOpen()) closeCalendar();
+});
+document.getElementById('tabWindows')!.addEventListener('click', () => {
+  calTab = 'windows';
+  renderCalendar();
+});
+document.getElementById('tabDeadlines')!.addEventListener('click', () => {
+  calTab = 'deadlines';
+  renderCalendar();
+});
 
 document.getElementById('filterToggle')!.addEventListener('change', render);
 document.getElementById('searchBox')!.addEventListener('input', render);
 document.getElementById('btnCSV')!.addEventListener('click', exportCSV);
-document.getElementById('btnPrint')!.addEventListener('click', () => {
-  document.querySelectorAll('tbody tr').forEach((tr) => {
-    const cb = tr.querySelector<HTMLInputElement>('input[type="checkbox"][data-id]');
-    if (cb && !cb.checked) tr.classList.add('print-hide');
-  });
-  document.querySelectorAll('.section-group').forEach((sg) => {
-    if (sg.querySelectorAll('tbody tr:not(.print-hide)').length === 0) sg.classList.add('print-hide');
-  });
-  window.print();
-  document.querySelectorAll('.print-hide').forEach((el) => el.classList.remove('print-hide'));
-});
 
 loadState();
 renderSoilPrep();
