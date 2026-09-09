@@ -455,7 +455,7 @@ function renderCalendarDeadlines(listed: PlantDefinition[], now: number) {
       for (const p of due) {
         const away = monthsUntil(m, now);
         const cls = away === 0 ? 'now' : away <= 1 ? 'soon' : '';
-        html += `<li class="dl-item" data-plant="${p.id}"><span>${p.emoji} ${esc(p.name)}</span><span class="dl-win">${monthWindowLabel(p)}</span><span class="pill-deadline ${cls}">${away === 0 ? 'this month' : `${away} mo`}</span></li>`;
+        html += `<li class="dl-item" data-plant="${p.id}"><span>${p.emoji} ${esc(p.name)}</span><span class="pill-deadline ${cls}">${away === 0 ? 'this month' : `${away} mo`}</span></li>`;
       }
       html += `</ul>`;
     }
