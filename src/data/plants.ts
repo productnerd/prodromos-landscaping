@@ -1635,13 +1635,13 @@ export const PLANTS: PlantDefinition[] = [
       'Hybrid of red maple and silver maple. Known for spectacular orange-red autumn foliage. Fast-growing, drought-tolerant once established. Adapts well to Mediterranean climates with cold winters like Prodromos. Needs some irrigation in summer.',
   },
 
-  // ─── 44. Persian Silk Tree ─────────────────────────────────────────
+  // ─── 44. Akakia Constantinoupoleos ─────────────────────────────────
   {
     id: 'silk-tree',
     emoji: '🌸',
     growth: 'fast',
     plantingDepth: 'Root ball depth',
-    name: 'Persian Silk Tree',
+    name: 'Akakia Constantinoupoleos',
     botanicalName: 'Albizia julibrissin',
     category: 'tree',
     tags: ['flower', 'ornamental', 'deciduous'],
@@ -1670,7 +1670,7 @@ export const PLANTS: PlantDefinition[] = [
     fruitColor: '#A08050',
     foliageColor: '#4C9A5A',
     cyprusNotes:
-      'Akakia Constantinoupoleos. Fast umbrella canopy with pink silky summer flowers. Drought-tolerant once established, but protect young trees from hard frost at altitude. Self-seeds readily.',
+      'Persian silk tree / Constantinople acacia. Fast umbrella canopy with pink silky summer flowers. Drought-tolerant once established, but protect young trees from hard frost at altitude. Self-seeds readily.',
   },
 
   // ─── 45. Climbing Maple ────────────────────────────────────────────
