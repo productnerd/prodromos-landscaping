@@ -4,6 +4,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 1. Cedar ───────────────────────────────────────────────────────
   {
     id: 'cedar',
+    emoji: '🌲',
+    growth: 'slow',
+    plantingDepth: 'Root ball depth',
     name: 'Cedar',
     botanicalName: 'Cedrus libani brevifolia',
     category: 'tree',
@@ -39,6 +42,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 2. Walnut ──────────────────────────────────────────────────────
   {
     id: 'walnut',
+    emoji: '🌰',
+    growth: 'medium',
+    plantingDepth: '50-70 cm',
     name: 'Walnut',
     botanicalName: 'Juglans regia',
     category: 'tree',
@@ -74,6 +80,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 3. Hazelnut ───────────────────────────────────────────────────
   {
     id: 'hazelnut',
+    emoji: '🌰',
+    growth: 'medium',
+    plantingDepth: '40-50 cm',
     name: 'Hazelnut',
     botanicalName: 'Corylus avellana',
     category: 'bush',
@@ -109,6 +118,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 4. Mulberry Vavatsinia ─────────────────────────────────────────
   {
     id: 'mulberry-vavatsinia',
+    emoji: '🌳',
+    growth: 'fast',
+    plantingDepth: '40-60 cm',
     name: 'Mulberry Vavatsinia',
     botanicalName: 'Morus nigra',
     category: 'tree',
@@ -144,6 +156,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 5. Cherry ──────────────────────────────────────────────────────
   {
     id: 'cherry',
+    emoji: '🍒',
+    growth: 'medium',
+    plantingDepth: 'Graft above soil',
     name: 'Cherry',
     botanicalName: 'Prunus avium',
     category: 'tree',
@@ -179,6 +194,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 6. Almond ─────────────────────────────────────────────────────
   {
     id: 'almond',
+    emoji: '🌰',
+    growth: 'fast',
+    plantingDepth: 'Graft above soil',
     name: 'Almond',
     botanicalName: 'Prunus dulcis',
     category: 'tree',
@@ -214,6 +232,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 7. Maple - Sycamore ───────────────────────────────────────────
   {
     id: 'maple-sycamore',
+    emoji: '🍁',
+    growth: 'medium',
+    plantingDepth: 'Root ball depth',
     name: 'Maple - Sycamore',
     botanicalName: 'Acer pseudoplatanus',
     category: 'tree',
@@ -249,6 +270,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 8. Maple - Norway ─────────────────────────────────────────────
   {
     id: 'maple-norway',
+    emoji: '🍁',
+    growth: 'medium',
+    plantingDepth: 'Root ball depth',
     name: 'Maple - Norway',
     botanicalName: 'Acer platanoides',
     category: 'tree',
@@ -284,6 +308,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 9. Maple - Field ──────────────────────────────────────────────
   {
     id: 'maple-field',
+    emoji: '🍁',
+    growth: 'medium',
+    plantingDepth: 'Root ball depth',
     name: 'Maple - Field',
     botanicalName: 'Acer campestre',
     category: 'tree',
@@ -319,6 +346,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 10. Apple ──────────────────────────────────────────────────────
   {
     id: 'apple',
+    emoji: '🍎',
+    growth: 'medium',
+    plantingDepth: 'Graft above soil',
     name: 'Apple',
     botanicalName: 'Malus domestica',
     category: 'tree',
@@ -354,6 +384,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 11. Peach ──────────────────────────────────────────────────────
   {
     id: 'peach',
+    emoji: '🍑',
+    growth: 'fast',
+    plantingDepth: 'Graft above soil',
     name: 'Peach',
     botanicalName: 'Prunus persica',
     category: 'tree',
@@ -389,6 +422,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 12. Apricot ───────────────────────────────────────────────────
   {
     id: 'apricot',
+    emoji: '🍑',
+    growth: 'medium',
+    plantingDepth: 'Graft above soil',
     name: 'Apricot',
     botanicalName: 'Prunus armeniaca',
     category: 'tree',
@@ -424,6 +460,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 13. Damaskina / Plum ──────────────────────────────────────────
   {
     id: 'damaskina-plum',
+    emoji: '🍑',
+    growth: 'medium',
+    plantingDepth: 'Graft above soil',
     name: 'Damaskina/Plum',
     botanicalName: 'Prunus domestica',
     category: 'tree',
@@ -459,6 +498,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 14. Lotus Fruit ───────────────────────────────────────────────
   {
     id: 'lotus-fruit',
+    emoji: '🍈',
+    growth: 'medium',
+    plantingDepth: 'Graft above soil',
     name: 'Lotus Fruit',
     botanicalName: 'Diospyros lotus',
     category: 'tree',
@@ -494,6 +536,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 15. Rhododendron ──────────────────────────────────────────────
   {
     id: 'rhododendron',
+    emoji: '🌺',
+    growth: 'slow',
+    plantingDepth: 'Root ball depth, crown at surface',
     name: 'Rhododendron',
     botanicalName: 'Rhododendron ponticum',
     category: 'bush',
@@ -529,6 +574,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 16. Lilac ─────────────────────────────────────────────────────
   {
     id: 'lilac',
+    emoji: '🌸',
+    growth: 'medium',
+    plantingDepth: 'Root ball depth',
     name: 'Lilac',
     botanicalName: 'Syringa vulgaris',
     category: 'bush',
@@ -564,6 +612,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 17. Japanese Maple ─────────────────────────────────────────────
   {
     id: 'japanese-maple',
+    emoji: '🍁',
+    growth: 'slow',
+    plantingDepth: 'Same as pot',
     name: 'Japanese Maple',
     botanicalName: 'Acer palmatum',
     category: 'tree',
@@ -599,6 +650,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 18. Peonies ───────────────────────────────────────────────────
   {
     id: 'peonies',
+    emoji: '🌸',
+    growth: 'slow',
+    plantingDepth: 'Eyes 5 cm below soil',
     name: 'Peonies',
     botanicalName: 'Paeonia lactiflora',
     category: 'flower',
@@ -634,6 +688,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 19. Wild Roses ─────────────────────────────────────────────────
   {
     id: 'wild-roses',
+    emoji: '🌹',
+    growth: 'fast',
+    plantingDepth: 'Root crown / bud union level',
     name: 'Wild Roses',
     botanicalName: 'Rosa canina',
     category: 'bush',
@@ -669,6 +726,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 20. Tulips ─────────────────────────────────────────────────────
   {
     id: 'tulips',
+    emoji: '🌷',
+    growth: 'medium',
+    plantingDepth: '2-3x bulb height (~15 cm)',
     name: 'Tulips',
     botanicalName: 'Tulipa',
     category: 'bulb',
@@ -704,6 +764,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 21. Hydrangea / Hortensia ──────────────────────────────────────
   {
     id: 'hydrangea',
+    emoji: '🌸',
+    growth: 'medium',
+    plantingDepth: 'Root ball depth',
     name: 'Hydrangea/Hortensia',
     botanicalName: 'Hydrangea macrophylla',
     category: 'bush',
@@ -739,6 +802,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 22. Grapevine ─────────────────────────────────────────────────
   {
     id: 'grapevine',
+    emoji: '🍇',
+    growth: 'fast',
+    plantingDepth: '20-30 cm',
     name: 'Grapevine',
     botanicalName: 'Vitis vinifera',
     category: 'climber',
@@ -774,6 +840,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 23. Raspberry ─────────────────────────────────────────────────
   {
     id: 'raspberry',
+    emoji: '🌿',
+    growth: 'fast',
+    plantingDepth: 'Root crown level',
     name: 'Raspberry',
     botanicalName: 'Rubus idaeus',
     category: 'bush',
@@ -809,6 +878,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 24. Blackberry ─────────────────────────────────────────────────
   {
     id: 'blackberry',
+    emoji: '🌿',
+    growth: 'fast',
+    plantingDepth: 'Root crown level',
     name: 'Blackberry',
     botanicalName: 'Rubus fruticosus',
     category: 'bush',
@@ -844,6 +916,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 25. Blueberry ─────────────────────────────────────────────────
   {
     id: 'blueberry',
+    emoji: '🫐',
+    growth: 'slow',
+    plantingDepth: '5-10 cm',
     name: 'Blueberry',
     botanicalName: 'Vaccinium corymbosum',
     category: 'bush',
@@ -879,6 +954,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 26. English Lavender ───────────────────────────────────────────
   {
     id: 'lavender',
+    emoji: '💜',
+    growth: 'medium',
+    plantingDepth: 'Root ball level',
     name: 'English Lavender',
     botanicalName: 'Lavandula angustifolia',
     category: 'herb',
@@ -914,6 +992,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 27. Iris ───────────────────────────────────────────────────────
   {
     id: 'iris',
+    emoji: '🌷',
+    growth: 'medium',
+    plantingDepth: 'Rhizome tops exposed',
     name: 'Iris',
     botanicalName: 'Iris germanica',
     category: 'bulb',
@@ -949,6 +1030,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 28. Daffodils ─────────────────────────────────────────────────
   {
     id: 'daffodils',
+    emoji: '🌼',
+    growth: 'medium',
+    plantingDepth: 'Bulb depth 2-3x height',
     name: 'Daffodils',
     botanicalName: 'Narcissus',
     category: 'bulb',
@@ -984,6 +1068,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 29. Mint ───────────────────────────────────────────────────────
   {
     id: 'mint',
+    emoji: '🌿',
+    growth: 'fast',
+    plantingDepth: '5 cm',
     name: 'Mint',
     botanicalName: 'Mentha spicata/piperita',
     category: 'herb',
@@ -1019,6 +1106,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 30. Spearmint ──────────────────────────────────────────────────
   {
     id: 'spearmint',
+    emoji: '🌿',
+    growth: 'fast',
+    plantingDepth: '5 cm',
     name: 'Spearmint',
     botanicalName: 'Mentha spicata',
     category: 'herb',
@@ -1054,6 +1144,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 31. Lemon Balm ────────────────────────────────────────────────
   {
     id: 'lemon-balm',
+    emoji: '🌿',
+    growth: 'fast',
+    plantingDepth: '5 cm',
     name: 'Lemon Balm',
     botanicalName: 'Melissa officinalis',
     category: 'herb',
@@ -1089,6 +1182,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 32. Chamomile ──────────────────────────────────────────────────
   {
     id: 'chamomile',
+    emoji: '🌼',
+    growth: 'fast',
+    plantingDepth: 'Shallow (surface)',
     name: 'Chamomile',
     botanicalName: 'Matricaria chamomilla',
     category: 'herb',
@@ -1124,6 +1220,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 33. Ground Covers ──────────────────────────────────────────────
   {
     id: 'ground-covers',
+    emoji: '🌿',
+    growth: 'fast',
+    plantingDepth: 'Root ball depth',
     name: 'Ground Covers',
     botanicalName: 'Thymus serpyllum / Ajuga reptans',
     category: 'groundcover',
@@ -1159,6 +1258,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 34. Ferns ──────────────────────────────────────────────────────
   {
     id: 'ferns',
+    emoji: '🌿',
+    growth: 'medium',
+    plantingDepth: 'Root ball depth',
     name: 'Ferns',
     botanicalName: 'Pteridium aquilinum',
     category: 'groundcover',
@@ -1194,6 +1296,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 35. Japanese Silver Grass ──────────────────────────────────────
   {
     id: 'japanese-silver-grass',
+    emoji: '🌾',
+    growth: 'fast',
+    plantingDepth: 'Root ball level',
     name: 'Japanese Silver Grass',
     botanicalName: 'Miscanthus sinensis',
     category: 'grass',
@@ -1229,6 +1334,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 36. Beans ──────────────────────────────────────────────────────
   {
     id: 'beans',
+    emoji: '🌱',
+    growth: 'fast',
+    plantingDepth: '3-5 cm',
     name: 'Beans',
     botanicalName: 'Phaseolus vulgaris',
     category: 'vegetable',
@@ -1264,6 +1372,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 37. Pumpkins ──────────────────────────────────────────────────
   {
     id: 'pumpkins',
+    emoji: '🎃',
+    growth: 'fast',
+    plantingDepth: '2-3 cm',
     name: 'Pumpkins',
     botanicalName: 'Cucurbita maxima',
     category: 'vegetable',
@@ -1299,6 +1410,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 38. Strawberries ──────────────────────────────────────────────
   {
     id: 'strawberries',
+    emoji: '🍓',
+    growth: 'fast',
+    plantingDepth: 'Crown level',
     name: 'Strawberries',
     botanicalName: 'Fragaria × ananassa',
     category: 'groundcover',
@@ -1334,6 +1448,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 39. Wisteria ──────────────────────────────────────────────────
   {
     id: 'wisteria',
+    emoji: '🌸',
+    growth: 'fast',
+    plantingDepth: 'Root ball depth / graft above soil',
     name: 'Wisteria',
     botanicalName: 'Wisteria sinensis',
     category: 'climber',
@@ -1369,6 +1486,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 40. Pine ──────────────────────────────────────────────────────
   {
     id: 'pine',
+    emoji: '🌲',
+    growth: 'fast',
+    plantingDepth: 'Root ball depth',
     name: 'Pine',
     botanicalName: 'Pinus brutia',
     category: 'tree',
@@ -1404,6 +1524,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 41. Golden Oak ────────────────────────────────────────────────
   {
     id: 'golden-oak',
+    emoji: '🌳',
+    growth: 'slow',
+    plantingDepth: 'Root ball depth',
     name: 'Golden Oak',
     botanicalName: 'Quercus alnifolia',
     category: 'tree',
@@ -1439,6 +1562,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 42. Sweet Chestnut ─────────────────────────────────────────────
   {
     id: 'sweet-chestnut',
+    emoji: '🌰',
+    growth: 'medium',
+    plantingDepth: 'Root ball depth',
     name: 'Sweet Chestnut',
     botanicalName: 'Castanea sativa',
     category: 'tree',
@@ -1474,6 +1600,9 @@ export const PLANTS: PlantDefinition[] = [
   // ─── 43. Autumn Blaze Maple ────────────────────────────────────────
   {
     id: 'maple-autumn-blaze',
+    emoji: '🍁',
+    growth: 'fast',
+    plantingDepth: 'Root ball depth',
     name: 'Maple - Autumn Blaze',
     botanicalName: 'Acer × freemanii',
     category: 'tree',
@@ -1504,6 +1633,120 @@ export const PLANTS: PlantDefinition[] = [
     foliageColor: '#4CAF50',
     cyprusNotes:
       'Hybrid of red maple and silver maple. Known for spectacular orange-red autumn foliage. Fast-growing, drought-tolerant once established. Adapts well to Mediterranean climates with cold winters like Prodromos. Needs some irrigation in summer.',
+  },
+
+  // ─── 44. Persian Silk Tree ─────────────────────────────────────────
+  {
+    id: 'silk-tree',
+    emoji: '🌸',
+    growth: 'fast',
+    plantingDepth: 'Root ball depth',
+    name: 'Persian Silk Tree',
+    botanicalName: 'Albizia julibrissin',
+    category: 'tree',
+    tags: ['flower', 'ornamental', 'deciduous'],
+    matureRadiusM: 3,
+    heightM: 8,
+    sun: 'full',
+    water: 'low',
+    soil: 'any well-drained',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'dormant',
+      2: 'dormant',
+      3: 'dormant',
+      4: 'sprouting',
+      5: 'leafing',
+      6: 'flowering',
+      7: 'flowering',
+      8: 'flowering',
+      9: 'leafing',
+      10: 'autumn-color',
+      11: 'autumn-color',
+      12: 'dormant',
+    },
+    plantingMonths: [3, 4, 11, 12],
+    flowerColor: '#F08CA0',
+    fruitColor: '#A08050',
+    foliageColor: '#4C9A5A',
+    cyprusNotes:
+      'Akakia Constantinoupoleos. Fast umbrella canopy with pink silky summer flowers. Drought-tolerant once established, but protect young trees from hard frost at altitude. Self-seeds readily.',
+  },
+
+  // ─── 45. Climbing Maple ────────────────────────────────────────────
+  {
+    id: 'climbing-maple',
+    emoji: '🍁',
+    growth: 'slow',
+    plantingDepth: 'Root ball depth',
+    name: 'Climbing Maple',
+    botanicalName: 'Schizophragma hydrangeoides',
+    category: 'climber',
+    tags: ['ornamental', 'deciduous', 'flower'],
+    matureRadiusM: 1.5,
+    heightM: 8,
+    sun: 'partial',
+    water: 'medium',
+    soil: 'moist well-drained humus-rich',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'dormant',
+      2: 'dormant',
+      3: 'sprouting',
+      4: 'leafing',
+      5: 'leafing',
+      6: 'flowering',
+      7: 'flowering',
+      8: 'leafing',
+      9: 'leafing',
+      10: 'autumn-color',
+      11: 'autumn-color',
+      12: 'dormant',
+    },
+    plantingMonths: [3, 4, 10, 11],
+    flowerColor: '#F5F0DC',
+    fruitColor: '#8B7355',
+    foliageColor: '#3B7A2C',
+    cyprusNotes:
+      'Self-clinging via aerial roots — slow to establish then vigorous. Needs a wall or large tree. Tolerates cold well. Prune after flowering. Maple-shaped leaves with good autumn colour.',
+  },
+
+  // ─── 46. Climbing Wild Rose ────────────────────────────────────────
+  {
+    id: 'climbing-rose',
+    emoji: '🌹',
+    growth: 'fast',
+    plantingDepth: 'Root crown / bud union level',
+    name: 'Climbing Wild Rose',
+    botanicalName: 'Rosa arvensis',
+    category: 'climber',
+    tags: ['flower', 'deciduous', 'fence'],
+    matureRadiusM: 1.5,
+    heightM: 4,
+    sun: 'full',
+    water: 'low',
+    soil: 'any well-drained',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'dormant',
+      2: 'dormant',
+      3: 'leafing',
+      4: 'leafing',
+      5: 'flowering',
+      6: 'flowering',
+      7: 'leafing',
+      8: 'fruiting',
+      9: 'fruiting',
+      10: 'fruiting',
+      11: 'autumn-color',
+      12: 'dormant',
+    },
+    plantingMonths: [11, 12, 1, 2],
+    flowerColor: '#FFF5F0',
+    fruitColor: '#E25822',
+    foliageColor: '#3E8B2F',
+    cyprusNotes:
+      'European native rambler — very cold-hardy. White single flowers in summer, rosehips in autumn. Tolerates poor soil and shade. Train onto pergola, fence or wall; prune after flowering.',
   },
 ];
 

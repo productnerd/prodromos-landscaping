@@ -42,29 +42,29 @@ export function PlantingPlanModal({ isOpen, onClose }: PlantingPlanModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--forest-deep)]/50"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto relative"
+        className="bg-[var(--paper)] text-[var(--ink)] border border-[var(--divider)] rounded-[4px] shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 text-lg"
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--cream)] text-[var(--ink-light)] text-lg"
           aria-label="Close"
         >
           &times;
         </button>
 
         <div className="p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
+          <h2 className="font-[Fraunces,Georgia,serif] text-xl font-medium text-[var(--forest-deep)] mb-4">
             Planting Plan &mdash; Prodromos, Cyprus
           </h2>
 
           {uniquePlants.length === 0 ? (
-            <p className="text-gray-500 text-sm">No plants placed in the garden yet.</p>
+            <p className="text-[var(--ink-light)] italic text-sm">No plants placed in the garden yet.</p>
           ) : (
             <>
               {/* Calendar table */}
@@ -72,14 +72,16 @@ export function PlantingPlanModal({ isOpen, onClose }: PlantingPlanModalProps) {
                 <table className="w-full text-sm border-collapse">
                   <thead>
                     <tr>
-                      <th className="text-left py-2 pr-4 font-medium text-gray-700 border-b border-gray-200">
+                      <th className="text-left py-2 pr-4 font-medium text-[var(--ink-light)] border-b border-[var(--divider)]">
                         Plant
                       </th>
                       {MONTH_ABBR.map((m, i) => (
                         <th
                           key={i}
-                          className={`text-center py-2 px-1 font-medium border-b border-gray-200 ${
-                            i + 1 === currentMonth ? 'text-green-700' : 'text-gray-500'
+                          className={`text-center py-2 px-1 font-medium border-b border-[var(--divider)] ${
+                            i + 1 === currentMonth
+                              ? 'text-[var(--forest)]'
+                              : 'text-[var(--warm-gray)]'
                           }`}
                         >
                           {m}
@@ -89,8 +91,8 @@ export function PlantingPlanModal({ isOpen, onClose }: PlantingPlanModalProps) {
                   </thead>
                   <tbody>
                     {uniquePlants.map((plant) => (
-                      <tr key={plant.id} className="border-b border-gray-100">
-                        <td className="py-2 pr-4 font-medium text-gray-800 whitespace-nowrap">
+                      <tr key={plant.id} className="border-b border-[var(--divider)]">
+                        <td className="py-2 pr-4 font-medium text-[var(--ink)] whitespace-nowrap">
                           {plant.name}
                         </td>
                         {Array.from({ length: 12 }, (_, i) => {
@@ -99,8 +101,8 @@ export function PlantingPlanModal({ isOpen, onClose }: PlantingPlanModalProps) {
                           return (
                             <td key={month} className="p-0.5">
                               <div
-                                className={`w-full h-6 rounded ${
-                                  isPlanting ? 'bg-green-500' : 'bg-gray-100'
+                                className={`w-full h-6 rounded-[4px] ${
+                                  isPlanting ? 'bg-[var(--forest)]' : 'bg-[var(--cream)]'
                                 }`}
                               />
                             </td>
@@ -114,11 +116,11 @@ export function PlantingPlanModal({ isOpen, onClose }: PlantingPlanModalProps) {
 
               {/* Plant this month */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-[Fraunces,Georgia,serif] font-medium text-[var(--forest-deep)] mb-2">
                   Plant This Month ({MONTH_ABBR[currentMonth - 1]})
                 </h3>
                 {plantThisMonth.length === 0 ? (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm italic text-[var(--ink-light)]">
                     No plants to plant this month.
                   </p>
                 ) : (
@@ -126,7 +128,7 @@ export function PlantingPlanModal({ isOpen, onClose }: PlantingPlanModalProps) {
                     {plantThisMonth.map((plant) => (
                       <span
                         key={plant.id}
-                        className="text-sm px-3 py-1 bg-green-100 text-green-800 rounded-full"
+                        className="text-sm px-3 py-1 bg-[var(--sage-light)] text-[var(--forest-deep)] rounded-full"
                       >
                         {plant.name}
                       </span>

@@ -29,10 +29,15 @@ export type MonthlyState =
   | 'autumn-color'
   | 'evergreen-foliage';
 
+export type GrowthRate = 'fast' | 'medium' | 'slow';
+
 export interface PlantDefinition {
   id: string;
   name: string;
+  emoji: string;
   botanicalName: string;
+  growth: GrowthRate;
+  plantingDepth: string;
   category: PlantCategory;
   tags: PlantTag[];
   matureRadiusM: number;

@@ -33,11 +33,8 @@ function PlantCard({ plant }: { plant: PlantDefinition }) {
     <div
       draggable="true"
       onDragStart={handleDragStart}
-      className="flex items-start gap-3 py-2 px-3 border-b cursor-grab"
-      style={{
-        backgroundColor: hexToRgba(brandColor, 0.08),
-        borderBottomColor: hexToRgba(brandColor, 0.2),
-      }}
+      className="flex items-start gap-3 py-2 px-3 border-b border-[var(--divider)] cursor-grab"
+      style={{ backgroundColor: hexToRgba(brandColor, 0.08) }}
     >
       <div
         className="w-5 h-5 rounded-full flex-shrink-0 mt-1 ring-2"
@@ -47,8 +44,8 @@ function PlantCard({ plant }: { plant: PlantDefinition }) {
         }}
       />
       <div className="min-w-0 flex-1">
-        <div className="font-bold text-sm text-gray-900 truncate">{plant.name}</div>
-        <div className="text-xs italic text-gray-500 truncate">{plant.botanicalName}</div>
+        <div className="font-[Fraunces,Georgia,serif] font-medium text-sm text-[var(--forest-deep)] truncate">{plant.name}</div>
+        <div className="text-xs italic text-[var(--ink-light)] truncate">{plant.botanicalName}</div>
         <div className="flex flex-wrap gap-1 mt-1">
           <span
             className="text-[10px] px-1.5 py-0.5 rounded font-medium text-white"
@@ -119,20 +116,20 @@ export function PlantSidebar() {
   const showInfoPanel = selectedPlacedPlant && PLANTS_MAP[selectedPlacedPlant.plantId];
 
   return (
-    <div className="w-80 h-full bg-white border-l border-gray-200 flex flex-col overflow-hidden">
+    <div className="w-80 h-full bg-[var(--paper)] border-l border-[var(--divider)] flex flex-col overflow-hidden">
       {/* Search */}
-      <div className="p-3 border-b border-gray-200">
+      <div className="p-3 border-b border-[var(--divider)]">
         <input
           type="text"
           placeholder="Search plants..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full px-3 py-2 text-sm bg-[var(--cream)] text-[var(--ink)] placeholder:text-[var(--warm-gray)] border border-[var(--divider)] rounded-[4px] focus:outline-none focus:border-[var(--sage)] focus:ring-1 focus:ring-[var(--sage)]"
         />
       </div>
 
       {/* Category filter */}
-      <div className="px-3 py-2 border-b border-gray-200">
+      <div className="px-3 py-2 border-b border-[var(--divider)]">
         <div className="flex flex-wrap gap-1">
           {categoriesWithPlants.map((cat) => (
             <button
@@ -140,8 +137,8 @@ export function PlantSidebar() {
               onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
               className={`text-xs px-2 py-1 rounded-full transition-colors ${
                 activeCategory === cat
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-[var(--forest)] text-[var(--paper)]'
+                  : 'bg-[var(--sage-light)]/40 text-[var(--ink-light)] hover:bg-[var(--sage-light)]'
               }`}
             >
               {CATEGORY_LABELS[cat]}
@@ -151,7 +148,7 @@ export function PlantSidebar() {
       </div>
 
       {/* Tag filter */}
-      <div className="px-3 py-2 border-b border-gray-200">
+      <div className="px-3 py-2 border-b border-[var(--divider)]">
         <div className="flex flex-wrap gap-1">
           {tagsWithPlants.map((tag) => (
             <button
@@ -159,8 +156,8 @@ export function PlantSidebar() {
               onClick={() => toggleTag(tag)}
               className={`text-[11px] px-2 py-0.5 rounded-full transition-colors ${
                 activeTags.has(tag)
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-[var(--sage)] text-[var(--paper)]'
+                  : 'bg-[var(--cream)] text-[var(--ink-light)] hover:bg-[var(--sage-light)]'
               }`}
             >
               {tag}
@@ -175,7 +172,7 @@ export function PlantSidebar() {
           <PlantCard key={plant.id} plant={plant} />
         ))}
         {filtered.length === 0 && (
-          <div className="p-4 text-sm text-gray-400 text-center">No plants match filters</div>
+          <div className="p-4 text-sm italic text-[var(--warm-gray)] text-center">No plants match filters</div>
         )}
       </div>
 

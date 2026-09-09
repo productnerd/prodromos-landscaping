@@ -23,10 +23,10 @@ export function PlantInfoPanel() {
   const stateColor = state ? STATE_COLORS[state] : null;
 
   return (
-    <div className="p-4 border-t border-gray-200 bg-gray-50 max-h-80 overflow-y-auto">
+    <div className="p-4 border-t border-[var(--divider)] bg-[var(--cream)] max-h-80 overflow-y-auto">
       {/* Name */}
-      <h3 className="font-bold text-gray-900">{plant.name}</h3>
-      <p className="text-sm italic text-gray-500 mb-2">{plant.botanicalName}</p>
+      <h3 className="font-[Fraunces,Georgia,serif] font-medium text-[var(--forest-deep)]">{plant.name}</h3>
+      <p className="text-sm italic text-[var(--ink-light)] mb-2">{plant.botanicalName}</p>
 
       {/* Current state badge */}
       {state && (
@@ -51,14 +51,14 @@ export function PlantInfoPanel() {
       </div>
 
       {/* Dimensions */}
-      <div className="text-sm text-gray-700 mb-3">
+      <div className="text-sm text-[var(--ink-light)] mb-3">
         <div>Spread: {(plant.matureRadiusM * 2).toFixed(1)}m diameter</div>
         <div>Height: {plant.heightM}m</div>
       </div>
 
       {/* Planting months */}
       <div className="mb-3">
-        <div className="text-xs font-medium text-gray-600 mb-1">Best planting months</div>
+        <div className="text-xs font-medium text-[var(--ink-light)] mb-1">Best planting months</div>
         <div className="flex gap-1 flex-wrap">
           {MONTH_NAMES.map((name, i) => {
             const month = i + 1;
@@ -66,10 +66,10 @@ export function PlantInfoPanel() {
             return (
               <span
                 key={month}
-                className={`text-[10px] w-7 text-center py-0.5 rounded ${
+                className={`text-[10px] w-7 text-center py-0.5 rounded-[4px] ${
                   isPlanting
-                    ? 'bg-green-500 text-white font-medium'
-                    : 'bg-gray-200 text-gray-400'
+                    ? 'bg-[var(--forest)] text-[var(--paper)] font-medium'
+                    : 'bg-[var(--paper)] text-[var(--warm-gray)]'
                 }`}
               >
                 {name}
@@ -81,13 +81,13 @@ export function PlantInfoPanel() {
 
       {/* Cyprus notes */}
       {plant.cyprusNotes && (
-        <p className="text-xs text-gray-600 mb-3">{plant.cyprusNotes}</p>
+        <p className="text-xs italic text-[var(--ink-light)] mb-3">{plant.cyprusNotes}</p>
       )}
 
       {/* Remove button */}
       <button
         onClick={() => removeElement(placed.id)}
-        className="w-full py-1.5 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+        className="w-full py-1.5 text-sm bg-[var(--terracotta)] text-[var(--paper)] rounded-[4px] hover:brightness-95 transition-colors"
       >
         Remove
       </button>

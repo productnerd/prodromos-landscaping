@@ -10,7 +10,7 @@ export default function App() {
   const stageRef = useRef<any>(null);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-screen bg-[var(--cream)] text-[var(--ink)]">
       <Toolbar
         stageRef={stageRef}
         onShowPlantingPlan={() => setShowPlantingPlan(true)}

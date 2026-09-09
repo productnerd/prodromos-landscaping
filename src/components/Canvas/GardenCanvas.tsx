@@ -229,7 +229,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   return (
     <div
       ref={containerRef}
-      className="h-full w-full overflow-hidden bg-gray-100"
+      className="h-full w-full overflow-hidden bg-[var(--cream)]"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >

@@ -30,18 +30,18 @@ export function TimelineSlider() {
   }, [playing, advance]);
 
   return (
-    <div className="h-16 bg-gray-800 text-white flex items-center px-6 gap-4">
+    <div className="h-16 bg-[var(--paper)] text-[var(--ink)] border-t border-[var(--divider)] flex items-center px-6 gap-4">
       {/* Play/pause */}
       <button
         onClick={() => setPlaying((p) => !p)}
-        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 transition-colors text-sm flex-shrink-0"
+        className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--forest)] text-[var(--paper)] hover:bg-[var(--forest-deep)] transition-colors text-sm flex-shrink-0"
         aria-label={playing ? 'Pause' : 'Play'}
       >
         {playing ? '⏸' : '▶'}
       </button>
 
       {/* Month label */}
-      <span className="text-lg font-semibold w-28 flex-shrink-0">
+      <span className="font-[Fraunces,Georgia,serif] font-medium text-lg text-[var(--forest-deep)] w-28 flex-shrink-0">
         {MONTH_LABELS[currentMonth - 1]}
       </span>
 
@@ -54,14 +54,16 @@ export function TimelineSlider() {
           step={1}
           value={currentMonth}
           onChange={(e) => setMonth(Number(e.target.value))}
-          className="w-full accent-green-500"
+          className="w-full accent-[var(--forest)]"
         />
         <div className="flex justify-between px-0.5">
           {MONTH_ABBR.map((m, i) => (
             <span
               key={i}
               className={`text-[10px] ${
-                i + 1 === currentMonth ? 'text-green-400 font-bold' : 'text-gray-400'
+                i + 1 === currentMonth
+                  ? 'text-[var(--forest)] font-bold'
+                  : 'text-[var(--warm-gray)]'
               }`}
             >
               {m}

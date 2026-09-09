@@ -1,8 +1,26 @@
 @import "tailwindcss";
 
+:root {
+  --cream: #F5F0E8;
+  --paper: #FAF7F2;
+  --sage: #8B9E7E;
+  --sage-light: #C5D1BC;
+  --forest: #3D5A3E;
+  --forest-deep: #2A3F2B;
+  --terracotta: #C17849;
+  --terracotta-light: #E8C4A8;
+  --ink: #3B3228;
+  --ink-light: #6B5E52;
+  --warm-gray: #A89E94;
+  --divider: #D9D0C5;
+}
+
 body {
   margin: 0;
   overflow: hidden;
+  font-family: 'Spectral', Georgia, serif;
+  background-color: var(--cream);
+  color: var(--ink);
 }
 
 #root {
