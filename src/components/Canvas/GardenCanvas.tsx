@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
-import { Stage, Layer, Line, Circle, Arc, Text, Rect, Group } from 'react-konva';
+import { Stage, Layer, Line, Circle, Text, Rect, Group } from 'react-konva';
 import type Konva from 'konva';
 import { useGardenStore } from '../../stores/gardenStore';
 import { checkCompatibility } from '../../utils/compatibility-checker';
@@ -15,7 +15,6 @@ const SCALE_BY = 1.05;
 
 export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   const {
-    dxfShapes,
     placedPlants,
     placedBuildings,
     plotPolygons,
@@ -25,6 +24,11 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     selectedId,
     buildingMode,
     drawPlotMode,
+    measureMode,
+    measurePoints,
+    addMeasurePoint,
+    pendingPlantId,
+    clearPendingPlant,
     addPlant,
     addBuilding,
     setSelectedId,
@@ -87,6 +91,17 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     observer.observe(container);
     return () => observer.disconnect();
   }, []);
+
+  // A plant clicked in the sidebar lands in the middle of what you are looking at.
+  useEffect(() => {
+    if (!pendingPlantId) return;
+    addPlant(
+      pendingPlantId,
+      (dimensions.width / 2 - stagePos.x) / stageScale,
+      (dimensions.height / 2 - stagePos.y) / stageScale,
+    );
+    clearPendingPlant();
+  }, [pendingPlantId, dimensions, stagePos, stageScale, addPlant, clearPendingPlant]);
 
   // Compatibility warnings
   const warnings = useMemo(
@@ -166,6 +181,11 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
       const pos = getCanvasPos();
       if (!pos) return;
 
+      if (measureMode) {
+        addMeasurePoint(pos.x, pos.y);
+        return;
+      }
+
       if (drawPlotMode) {
         if (!drawingPlotId) {
           startPlot();
@@ -197,7 +217,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         setSelectedId(null);
       }
     },
-    [drawPlotMode, buildingMode, drawingPlotId, plotPolygons, stageScale, getCanvasPos, startPlot, addPlotVertex, closePlot, addBuilding, setSelectedId],
+    [drawPlotMode, buildingMode, measureMode, addMeasurePoint, drawingPlotId, plotPolygons, stageScale, getCanvasPos, startPlot, addPlotVertex, closePlot, addBuilding, setSelectedId],
   );
 
   const handleDragEnd = useCallback((e: Konva.KonvaEventObject<DragEvent>) => {
@@ -206,13 +226,14 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   }, []);
 
   const handleMouseMove = useCallback(() => {
-    if (!drawPlotMode || !drawingPlotId) {
+    const measuring = measureMode && measurePoints.length === 1;
+    if (!measuring && (!drawPlotMode || !drawingPlotId)) {
       setCursorPos(null);
       return;
     }
     const pos = getCanvasPos();
     if (pos) setCursorPos(pos);
-  }, [drawPlotMode, drawingPlotId, getCanvasPos]);
+  }, [drawPlotMode, drawingPlotId, measureMode, measurePoints.length, getCanvasPos]);
 
   const previewLine = useMemo(() => {
     if (!cursorPos || !drawingPlotId) return null;
@@ -241,14 +262,14 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         scaleY={stageScale}
         x={stagePos.x}
         y={stagePos.y}
-        draggable={!drawPlotMode}
+        draggable={!drawPlotMode && !measureMode}
         onWheel={handleWheel}
         onClick={handleStageClick}
         onDragEnd={handleDragEnd}
         onMouseMove={handleMouseMove}
-        style={{ cursor: drawPlotMode ? 'crosshair' : undefined }}
+        style={{ cursor: drawPlotMode || measureMode ? 'crosshair' : undefined }}
       >
-        {/* Layer 1: DXF base shapes + grid */}
+        {/* Layer 1: grid */}
         <Layer listening={false}>
           {/* Grid */}
           {Array.from({ length: Math.ceil(dimensions.width / stageScale / pixelsPerMeter) + 20 }, (_, i) => (
@@ -268,60 +289,6 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
             />
           ))}
 
-          {/* DXF shapes */}
-          {dxfShapes.map((shape, idx) => {
-            switch (shape.type) {
-              case 'line':
-              case 'polyline':
-                return (
-                  <Line
-                    key={`dxf-${idx}`}
-                    points={shape.points ?? []}
-                    stroke={shape.color ?? '#666'}
-                    strokeWidth={1}
-                    closed={shape.closed}
-                  />
-                );
-              case 'circle':
-                return (
-                  <Circle
-                    key={`dxf-${idx}`}
-                    x={shape.x ?? 0}
-                    y={shape.y ?? 0}
-                    radius={shape.radius ?? 0}
-                    stroke={shape.color ?? '#666'}
-                    strokeWidth={1}
-                  />
-                );
-              case 'arc':
-                return (
-                  <Arc
-                    key={`dxf-${idx}`}
-                    x={shape.x ?? 0}
-                    y={shape.y ?? 0}
-                    innerRadius={shape.radius ?? 0}
-                    outerRadius={shape.radius ?? 0}
-                    angle={(shape.endAngle ?? 360) - (shape.startAngle ?? 0)}
-                    rotation={shape.startAngle ?? 0}
-                    stroke={shape.color ?? '#666'}
-                    strokeWidth={1}
-                  />
-                );
-              case 'text':
-                return (
-                  <Text
-                    key={`dxf-${idx}`}
-                    x={shape.x ?? 0}
-                    y={shape.y ?? 0}
-                    text={shape.text ?? ''}
-                    fontSize={12}
-                    fill={shape.color ?? '#444'}
-                  />
-                );
-              default:
-                return null;
-            }
-          })}
         </Layer>
 
         {/* Layer 2: Interactive plots, plants, and buildings */}
@@ -404,6 +371,73 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
               </Group>
             );
           })()}
+
+          {/* Measurement: fixed first point, live second point until the click lands */}
+          {measureMode && measurePoints.length > 0 && (() => {
+            const from = measurePoints[0];
+            const to = measurePoints[1] ?? cursorPos;
+            if (!to) return null;
+
+            const dx = to.x - from.x;
+            const dy = to.y - from.y;
+            const lengthM = Math.sqrt(dx * dx + dy * dy) / pixelsPerMeter;
+            const midX = (from.x + to.x) / 2;
+            const midY = (from.y + to.y) / 2;
+            const angle = Math.atan2(dy, dx);
+            const offsetX = -Math.sin(angle) * (16 / stageScale);
+            const offsetY = Math.cos(angle) * (16 / stageScale);
+            const fontSize = 12 / stageScale;
+            const label = `${lengthM.toFixed(2)} m`;
+            const labelW = label.length * fontSize * 0.66;
+            const labelH = fontSize * 1.7;
+            const tick = 5 / stageScale;
+
+            return (
+              <Group listening={false}>
+                <Line
+                  points={[from.x, from.y, to.x, to.y]}
+                  stroke="#C17849"
+                  strokeWidth={2 / stageScale}
+                />
+                {[from, to].map((pt, i) => (
+                  <Circle
+                    key={`mp-${i}`}
+                    x={pt.x}
+                    y={pt.y}
+                    radius={tick}
+                    fill="#C17849"
+                    stroke="#FAF7F2"
+                    strokeWidth={1.5 / stageScale}
+                  />
+                ))}
+                <Rect
+                  x={midX + offsetX - labelW / 2}
+                  y={midY + offsetY - labelH / 2}
+                  width={labelW}
+                  height={labelH}
+                  fill="#FAF7F2"
+                  cornerRadius={3 / stageScale}
+                  stroke="#C17849"
+                  strokeWidth={1 / stageScale}
+                />
+                <Text
+                  x={midX + offsetX}
+                  y={midY + offsetY}
+                  text={label}
+                  fontSize={fontSize}
+                  fontStyle="bold"
+                  fill="#C17849"
+                  align="center"
+                  verticalAlign="middle"
+                  offsetX={labelW / 2}
+                  offsetY={labelH / 2}
+                  width={labelW}
+                  height={labelH}
+                />
+              </Group>
+            );
+          })()}
+
           {warnings.map((w, idx) => {
             const posA = plantPosMap.get(w.plantAInstanceId);
             const posB = plantPosMap.get(w.plantBInstanceId);

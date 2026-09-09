@@ -26,15 +26,3 @@ export interface PlotPolygon {
   closed: boolean;
 }
 
-export interface DxfShape {
-  type: 'line' | 'polyline' | 'circle' | 'arc' | 'text';
-  points?: number[];
-  x?: number;
-  y?: number;
-  radius?: number;
-  startAngle?: number;
-  endAngle?: number;
-  text?: string;
-  closed?: boolean;
-  color?: string;
-}

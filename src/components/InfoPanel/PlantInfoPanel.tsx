@@ -13,6 +13,8 @@ export function PlantInfoPanel() {
   const currentMonth = useGardenStore((s) => s.currentMonth);
   const removeElement = useGardenStore((s) => s.removeElement);
 
+  const setSelectedId = useGardenStore((s) => s.setSelectedId);
+
   const placed = placedPlants.find((p) => p.id === selectedId);
   if (!placed) return null;
 
@@ -23,7 +25,14 @@ export function PlantInfoPanel() {
   const stateColor = state ? STATE_COLORS[state] : null;
 
   return (
-    <div className="p-4 border-t border-[var(--divider)] bg-[var(--cream)] max-h-80 overflow-y-auto">
+    <div className="absolute bottom-3 left-3 z-20 w-80 max-h-[60%] overflow-y-auto rounded-md border border-[var(--divider)] bg-[var(--paper)] shadow-[0_8px_28px_rgba(42,63,43,0.22)] p-4">
+      <button
+        onClick={() => setSelectedId(null)}
+        aria-label="Close details"
+        className="absolute top-2 right-2 w-6 h-6 rounded-[4px] border border-[var(--divider)] bg-[var(--paper)] text-[var(--ink-light)] hover:bg-[var(--cream)] leading-none"
+      >
+        &times;
+      </button>
       {/* Name */}
       <h3 className="font-[Fraunces,Georgia,serif] font-medium text-[var(--forest-deep)]">{plant.name}</h3>
       <p className="text-sm italic text-[var(--ink-light)] mb-2">{plant.botanicalName}</p>

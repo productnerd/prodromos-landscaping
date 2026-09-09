@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuid } from 'uuid';
-import type { PlacedPlant, PlacedBuilding, DxfShape, PlotPolygon, PlotVertex } from '../types/canvas';
+import type { PlacedPlant, PlacedBuilding, PlotPolygon, PlotVertex } from '../types/canvas';
 import { DEFAULT_PIXELS_PER_METER } from '../utils/scale';
 
 type UndoEntry =
@@ -11,7 +11,6 @@ type UndoEntry =
   | { type: 'startPlot'; plotId: string };
 
 interface GardenState {
-  dxfShapes: DxfShape[];
   placedPlants: PlacedPlant[];
   placedBuildings: PlacedBuilding[];
   plotPolygons: PlotPolygon[];
@@ -22,12 +21,13 @@ interface GardenState {
   selectedVertex: { plotId: string; index: number } | null;
   buildingMode: boolean;
   drawPlotMode: boolean;
+  measureMode: boolean;
+  measurePoints: { x: number; y: number }[];
+  pendingPlantId: string | null;
   undoStack: UndoEntry[];
   overlayWater: boolean;
   overlaySoil: boolean;
 
-  importDxf: (shapes: DxfShape[]) => void;
-  clearDxf: () => void;
   addPlant: (plantId: string, x: number, y: number) => void;
   addBuilding: (x: number, y: number, widthM: number, heightM: number, label: string) => void;
   moveElement: (id: string, x: number, y: number) => void;
@@ -39,6 +39,11 @@ interface GardenState {
   setPixelsPerMeter: (ppm: number) => void;
   setBuildingMode: (on: boolean) => void;
   setDrawPlotMode: (on: boolean) => void;
+  setMeasureMode: (on: boolean) => void;
+  addMeasurePoint: (x: number, y: number) => void;
+  clearMeasure: () => void;
+  requestPlacePlant: (plantId: string) => void;
+  clearPendingPlant: () => void;
   startPlot: () => void;
   addPlotVertex: (x: number, y: number) => void;
   closePlot: () => void;
@@ -55,7 +60,6 @@ interface GardenState {
 export const useGardenStore = create<GardenState>()(
   persist(
     (set) => ({
-      dxfShapes: [],
       placedPlants: [],
       placedBuildings: [],
       plotPolygons: [],
@@ -66,18 +70,20 @@ export const useGardenStore = create<GardenState>()(
       selectedVertex: null,
       buildingMode: false,
       drawPlotMode: false,
+      measureMode: false,
+      measurePoints: [],
+      pendingPlantId: null,
       undoStack: [],
       overlayWater: false,
       overlaySoil: false,
-
-      importDxf: (shapes: DxfShape[]) => set({ dxfShapes: shapes }),
-      clearDxf: () => set({ dxfShapes: [] }),
 
       addPlant: (plantId: string, x: number, y: number) => {
         const id = uuid();
         set((s: GardenState) => ({
           placedPlants: [...s.placedPlants, { id, plantId, x, y }],
           undoStack: [...s.undoStack, { type: 'addPlant' as const, plantId: id }],
+          // Select what you just placed so its details come up straight away.
+          selectedId: id,
         }));
       },
 
@@ -127,8 +133,18 @@ export const useGardenStore = create<GardenState>()(
       setMonth: (month: number) => set({ currentMonth: month }),
       setSelectedId: (id: string | null) => set({ selectedId: id }),
       setPixelsPerMeter: (ppm: number) => set({ pixelsPerMeter: ppm }),
-      setBuildingMode: (on: boolean) => set({ buildingMode: on }),
-      setDrawPlotMode: (on: boolean) => set({ drawPlotMode: on, buildingMode: false }),
+      setBuildingMode: (on: boolean) => set({ buildingMode: on, measureMode: false }),
+      setDrawPlotMode: (on: boolean) => set({ drawPlotMode: on, buildingMode: false, measureMode: false }),
+      setMeasureMode: (on: boolean) =>
+        set({ measureMode: on, buildingMode: false, drawPlotMode: false, measurePoints: [] }),
+      addMeasurePoint: (x: number, y: number) =>
+        set((st: GardenState) => ({
+          // A third click starts a fresh measurement.
+          measurePoints: st.measurePoints.length >= 2 ? [{ x, y }] : [...st.measurePoints, { x, y }],
+        })),
+      clearMeasure: () => set({ measurePoints: [] }),
+      requestPlacePlant: (plantId: string) => set({ pendingPlantId: plantId }),
+      clearPendingPlant: () => set({ pendingPlantId: null }),
       setOverlayWater: (on: boolean) => set({ overlayWater: on }),
       setOverlaySoil: (on: boolean) => set({ overlaySoil: on }),
 
@@ -262,6 +278,7 @@ export const useGardenStore = create<GardenState>()(
         plotPolygons: state.plotPolygons,
         pixelsPerMeter: state.pixelsPerMeter,
         currentMonth: state.currentMonth,
+        selectedId: state.selectedId,
       }),
     },
   ),

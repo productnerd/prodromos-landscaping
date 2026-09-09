@@ -1,11 +1,23 @@
 import { useState, useMemo } from 'react';
 import { useGardenStore } from '../../stores/gardenStore';
-import { PLANTS, PLANTS_MAP } from '../../data/plants';
+import { PLANTS } from '../../data/plants';
 import { CATEGORY_LABELS } from '../../types/plant';
 import type { PlantCategory, PlantTag, PlantDefinition } from '../../types/plant';
-import { PlantInfoPanel } from '../InfoPanel/PlantInfoPanel';
 
 const ALL_CATEGORIES = Object.keys(CATEGORY_LABELS) as PlantCategory[];
+
+/** Trees first, then down the canopy to ground level. */
+const GROUP_ORDER: PlantCategory[] = [
+  'tree',
+  'bush',
+  'climber',
+  'herb',
+  'flower',
+  'bulb',
+  'grass',
+  'groundcover',
+  'vegetable',
+];
 const ALL_TAGS: PlantTag[] = ['herb', 'fruit', 'flower', 'fence', 'ornamental', 'evergreen', 'deciduous', 'edible'];
 
 function getBrandColor(plant: PlantDefinition): string {
@@ -21,8 +33,15 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+const SUN_LABEL: Record<PlantDefinition['sun'], string> = {
+  full: '☀️ Full sun',
+  partial: '⛅ Part shade',
+  shade: '🌑 Shade',
+};
+
 function PlantCard({ plant }: { plant: PlantDefinition }) {
   const brandColor = getBrandColor(plant);
+  const requestPlacePlant = useGardenStore((s) => s.requestPlacePlant);
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('plantId', plant.id);
@@ -33,7 +52,9 @@ function PlantCard({ plant }: { plant: PlantDefinition }) {
     <div
       draggable="true"
       onDragStart={handleDragStart}
-      className="flex items-start gap-3 py-2 px-3 border-b border-[var(--divider)] cursor-grab"
+      onClick={() => requestPlacePlant(plant.id)}
+      title={`Click to place ${plant.name} on the plan, or drag it where you want it`}
+      className="flex items-start gap-3 py-2 px-3 border-b border-[var(--divider)] cursor-pointer hover:brightness-95"
       style={{ backgroundColor: hexToRgba(brandColor, 0.08) }}
     >
       <div
@@ -47,11 +68,8 @@ function PlantCard({ plant }: { plant: PlantDefinition }) {
         <div className="font-[Fraunces,Georgia,serif] font-medium text-sm text-[var(--forest-deep)] truncate">{plant.name}</div>
         <div className="text-xs italic text-[var(--ink-light)] truncate">{plant.botanicalName}</div>
         <div className="flex flex-wrap gap-1 mt-1">
-          <span
-            className="text-[10px] px-1.5 py-0.5 rounded font-medium text-white"
-            style={{ backgroundColor: hexToRgba(brandColor, 0.7) }}
-          >
-            {CATEGORY_LABELS[plant.category]}
+          <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-[var(--cream)] text-[var(--ink-light)] border border-[var(--divider)]">
+            {SUN_LABEL[plant.sun]}
           </span>
           {plant.tags.map((tag) => (
             <span
@@ -75,8 +93,6 @@ export function PlantSidebar() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<PlantCategory | null>(null);
   const [activeTags, setActiveTags] = useState<Set<PlantTag>>(new Set());
-  const selectedId = useGardenStore((s) => s.selectedId);
-  const placedPlants = useGardenStore((s) => s.placedPlants);
 
   const categoriesWithPlants = useMemo(
     () => ALL_CATEGORIES.filter((cat) => PLANTS.some((p) => p.category === cat)),
@@ -102,6 +118,15 @@ export function PlantSidebar() {
     });
   }, [search, activeCategory, activeTags]);
 
+  const grouped = useMemo(
+    () =>
+      GROUP_ORDER.map((category) => ({
+        category,
+        plants: filtered.filter((p) => p.category === category),
+      })).filter((g) => g.plants.length > 0),
+    [filtered],
+  );
+
   const toggleTag = (tag: PlantTag) => {
     setActiveTags((prev) => {
       const next = new Set(prev);
@@ -110,10 +135,6 @@ export function PlantSidebar() {
       return next;
     });
   };
-
-  // Check if selectedId corresponds to a placed plant
-  const selectedPlacedPlant = placedPlants.find((p) => p.id === selectedId);
-  const showInfoPanel = selectedPlacedPlant && PLANTS_MAP[selectedPlacedPlant.plantId];
 
   return (
     <div className="w-80 h-full bg-[var(--paper)] border-l border-[var(--divider)] flex flex-col overflow-hidden">
@@ -166,18 +187,23 @@ export function PlantSidebar() {
         </div>
       </div>
 
-      {/* Plant list */}
+      {/* Plant list, grouped with trees at the top */}
       <div className="flex-1 overflow-y-auto">
-        {filtered.map((plant) => (
-          <PlantCard key={plant.id} plant={plant} />
+        {grouped.map(({ category, plants }) => (
+          <div key={category}>
+            <div className="sticky top-0 z-10 px-3 py-1 bg-[var(--sage-light)] border-y border-[var(--divider)] font-[Fraunces,Georgia,serif] text-[11px] font-medium uppercase tracking-wide text-[var(--forest-deep)] flex items-center">
+              {CATEGORY_LABELS[category]}
+              <span className="ml-auto font-normal normal-case text-[var(--ink-light)]">{plants.length}</span>
+            </div>
+            {plants.map((plant) => (
+              <PlantCard key={plant.id} plant={plant} />
+            ))}
+          </div>
         ))}
         {filtered.length === 0 && (
           <div className="p-4 text-sm italic text-[var(--warm-gray)] text-center">No plants match filters</div>
         )}
       </div>
-
-      {/* Info panel for selected plant */}
-      {showInfoPanel && <PlantInfoPanel />}
     </div>
   );
 }

@@ -1,10 +1,5 @@
-import { useRef } from 'react';
 import type Konva from 'konva';
 import { useGardenStore } from '../../stores/gardenStore';
-import { dxfToKonvaShapes } from '../../utils/dxf-to-konva';
-
-import * as dxfModule from 'dxf';
-const parseDxf = (dxfModule as any).default || (dxfModule as any).parse || dxfModule;
 
 interface ToolbarProps {
   stageRef: React.RefObject<Konva.Stage | null>;
@@ -26,9 +21,11 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
     undoStack,
     overlayWater,
     overlaySoil,
-    importDxf,
     removeElement,
     setBuildingMode,
+    measureMode,
+    setMeasureMode,
+    clearMeasure,
     setDrawPlotMode,
     cancelPlot,
     setPixelsPerMeter,
@@ -36,34 +33,6 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
     setOverlayWater,
     setOverlaySoil,
   } = useGardenStore();
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.name.toLowerCase().endsWith('.dwg')) {
-      alert('DWG files are not supported directly. Please export your drawing as a DXF file from your CAD software, then import that instead.');
-      e.target.value = '';
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = ev.target?.result as string;
-      try {
-        const parsed = parseDxf(text);
-        const shapes = dxfToKonvaShapes(parsed);
-        importDxf(shapes);
-      } catch (err) {
-        console.error('Failed to parse DXF:', err);
-        alert('Failed to parse the DXF file. Make sure it is a valid DXF.');
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  };
 
   const handleExportPng = () => {
     const stage = stageRef.current;
@@ -80,20 +49,6 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
       <span className="font-[Fraunces,Georgia,serif] font-medium text-[15px] text-[var(--forest-deep)] mr-auto whitespace-nowrap">
         Garden Planner &mdash; Prodromos, Cyprus
       </span>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".dxf,.dwg"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-      <button
-        className={BTN}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        Import DXF
-      </button>
 
       <button
         className={drawPlotMode ? BTN_ACTIVE : BTN}
@@ -120,6 +75,23 @@ export default function Toolbar({ stageRef, onShowPlantingPlan }: ToolbarProps) 
       >
         Add Building
       </button>
+
+      <button
+        className={measureMode ? BTN_ACTIVE : BTN}
+        onClick={() => setMeasureMode(!measureMode)}
+        title="Measure a distance between two points"
+      >
+        Measure 📏
+      </button>
+
+      {measureMode && (
+        <span className="text-[10px] italic text-[var(--ink-light)] max-w-40">
+          Click two points to measure.{' '}
+          <button className="underline" onClick={clearMeasure}>
+            Clear
+          </button>
+        </span>
+      )}
 
       <button
         className={`${BTN} disabled:opacity-40`}
