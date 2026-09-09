@@ -602,6 +602,64 @@ footer {
   overflow-y: auto;
 }
 
+.plant-tip {
+  position: fixed;
+  z-index: 600;
+  background: var(--paper);
+  border: 1px solid var(--forest);
+  border-radius: 6px;
+  padding: 0.55rem 0.7rem;
+  box-shadow: 0 6px 20px rgba(42, 63, 43, 0.28);
+  pointer-events: none;
+  max-width: 320px;
+}
+
+.plant-tip .tip-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--forest-deep);
+  white-space: nowrap;
+}
+
+.plant-tip .tip-bot {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--warm-gray);
+  margin-bottom: 0.4rem;
+}
+
+.plant-tip .tip-strip {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 0.4rem;
+}
+
+.plant-tip .tip-m {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.02em;
+  padding: 3px 0;
+  width: 24px;
+  text-align: center;
+  border-radius: 3px;
+}
+.plant-tip .tip-m.on { background: var(--forest); color: var(--paper); }
+.plant-tip .tip-m.off { background: var(--cream); color: var(--warm-gray); }
+.plant-tip .tip-m.is-now { outline: 2px solid var(--terracotta); outline-offset: -2px; }
+
+.plant-tip .tip-foot {
+  font-size: 0.74rem;
+  color: var(--ink-light);
+}
+.plant-tip .tip-foot strong { color: var(--forest-deep); font-weight: 600; }
+
+.cal-item[data-plant], .dl-item[data-plant] { cursor: help; }
+.cal-item[data-plant]:hover, .dl-item[data-plant]:hover {
+  background: rgba(139, 158, 126, 0.14);
+  border-radius: 3px;
+}
+
 .pill-deadline {
   display: inline-block;
   font-family: 'Fraunces', Georgia, serif;

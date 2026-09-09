@@ -1,4 +1,4 @@
-import { PLANTS } from '../src/data/plants';
+import { PLANTS, PLANTS_MAP } from '../src/data/plants';
 import { COMPATIBILITY_RULES } from '../src/data/compatibility-rules';
 import type { PlantDefinition, PlantCategory } from '../src/types/plant';
 
@@ -423,10 +423,7 @@ function renderCalendarWindows(listed: PlantDefinition[], now: number) {
       const cls = isBest ? 'cal-item is-best' : can ? 'cal-item' : 'cal-item cant';
       const mark = isBest ? '\u2605' : can ? '\u2713' : '\u2715';
       const qty = onMap.has(p.id) ? ` <span class="shop-qty">\u00d7${onMap.get(p.id)}</span>` : '';
-      const title = can
-        ? `${p.name} \u2014 can be planted in ${MONTH_ABBR[m - 1]}`
-        : `${p.name} \u2014 do not plant in ${MONTH_ABBR[m - 1]}. Window: ${monthWindowLabel(p)}`;
-      html += `<li class="${cls}" title="${esc(title)}"><i class="cal-mark">${mark}</i><span>${p.emoji} ${esc(p.name)}${qty}</span></li>`;
+      html += `<li class="${cls}" data-plant="${p.id}"><i class="cal-mark">${mark}</i><span>${p.emoji} ${esc(p.name)}${qty}</span></li>`;
     }
     html += `</ul></div>`;
   }
@@ -458,7 +455,7 @@ function renderCalendarDeadlines(listed: PlantDefinition[], now: number) {
       for (const p of due) {
         const away = monthsUntil(m, now);
         const cls = away === 0 ? 'now' : away <= 1 ? 'soon' : '';
-        html += `<li class="dl-item"><span>${p.emoji} ${esc(p.name)}</span><span class="dl-win">${monthWindowLabel(p)}</span><span class="pill-deadline ${cls}">${away === 0 ? 'this month' : `${away} mo`}</span></li>`;
+        html += `<li class="dl-item" data-plant="${p.id}"><span>${p.emoji} ${esc(p.name)}</span><span class="dl-win">${monthWindowLabel(p)}</span><span class="pill-deadline ${cls}">${away === 0 ? 'this month' : `${away} mo`}</span></li>`;
       }
       html += `</ul>`;
     }
@@ -484,6 +481,54 @@ function renderCalendar() {
     calTab === 'windows' ? renderCalendarWindows(listed, now) : renderCalendarDeadlines(listed, now);
 }
 
+// ─── Hover tooltip: a plant's whole planting year at a glance ────────
+const tipEl = document.createElement('div');
+tipEl.className = 'plant-tip hidden';
+document.body.appendChild(tipEl);
+
+function showPlantTip(p: PlantDefinition, target: Element) {
+  const now = new Date().getMonth() + 1;
+  const dl = plantingDeadline(p, now);
+
+  const strip = SEASON_ORDER.map((m) => {
+    const on = p.plantingMonths.includes(m);
+    const classes = ['tip-m', on ? 'on' : 'off', m === now ? 'is-now' : ''].filter(Boolean).join(' ');
+    return `<span class="${classes}">${MONTH_ABBR[m - 1]}</span>`;
+  }).join('');
+
+  tipEl.innerHTML =
+    `<div class="tip-name">${p.emoji} ${esc(p.name)}</div>` +
+    `<div class="tip-bot">${esc(p.botanicalName)}</div>` +
+    `<div class="tip-strip">${strip}</div>` +
+    `<div class="tip-foot">Plant in <strong>${monthWindowLabel(p)}</strong>${dl !== null ? ` &middot; latest <strong>${MONTH_ABBR[dl - 1]}</strong>` : ''}</div>`;
+
+  tipEl.classList.remove('hidden');
+
+  const r = target.getBoundingClientRect();
+  const t = tipEl.getBoundingClientRect();
+  const top = r.top - t.height - 8;
+  tipEl.style.top = `${top < 8 ? r.bottom + 8 : top}px`;
+  tipEl.style.left = `${Math.min(Math.max(8, r.left), window.innerWidth - t.width - 8)}px`;
+}
+
+function hidePlantTip() {
+  tipEl.classList.add('hidden');
+}
+
+const calBodyEl = document.getElementById('calBody')!;
+calBodyEl.addEventListener('mouseover', (e) => {
+  const li = (e.target as HTMLElement).closest<HTMLElement>('[data-plant]');
+  if (!li) return;
+  const p = PLANTS_MAP[li.dataset.plant!];
+  if (p) showPlantTip(p, li);
+});
+calBodyEl.addEventListener('mouseout', (e) => {
+  const to = (e as MouseEvent).relatedTarget as HTMLElement | null;
+  if (to?.closest('[data-plant]') === (e.target as HTMLElement).closest('[data-plant]')) return;
+  hidePlantTip();
+});
+calBodyEl.addEventListener('scroll', hidePlantTip, true);
+
 function openCalendar() {
   document.getElementById('calModal')!.classList.remove('hidden');
   renderCalendar();
@@ -491,6 +536,7 @@ function openCalendar() {
 
 function closeCalendar() {
   document.getElementById('calModal')!.classList.add('hidden');
+  hidePlantTip();
 }
 
 function isCalendarOpen() {
