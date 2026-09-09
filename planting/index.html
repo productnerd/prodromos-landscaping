@@ -692,6 +692,83 @@ footer {
 }
 .dl-item .pill-deadline { margin-left: auto; }
 
+.tl { display: flex; flex-direction: column; gap: 1px; }
+
+.tl-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.4fr) repeat(12, 1fr);
+  align-items: stretch;
+  gap: 2px;
+}
+
+.tl-name {
+  font-size: 0.82rem;
+  color: var(--forest-deep);
+  padding: 3px 6px 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tl-head { position: sticky; top: 0; background: var(--cream); z-index: 5; }
+.tl-head .tl-m {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-light);
+  text-align: center;
+  padding-bottom: 3px;
+  border-bottom: 2px solid var(--divider);
+}
+.tl-head .tl-m.is-now {
+  color: var(--paper);
+  background: var(--forest);
+  border-radius: 3px 3px 0 0;
+  border-bottom-color: var(--forest);
+}
+
+.tl-section {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 0.82rem;
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.tl-cell {
+  min-height: 20px;
+  border-radius: 3px;
+  background: rgba(168, 158, 148, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+}
+.tl-cell.on { background: var(--sage); }
+.tl-cell.best { background: var(--forest); color: var(--paper); }
+.tl-cell.is-now { outline: 2px solid var(--terracotta); outline-offset: -2px; }
+
+.tl-row[data-plant]:hover .tl-name { font-weight: 600; }
+.tl-row[data-plant] { cursor: help; }
+
+.tl-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 12px;
+  border-radius: 3px;
+  background: rgba(168, 158, 148, 0.14);
+}
+.tl-swatch.on { background: var(--sage); }
+.tl-swatch.best { background: var(--forest); }
+
+@media (max-width: 700px) {
+  .tl-row { grid-template-columns: minmax(110px, 1fr) repeat(12, 1fr); }
+  .tl-name { font-size: 0.74rem; }
+}
+
 .cal-months {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -952,6 +1029,7 @@ footer {
       <div class="view-switch">
         <button class="btn" id="tabWindows" aria-pressed="true">When I can plant</button>
         <button class="btn" id="tabDeadlines" aria-pressed="false">⏳ Deadlines</button>
+        <button class="btn" id="tabTimeline" aria-pressed="false">📊 Year grid</button>
       </div>
       <button class="modal-close" id="calClose" aria-label="Close calendar">&times;</button>
     </div>

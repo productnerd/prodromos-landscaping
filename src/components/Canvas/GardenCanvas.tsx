@@ -27,6 +27,9 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     measureMode,
     measurePoints,
     addMeasurePoint,
+    clearMeasure,
+    setMeasureMode,
+    setBuildingMode,
     pendingPlantId,
     clearPendingPlant,
     addPlant,
@@ -53,8 +56,13 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   // Escape key cancels drawing
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && drawPlotMode) {
-        cancelPlot();
+      // Escape backs out of whatever is in progress, one step at a time.
+      if (e.key === 'Escape') {
+        if (drawPlotMode) cancelPlot();
+        else if (measureMode && measurePoints.length > 0) clearMeasure();
+        else if (measureMode) setMeasureMode(false);
+        else if (buildingMode) setBuildingMode(false);
+        else setSelectedId(null);
       }
       if (e.key === 'z' && (e.metaKey || e.ctrlKey) && !e.shiftKey) {
         e.preventDefault();
@@ -72,7 +80,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [drawPlotMode, cancelPlot, undo, selectedVertex, removeVertex, selectedId, removeElement]);
+  }, [drawPlotMode, cancelPlot, measureMode, measurePoints.length, clearMeasure, setMeasureMode, buildingMode, setBuildingMode, undo, selectedVertex, removeVertex, selectedId, removeElement, setSelectedId]);
 
   // Measure container size
   useEffect(() => {

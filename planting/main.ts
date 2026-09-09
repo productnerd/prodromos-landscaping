@@ -303,7 +303,7 @@ function renderShoppingList() {
 }
 
 // ─── Calendar view ───────────────────────────────────────────────────
-let calTab: 'windows' | 'deadlines' = 'windows';
+let calTab: 'windows' | 'deadlines' | 'timeline' = 'windows';
 
 /** Months in planting-season order, September first. */
 const SEASON_ORDER = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
@@ -464,6 +464,45 @@ function renderCalendarDeadlines(listed: PlantDefinition[], now: number) {
   return html + `</div>`;
 }
 
+/** One row per plant, its plantable months painted across the year. */
+function renderCalendarTimeline(listed: PlantDefinition[], now: number) {
+  const suggested = suggestedMonths(listed);
+  const byId = new Set(listed.map((p) => p.id));
+
+  let html = `<div class="cal-legend">
+    <span><i class="tl-swatch on"></i> can plant</span>
+    <span><i class="tl-swatch best"></i> suggested month</span>
+    <span><i class="tl-swatch"></i> cannot plant</span>
+    <span>Season runs Sep &rarr; Aug.</span>
+  </div>`;
+
+  html += `<div class="tl">`;
+  html += `<div class="tl-row tl-head"><span class="tl-name"></span>${SEASON_ORDER.map(
+    (m) => `<span class="tl-m${m === now ? ' is-now' : ''}">${MONTH_ABBR[m - 1]}</span>`,
+  ).join('')}</div>`;
+
+  for (const { section, plants } of ORDERED) {
+    const rows = plants.filter((p) => byId.has(p.id));
+    if (rows.length === 0) continue;
+    html += `<div class="tl-section" style="background:${SECTION_COLORS[section.key]}">${section.label}</div>`;
+
+    for (const p of rows) {
+      html += `<div class="tl-row" data-plant="${p.id}">`;
+      html += `<span class="tl-name">${p.emoji} ${esc(p.name)}</span>`;
+      for (const m of SEASON_ORDER) {
+        const can = p.plantingMonths.includes(m);
+        const best = suggested.get(p.id) === m;
+        const cls = ['tl-cell', can ? 'on' : '', best ? 'best' : '', m === now ? 'is-now' : '']
+          .filter(Boolean)
+          .join(' ');
+        html += `<span class="${cls}">${best ? '\u2605' : ''}</span>`;
+      }
+      html += `</div>`;
+    }
+  }
+  return html + `</div>`;
+}
+
 function renderCalendar() {
   const body = document.getElementById('calBody')!;
   const now = new Date().getMonth() + 1;
@@ -471,6 +510,7 @@ function renderCalendar() {
 
   document.getElementById('tabWindows')!.setAttribute('aria-pressed', String(calTab === 'windows'));
   document.getElementById('tabDeadlines')!.setAttribute('aria-pressed', String(calTab === 'deadlines'));
+  document.getElementById('tabTimeline')!.setAttribute('aria-pressed', String(calTab === 'timeline'));
 
   if (listed.length === 0) {
     body.innerHTML = `<div class="empty-state">Pick some plants in the list \u2014 they will show up here month by month, with the months you cannot plant them crossed off.</div>`;
@@ -478,7 +518,11 @@ function renderCalendar() {
   }
 
   body.innerHTML =
-    calTab === 'windows' ? renderCalendarWindows(listed, now) : renderCalendarDeadlines(listed, now);
+    calTab === 'windows'
+      ? renderCalendarWindows(listed, now)
+      : calTab === 'deadlines'
+        ? renderCalendarDeadlines(listed, now)
+        : renderCalendarTimeline(listed, now);
 }
 
 // ─── Hover tooltip: a plant's whole planting year at a glance ────────
@@ -868,6 +912,10 @@ document.getElementById('tabWindows')!.addEventListener('click', () => {
 });
 document.getElementById('tabDeadlines')!.addEventListener('click', () => {
   calTab = 'deadlines';
+  renderCalendar();
+});
+document.getElementById('tabTimeline')!.addEventListener('click', () => {
+  calTab = 'timeline';
   renderCalendar();
 });
 
