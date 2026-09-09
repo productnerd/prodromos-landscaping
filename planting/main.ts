@@ -335,55 +335,51 @@ function monthWindowLabel(p: PlantDefinition) {
 function renderCalendar() {
   const el = document.getElementById('calendar')!;
   const now = new Date().getMonth() + 1;
-  const visible = visiblePlants();
-  const picked = visible.filter((p) => state.checked[p.id]);
-  const scheduleFor = picked.length > 0 ? picked : [];
-  const suggested = suggestedMonths(scheduleFor);
+  const picked = PLANTS.filter((p) => state.checked[p.id]);
+  const onMap = placedCounts();
+  const listed = picked.length > 0 ? picked : PLANTS.filter((p) => onMap.has(p.id));
+  const suggested = suggestedMonths(listed);
   const monthOrder = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
+
+  if (listed.length === 0) {
+    el.innerHTML = `<div class="empty-state">Pick some plants in the table view — they will show up here month by month, with the months you cannot plant them crossed off.</div>`;
+    return;
+  }
 
   let html = `<div class="cal-legend">
     <span><i class="cal-cell cal-yes">✓</i> can plant</span>
-    <span><i class="cal-cell cal-no">✕</i> do not plant</span>
     <span><i class="cal-cell cal-best">★</i> suggested month</span>
-    <span>Season runs Sep &rarr; Aug. ${picked.length ? `Scheduling your ${picked.length} pick${picked.length !== 1 ? 's' : ''}.` : 'Pick plants to get a suggested schedule.'}</span>
+    <span><i class="cal-cell cal-no">✕</i> cannot plant this month</span>
+    <span>Season runs Sep &rarr; Aug &middot; showing your ${listed.length} selected plant${listed.length !== 1 ? 's' : ''}.</span>
   </div>`;
 
-  html += `<table class="cal-table"><thead><tr><th class="cal-plant-head">🌱 Plant</th>`;
+  html += `<div class="cal-months">`;
   for (const m of monthOrder) {
-    html += `<th class="${m === now ? 'is-now' : ''}">${MONTH_ABBR[m - 1]}</th>`;
-  }
-  html += `</tr></thead><tbody>`;
+    const canCount = listed.filter((p) => p.plantingMonths.includes(m)).length;
+    const dueCount = listed.filter((p) => suggested.get(p.id) === m).length;
 
-  const perMonth = new Map<number, number>();
+    html += `<div class="cal-month${m === now ? ' is-now' : ''}">`;
+    html += `<h3>${MONTH_ABBR[m - 1]}${m === now ? '<span class="cal-now-tag">this month</span>' : ''}<span class="cal-month-count">${canCount} of ${listed.length}</span></h3>`;
+    html += dueCount
+      ? `<div class="cal-due">★ ${dueCount} to plant this month</div>`
+      : `<div class="cal-due cal-due-none">nothing scheduled</div>`;
+    html += `<ul>`;
 
-  for (const { section, plants } of ORDERED) {
-    const rows = plants.filter((p) => visible.includes(p));
-    if (rows.length === 0) continue;
-    html += `<tr class="cal-section-row"><td colspan="13" style="background:${SECTION_COLORS[section.key]}">${section.label}</td></tr>`;
-
-    for (const p of rows) {
-      const isPicked = !!state.checked[p.id];
-      html += `<tr class="${isPicked ? '' : 'cal-row-unpicked'}">`;
-      html += `<td class="cal-plant">${p.emoji} ${esc(p.name)}<span class="cal-window">${monthWindowLabel(p)}</span></td>`;
-      for (const m of monthOrder) {
-        const can = p.plantingMonths.includes(m);
-        const isBest = suggested.get(p.id) === m;
-        if (isBest) perMonth.set(m, (perMonth.get(m) ?? 0) + 1);
-        const cls = isBest ? 'cal-best' : can ? 'cal-yes' : 'cal-no';
-        const mark = isBest ? '★' : can ? '✓' : '✕';
-        const title = can ? `${p.name} — can plant in ${MONTH_ABBR[m - 1]}` : `${p.name} — do not plant in ${MONTH_ABBR[m - 1]}`;
-        html += `<td class="${m === now ? 'is-now' : ''}"><span class="cal-cell ${cls}" title="${esc(title)}">${mark}</span></td>`;
-      }
-      html += `</tr>`;
+    for (const p of listed) {
+      const can = p.plantingMonths.includes(m);
+      const isBest = suggested.get(p.id) === m;
+      const cls = isBest ? 'cal-item is-best' : can ? 'cal-item' : 'cal-item cant';
+      const mark = isBest ? '★' : can ? '✓' : '✕';
+      const qty = onMap.has(p.id) ? ` <span class="shop-qty">×${onMap.get(p.id)}</span>` : '';
+      const title = can
+        ? `${p.name} — can be planted in ${MONTH_ABBR[m - 1]}`
+        : `${p.name} — do not plant in ${MONTH_ABBR[m - 1]}. Window: ${monthWindowLabel(p)}`;
+      html += `<li class="${cls}" title="${esc(title)}"><i class="cal-mark">${mark}</i><span>${p.emoji} ${esc(p.name)}${qty}</span></li>`;
     }
-  }
 
-  html += `<tr class="cal-total-row"><td class="cal-plant">Scheduled that month</td>`;
-  for (const m of monthOrder) {
-    const n = perMonth.get(m) ?? 0;
-    html += `<td class="${m === now ? 'is-now' : ''}"><span class="cal-load${n >= 6 ? ' busy' : ''}">${n || '–'}</span></td>`;
+    html += `</ul></div>`;
   }
-  html += `</tr></tbody></table>`;
+  html += `</div>`;
 
   el.innerHTML = html;
 }

@@ -361,6 +361,9 @@ footer {
 @media print {
   header { padding: 1rem; }
   .toolbar, .btn, .toggle-wrap, .search-box, footer, .cell-notes, .cell-check, .soil-prep, .page-nav { display: none !important; }
+  .cal-month { break-inside: avoid; border: 1px solid #ccc; }
+  .cal-item.cant { display: none !important; }
+  .cal-legend { display: none !important; }
   .shopping details { border: none; }
   .shopping summary { color: var(--forest-deep); background: none !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .plant-table thead th { position: static; background: #fff; }
@@ -542,116 +545,116 @@ footer {
 }
 .cal-legend span { display: flex; align-items: center; gap: 0.35rem; }
 
-.cal-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.85rem;
+.cal-months {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
 }
 
-.cal-table th {
+.cal-month {
+  background: var(--paper);
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  padding: 0.7rem 0.85rem 0.85rem;
+}
+
+.cal-month.is-now {
+  border-color: var(--forest);
+  box-shadow: 0 0 0 2px var(--sage-light);
+}
+
+.cal-month h3 {
   font-family: 'Fraunces', Georgia, serif;
   font-weight: 500;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--ink-light);
-  padding: 0.5rem 0.3rem;
-  border-bottom: 2px solid var(--divider);
-  background: var(--cream);
-  position: sticky;
-  top: 52px;
-  z-index: 10;
-}
-.cal-table th.cal-plant-head { text-align: left; padding-left: 0.6rem; min-width: 190px; }
-.cal-table th.is-now { color: var(--paper); background: var(--forest); border-radius: 4px 4px 0 0; }
-
-.cal-table td {
-  border-bottom: 1px solid var(--divider);
-  padding: 0.3rem;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.cal-table td.cal-plant {
-  text-align: left;
-  padding-left: 0.6rem;
-  font-weight: 500;
+  font-size: 1.05rem;
   color: var(--forest-deep);
-  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--divider);
 }
-.cal-table td.cal-plant .cal-window {
-  display: block;
+
+.cal-now-tag {
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--paper);
+  background: var(--forest);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.cal-month-count {
+  font-family: 'Spectral', Georgia, serif;
   font-size: 0.72rem;
   font-weight: 400;
-  font-style: italic;
   color: var(--warm-gray);
+  margin-left: auto;
 }
 
-.cal-table tbody tr:hover td { background: rgba(139, 158, 126, 0.08); }
-.cal-table td.is-now { background: rgba(61, 90, 62, 0.07); }
+.cal-due {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.75rem;
+  color: var(--terracotta);
+  margin: 0.4rem 0 0.35rem;
+}
+.cal-due-none { color: var(--warm-gray); font-style: italic; }
+
+.cal-month ul { list-style: none; }
+
+.cal-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.84rem;
+  padding: 2px 0;
+  line-height: 1.35;
+}
+
+.cal-item .cal-mark {
+  font-style: normal;
+  font-size: 0.75rem;
+  width: 1em;
+  flex-shrink: 0;
+  color: var(--sage);
+}
+
+.cal-item.is-best {
+  font-weight: 600;
+  color: var(--forest-deep);
+}
+.cal-item.is-best .cal-mark { color: var(--terracotta); }
+
+.cal-item.cant {
+  color: var(--warm-gray);
+  opacity: 0.55;
+  text-decoration: line-through;
+  text-decoration-color: var(--warm-gray);
+  text-decoration-thickness: 1px;
+}
+.cal-item.cant .cal-mark {
+  color: var(--warm-gray);
+  text-decoration: none;
+  display: inline-block;
+}
 
 .cal-cell {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 22px;
+  width: 20px;
+  height: 18px;
   border-radius: 3px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-style: normal;
 }
 .cal-yes { background: var(--sage-light); color: var(--forest-deep); }
-.cal-no {
-  color: var(--warm-gray);
-  opacity: 0.5;
-  font-size: 0.7rem;
-  background: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 3px,
-    rgba(168, 158, 148, 0.16) 3px,
-    rgba(168, 158, 148, 0.16) 5px
-  );
-}
-.cal-best {
-  background: var(--forest);
-  color: var(--paper);
-  font-weight: 700;
-  box-shadow: 0 0 0 2px var(--terracotta-light);
-}
-
-.cal-section-row td {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: var(--paper);
-  text-align: left !important;
-  padding: 0.35rem 0.6rem;
-}
-
-.cal-total-row td {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 500;
-  color: var(--forest-deep);
-  border-top: 2px solid var(--divider);
-  border-bottom: none;
-  padding-top: 0.5rem;
-}
-.cal-total-row td.cal-plant { color: var(--ink-light); font-size: 0.8rem; }
-.cal-load {
-  display: inline-block;
-  min-width: 22px;
-  padding: 1px 4px;
-  border-radius: 3px;
-  background: var(--cream);
-}
-.cal-load.busy { background: var(--terracotta-light); color: var(--terracotta); }
-
-.cal-row-unpicked td.cal-plant { color: var(--warm-gray); font-weight: 400; }
+.cal-best { background: var(--forest); color: var(--paper); }
+.cal-no { color: var(--warm-gray); text-decoration: line-through; }
 
 @media (max-width: 900px) {
-  #calendar { padding: 0 0.75rem 2rem; overflow-x: auto; }
-  .cal-table { min-width: 720px; }
+  #calendar { padding: 0 0.75rem 2rem; }
 }
 
 .shop-qty {
