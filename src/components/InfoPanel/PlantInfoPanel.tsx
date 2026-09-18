@@ -1,5 +1,6 @@
 import { useGardenStore } from '../../stores/gardenStore';
 import { PLANTS_MAP } from '../../data/plants';
+import { isClimber, climberLengthM, CLIMBER_DEPTH_M } from '../../utils/staging';
 import { STATE_LABELS, STATE_COLORS } from '../../types/plant';
 
 const MONTH_NAMES = [
@@ -14,7 +15,7 @@ export function PlantInfoPanel() {
   const removeElement = useGardenStore((s) => s.removeElement);
 
   const setSelectedId = useGardenStore((s) => s.setSelectedId);
-  const resizePlant = useGardenStore((s) => s.resizePlant);
+  const updatePlant = useGardenStore((s) => s.updatePlant);
   const checkpoint = useGardenStore((s) => s.checkpoint);
 
   const placed = placedPlants.find((p) => p.id === selectedId);
@@ -63,25 +64,49 @@ export function PlantInfoPanel() {
 
       {/* Dimensions */}
       <div className="text-sm text-[var(--ink-light)] mb-3">
-        <div>
-          Spread: {((placed.radiusM ?? plant.matureRadiusM) * 2).toFixed(1)}m diameter
-          {placed.radiusM !== undefined && placed.radiusM !== plant.matureRadiusM && (
-            <>
-              {' '}
-              <span className="text-[var(--warm-gray)]">(mature {(plant.matureRadiusM * 2).toFixed(1)}m)</span>{' '}
-              <button
-                className="underline text-[var(--forest)]"
-                onClick={() => {
-                  checkpoint();
-                  resizePlant(placed.id, undefined);
-                }}
-              >
-                reset
-              </button>
-            </>
-          )}
+        {isClimber(plant) ? (
+          <div>
+            Along the wall: {climberLengthM(plant, placed).toFixed(1)}m × {CLIMBER_DEPTH_M}m deep
+            {placed.lengthM !== undefined && placed.lengthM !== plant.matureRadiusM * 2 && (
+              <>
+                {' '}
+                <button
+                  className="underline text-[var(--forest)]"
+                  onClick={() => {
+                    checkpoint();
+                    updatePlant(placed.id, { lengthM: undefined });
+                  }}
+                >
+                  reset
+                </button>
+              </>
+            )}
+          </div>
+        ) : (
+          <div>
+            Spread: {((placed.radiusM ?? plant.matureRadiusM) * 2).toFixed(1)}m diameter
+            {placed.radiusM !== undefined && placed.radiusM !== plant.matureRadiusM && (
+              <>
+                {' '}
+                <span className="text-[var(--warm-gray)]">(mature {(plant.matureRadiusM * 2).toFixed(1)}m)</span>{' '}
+                <button
+                  className="underline text-[var(--forest)]"
+                  onClick={() => {
+                    checkpoint();
+                    updatePlant(placed.id, { radiusM: undefined });
+                  }}
+                >
+                  reset
+                </button>
+              </>
+            )}
+          </div>
+        )}
+        <div className="text-xs italic text-[var(--warm-gray)]">
+          {isClimber(plant)
+            ? 'Drag the blue square to change the length, the green dot to turn it to a wall.'
+            : "Drag the blue dot on the circle's edge to resize."}
         </div>
-        <div className="text-xs italic text-[var(--warm-gray)]">Drag the blue dot on the circle's edge to resize.</div>
         <div>Height: {plant.heightM}m</div>
       </div>
 

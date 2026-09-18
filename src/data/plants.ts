@@ -1746,6 +1746,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#FFF5F0',
     fruitColor: '#E25822',
     foliageColor: '#3E8B2F',
+    mapColor: '#E88BAA',
     cyprusNotes:
       'European native rambler — very cold-hardy. White single flowers in summer, rosehips in autumn. Tolerates poor soil and shade. Train onto pergola, fence or wall; prune after flowering.',
   },

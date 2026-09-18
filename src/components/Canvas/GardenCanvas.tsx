@@ -4,6 +4,8 @@ import type Konva from 'konva';
 import { useGardenStore } from '../../stores/gardenStore';
 import { checkCompatibility } from '../../utils/compatibility-checker';
 import PlantCircle from './PlantCircle';
+import ClimberStrip from './ClimberStrip';
+import { PLANTS_MAP } from '../../data/plants';
 import BuildingRect from './BuildingRect';
 import SurveyPlot from './SurveyPlot';
 import { SURVEY_BOUNDARY_M } from '../../data/survey-plot';
@@ -260,16 +262,19 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
               stageScale={stageScale}
             />
           ))}
-          {placedPlants.map((p) => (
-            <PlantCircle
-              key={p.id}
-              placed={p}
-              pixelsPerMeter={pixelsPerMeter}
-              currentMonth={currentMonth}
-              isSelected={selectedId === p.id}
-              stageScale={stageScale}
-            />
-          ))}
+          {placedPlants.map((p) => {
+            const Shape = PLANTS_MAP[p.plantId]?.category === 'climber' ? ClimberStrip : PlantCircle;
+            return (
+              <Shape
+                key={p.id}
+                placed={p}
+                pixelsPerMeter={pixelsPerMeter}
+                currentMonth={currentMonth}
+                isSelected={selectedId === p.id}
+                stageScale={stageScale}
+              />
+            );
+          })}
         </Layer>
 
         {/* Layer 3: measurement + compatibility warning lines */}

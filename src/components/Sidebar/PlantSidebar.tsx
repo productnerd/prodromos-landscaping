@@ -21,6 +21,7 @@ const GROUP_ORDER: PlantCategory[] = [
 const ALL_TAGS: PlantTag[] = ['herb', 'fruit', 'flower', 'fence', 'ornamental', 'evergreen', 'deciduous', 'edible'];
 
 function getBrandColor(plant: PlantDefinition): string {
+  if (plant.mapColor) return plant.mapColor;
   if (plant.tags.includes('fruit')) return plant.fruitColor;
   if (plant.tags.includes('flower')) return plant.flowerColor;
   return plant.foliageColor;

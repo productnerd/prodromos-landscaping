@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 import type { PlacedPlant, PlacedBuilding } from '../types/canvas';
 import { DEFAULT_BUILDING, DEFAULT_PATIOS, OLD_PATIO_SPOTS_PX } from '../data/survey-plot';
 import { PLANTS_MAP } from '../data/plants';
-import { stagingSpot } from '../utils/staging';
+import { stagingSpot, plantHalfExtents } from '../utils/staging';
 import { DEFAULT_PIXELS_PER_METER } from '../utils/scale';
 
 /** What undo restores: the full layout before a change. */
@@ -31,7 +31,7 @@ interface GardenState {
   /** Save the current layout so the next change can be undone. Call once at the start of a drag. */
   checkpoint: () => void;
   moveElement: (id: string, x: number, y: number) => void;
-  resizePlant: (id: string, radiusM: number | undefined) => void;
+  updatePlant: (id: string, patch: Partial<Pick<PlacedPlant, 'radiusM' | 'lengthM' | 'rotation'>>) => void;
   rotateBuilding: (id: string, rotation: number) => void;
   resizeBuilding: (id: string, widthM: number, heightM: number) => void;
   removeElement: (id: string) => void;
@@ -125,9 +125,9 @@ export const useGardenStore = create<GardenState>()(
           ),
         })),
 
-      resizePlant: (id: string, radiusM: number | undefined) =>
+      updatePlant: (id: string, patch: Partial<Pick<PlacedPlant, 'radiusM' | 'lengthM' | 'rotation'>>) =>
         set((s: GardenState) => ({
-          placedPlants: s.placedPlants.map((p: PlacedPlant) => (p.id === id ? { ...p, radiusM } : p)),
+          placedPlants: s.placedPlants.map((p: PlacedPlant) => (p.id === id ? { ...p, ...patch } : p)),
         })),
 
       removeElement: (id: string) =>
@@ -150,8 +150,9 @@ export const useGardenStore = create<GardenState>()(
       clearMeasure: () => set({ measurePoints: [] }),
       requestPlacePlant: (plantId: string) => {
         const s = get();
-        const r = PLANTS_MAP[plantId]?.matureRadiusM ?? 1;
-        const spot = stagingSpot(r, r, s.placedPlants, s.placedBuildings, s.pixelsPerMeter);
+        const plant = PLANTS_MAP[plantId];
+        const [halfW, halfH] = plant ? plantHalfExtents(plant) : [1, 1];
+        const spot = stagingSpot(halfW, halfH, s.placedPlants, s.placedBuildings, s.pixelsPerMeter);
         s.addPlant(plantId, spot.x, spot.y);
       },
       setOverlayWater: (on: boolean) => set({ overlayWater: on }),

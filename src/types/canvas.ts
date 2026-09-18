@@ -5,6 +5,9 @@ export interface PlacedPlant {
   y: number;
   /** Canopy radius set by hand; falls back to the species' mature radius. */
   radiusM?: number;
+  /** Climbers are strips along a wall: their length, and angle in degrees. */
+  lengthM?: number;
+  rotation?: number;
 }
 
 
