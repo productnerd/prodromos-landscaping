@@ -65,7 +65,7 @@ export default function PlantCircle({
 
   const state: MonthlyState = plant.monthlyStates[currentMonth] ?? 'dormant';
   const radiusPx = (placed.radiusM ?? plant.matureRadiusM) * pixelsPerMeter;
-  const fill = getFillColor(plant, state);
+  const fill = plant.mapColor ?? getFillColor(plant, state);
   const opacity = STATE_COLORS[state].opacity;
   const fontSize = Math.max(10, 12 / stageScale);
   const badgeFontSize = Math.max(8, 9 / stageScale);

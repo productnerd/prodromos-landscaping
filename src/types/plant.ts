@@ -51,6 +51,8 @@ export interface PlantDefinition {
   flowerColor: string;
   fruitColor: string;
   foliageColor: string;
+  /** Colour on the map in every month, instead of following the season. */
+  mapColor?: string;
   cyprusNotes: string;
 }
 

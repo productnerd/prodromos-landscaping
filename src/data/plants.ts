@@ -1669,6 +1669,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#F08CA0',
     fruitColor: '#A08050',
     foliageColor: '#4C9A5A',
+    mapColor: '#F08CA0',
     cyprusNotes:
       'Persian silk tree / Constantinople acacia. Fast umbrella canopy with pink silky summer flowers. Drought-tolerant once established, but protect young trees from hard frost at altitude. Self-seeds readily.',
   },
