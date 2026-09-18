@@ -7,6 +7,7 @@ import PlantCircle from './PlantCircle';
 import BuildingRect from './BuildingRect';
 import SurveyPlot from './SurveyPlot';
 import { SURVEY_BOUNDARY_M } from '../../data/survey-plot';
+import { STAGING_LEFT_M } from '../../utils/staging';
 
 interface GardenCanvasProps {
   stageRef: React.RefObject<Konva.Stage | null>;
@@ -26,8 +27,6 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     addMeasurePoint,
     clearMeasure,
     setMeasureMode,
-    pendingPlantId,
-    clearPendingPlant,
     addPlant,
     setSelectedId,
   } = useGardenStore();
@@ -77,11 +76,12 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
       const height = container.clientHeight;
       setDimensions({ width, height });
 
-      // Open with the whole plot in view.
+      // Open with the whole plot, and the waiting column beside it, in view.
       if (!fitted && width > 0 && height > 0) {
         fitted = true;
         const ppm = useGardenStore.getState().pixelsPerMeter;
-        const xs = SURVEY_BOUNDARY_M.map((v) => v.x * ppm);
+        // Include the column to the right where new items wait.
+        const xs = [...SURVEY_BOUNDARY_M.map((v) => v.x * ppm), (STAGING_LEFT_M + 6) * ppm];
         const ys = SURVEY_BOUNDARY_M.map((v) => v.y * ppm);
         const [minX, maxX, minY, maxY] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
         const scale = Math.min((width * 0.85) / (maxX - minX), (height * 0.85) / (maxY - minY));
@@ -98,17 +98,6 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     observer.observe(container);
     return () => observer.disconnect();
   }, []);
-
-  // A plant clicked in the sidebar lands in the middle of what you are looking at.
-  useEffect(() => {
-    if (!pendingPlantId) return;
-    addPlant(
-      pendingPlantId,
-      (dimensions.width / 2 - stagePos.x) / stageScale,
-      (dimensions.height / 2 - stagePos.y) / stageScale,
-    );
-    clearPendingPlant();
-  }, [pendingPlantId, dimensions, stagePos, stageScale, addPlant, clearPendingPlant]);
 
   // Compatibility warnings
   const warnings = useMemo(

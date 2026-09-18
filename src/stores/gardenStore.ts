@@ -2,7 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuid } from 'uuid';
 import type { PlacedPlant, PlacedBuilding } from '../types/canvas';
-import { DEFAULT_BUILDING, DEFAULT_PATIOS } from '../data/survey-plot';
+import { DEFAULT_BUILDING, DEFAULT_PATIOS, OLD_PATIO_SPOTS_PX } from '../data/survey-plot';
+import { PLANTS_MAP } from '../data/plants';
+import { stagingSpot } from '../utils/staging';
 import { DEFAULT_PIXELS_PER_METER } from '../utils/scale';
 
 /** What undo restores: the full layout before a change. */
@@ -21,7 +23,6 @@ interface GardenState {
   selectedId: string | null;
   measureMode: boolean;
   measurePoints: { x: number; y: number }[];
-  pendingPlantId: string | null;
   history: Snapshot[];
   overlayWater: boolean;
   overlaySoil: boolean;
@@ -41,7 +42,6 @@ interface GardenState {
   addMeasurePoint: (x: number, y: number) => void;
   clearMeasure: () => void;
   requestPlacePlant: (plantId: string) => void;
-  clearPendingPlant: () => void;
   setOverlayWater: (on: boolean) => void;
   setOverlaySoil: (on: boolean) => void;
   undo: () => void;
@@ -66,7 +66,7 @@ function withSnapshot(s: GardenState): Snapshot[] {
 
 export const useGardenStore = create<GardenState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       placedPlants: [],
       placedBuildings: [
         {
@@ -85,7 +85,6 @@ export const useGardenStore = create<GardenState>()(
       selectedId: null,
       measureMode: false,
       measurePoints: [],
-      pendingPlantId: null,
       history: [],
       overlayWater: false,
       overlaySoil: false,
@@ -149,8 +148,12 @@ export const useGardenStore = create<GardenState>()(
           measurePoints: st.measurePoints.length >= 2 ? [{ x, y }] : [...st.measurePoints, { x, y }],
         })),
       clearMeasure: () => set({ measurePoints: [] }),
-      requestPlacePlant: (plantId: string) => set({ pendingPlantId: plantId }),
-      clearPendingPlant: () => set({ pendingPlantId: null }),
+      requestPlacePlant: (plantId: string) => {
+        const s = get();
+        const r = PLANTS_MAP[plantId]?.matureRadiusM ?? 1;
+        const spot = stagingSpot(r, r, s.placedPlants, s.placedBuildings, s.pixelsPerMeter);
+        s.addPlant(plantId, spot.x, spot.y);
+      },
       setOverlayWater: (on: boolean) => set({ overlayWater: on }),
       setOverlaySoil: (on: boolean) => set({ overlaySoil: on }),
 
@@ -169,12 +172,20 @@ export const useGardenStore = create<GardenState>()(
     }),
     {
       name: 'garden-planner-state',
-      version: 1,
+      version: 2,
       // v1 added two patios; give them to plans saved before that, leaving everything else as it was.
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Partial<GardenState>;
         if (version < 1 && state.placedBuildings && !state.placedBuildings.some((b) => b.kind === 'patio')) {
           state.placedBuildings = [...state.placedBuildings, ...defaultPatios()];
+        }
+        // v2 moved the patios out of the plot; only move ones still where v1 dropped them.
+        if (version < 2 && state.placedBuildings) {
+          const fresh = defaultPatios();
+          state.placedBuildings = state.placedBuildings.map((b) => {
+            const i = OLD_PATIO_SPOTS_PX.findIndex((o) => Math.round(b.x) === o.x && Math.round(b.y) === o.y);
+            return b.kind === 'patio' && i >= 0 ? { ...b, x: fresh[i].x, y: fresh[i].y } : b;
+          });
         }
         return state as GardenState;
       },
