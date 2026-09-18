@@ -24,6 +24,7 @@ interface GardenState {
   measureMode: boolean;
   measurePoints: { x: number; y: number }[];
   pendingPlantId: string | null;
+  pendingPlotShape: PlotVertex[] | null;
   undoStack: UndoEntry[];
   overlayWater: boolean;
   overlaySoil: boolean;
@@ -44,6 +45,8 @@ interface GardenState {
   clearMeasure: () => void;
   requestPlacePlant: (plantId: string) => void;
   clearPendingPlant: () => void;
+  requestImportPlot: (shapeM: PlotVertex[]) => void;
+  addImportedPlot: (vertices: PlotVertex[]) => void;
   startPlot: () => void;
   addPlotVertex: (x: number, y: number) => void;
   closePlot: () => void;
@@ -73,6 +76,7 @@ export const useGardenStore = create<GardenState>()(
       measureMode: false,
       measurePoints: [],
       pendingPlantId: null,
+      pendingPlotShape: null,
       undoStack: [],
       overlayWater: false,
       overlaySoil: false,
@@ -145,6 +149,15 @@ export const useGardenStore = create<GardenState>()(
       clearMeasure: () => set({ measurePoints: [] }),
       requestPlacePlant: (plantId: string) => set({ pendingPlantId: plantId }),
       clearPendingPlant: () => set({ pendingPlantId: null }),
+      requestImportPlot: (shapeM: PlotVertex[]) => set({ pendingPlotShape: shapeM }),
+      addImportedPlot: (vertices: PlotVertex[]) => {
+        const id = uuid();
+        set((s: GardenState) => ({
+          plotPolygons: [...s.plotPolygons, { id, vertices, closed: true }],
+          undoStack: [...s.undoStack, { type: 'startPlot' as const, plotId: id }],
+          pendingPlotShape: null,
+        }));
+      },
       setOverlayWater: (on: boolean) => set({ overlayWater: on }),
       setOverlaySoil: (on: boolean) => set({ overlaySoil: on }),
 

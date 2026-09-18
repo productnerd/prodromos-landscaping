@@ -32,6 +32,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     setBuildingMode,
     pendingPlantId,
     clearPendingPlant,
+    addImportedPlot,
     addPlant,
     addBuilding,
     setSelectedId,
@@ -110,6 +111,31 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     );
     clearPendingPlant();
   }, [pendingPlantId, dimensions, stagePos, stageScale, addPlant, clearPendingPlant]);
+
+  // An imported plot outline (in metres, centred on 0,0) lands in the middle of the view,
+  // zoomed out if needed so the whole outline is visible.
+  useEffect(
+    () =>
+      useGardenStore.subscribe((s, prev) => {
+        const shape = s.pendingPlotShape;
+        if (!shape || shape === prev.pendingPlotShape) return;
+        const cx = (dimensions.width / 2 - stagePos.x) / stageScale;
+        const cy = (dimensions.height / 2 - stagePos.y) / stageScale;
+        const vertices = shape.map((v) => ({ x: cx + v.x * pixelsPerMeter, y: cy + v.y * pixelsPerMeter }));
+        addImportedPlot(vertices);
+
+        const xs = vertices.map((v) => v.x);
+        const ys = vertices.map((v) => v.y);
+        const fit = Math.min(
+          (dimensions.width * 0.85) / (Math.max(...xs) - Math.min(...xs) || 1),
+          (dimensions.height * 0.85) / (Math.max(...ys) - Math.min(...ys) || 1),
+        );
+        const nextScale = Math.min(stageScale, fit);
+        setStageScale(nextScale);
+        setStagePos({ x: dimensions.width / 2 - cx * nextScale, y: dimensions.height / 2 - cy * nextScale });
+      }),
+    [dimensions, stagePos, stageScale, pixelsPerMeter, addImportedPlot],
+  );
 
   // Compatibility warnings
   const warnings = useMemo(
