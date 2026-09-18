@@ -12,7 +12,6 @@ export function PlantInfoPanel() {
   const selectedId = useGardenStore((s) => s.selectedId);
   const placedPlants = useGardenStore((s) => s.placedPlants);
   const currentMonth = useGardenStore((s) => s.currentMonth);
-  const removeElement = useGardenStore((s) => s.removeElement);
 
   const setSelectedId = useGardenStore((s) => s.setSelectedId);
   const updatePlant = useGardenStore((s) => s.updatePlant);
@@ -161,13 +160,6 @@ export function PlantInfoPanel() {
         <p className="text-xs italic text-[var(--ink-light)] mb-3">{plant.cyprusNotes}</p>
       )}
 
-      {/* Remove button */}
-      <button
-        onClick={() => removeElement(placed.id)}
-        className="w-full py-1.5 text-sm bg-[var(--terracotta)] text-[var(--paper)] rounded-[4px] hover:brightness-95 transition-colors"
-      >
-        Remove
-      </button>
     </div>
   );
 }
