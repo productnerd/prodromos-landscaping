@@ -19,4 +19,10 @@ export const SURVEY_AREA_M2 = 556;
  * Existing building: fixed size, starting where it was placed against the
  * boundary. Centre in metres on the same axes; rotation in degrees clockwise.
  */
+/** Two patios to start with, placed inside the plot below the building. */
+export const DEFAULT_PATIOS = [
+  { label: 'Patio', x: 16, y: 20, widthM: 4, depthM: 3, rotation: 0 },
+  { label: 'Patio', x: 14, y: 30, widthM: 4, depthM: 3, rotation: 0 },
+];
+
 export const DEFAULT_BUILDING = { label: 'Building', x: 21.212, y: 13.044, widthM: 7.475, depthM: 3, rotation: 106.33 };

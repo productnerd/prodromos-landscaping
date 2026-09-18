@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuid } from 'uuid';
 import type { PlacedPlant, PlacedBuilding } from '../types/canvas';
-import { DEFAULT_BUILDING } from '../data/survey-plot';
+import { DEFAULT_BUILDING, DEFAULT_PATIOS } from '../data/survey-plot';
 import { DEFAULT_PIXELS_PER_METER } from '../utils/scale';
 
 /** What undo restores: the full layout before a change. */
@@ -32,6 +32,7 @@ interface GardenState {
   moveElement: (id: string, x: number, y: number) => void;
   resizePlant: (id: string, radiusM: number | undefined) => void;
   rotateBuilding: (id: string, rotation: number) => void;
+  resizeBuilding: (id: string, widthM: number, heightM: number) => void;
   removeElement: (id: string) => void;
   setMonth: (month: number) => void;
   setSelectedId: (id: string | null) => void;
@@ -44,6 +45,19 @@ interface GardenState {
   setOverlayWater: (on: boolean) => void;
   setOverlaySoil: (on: boolean) => void;
   undo: () => void;
+}
+
+function defaultPatios(): PlacedBuilding[] {
+  return DEFAULT_PATIOS.map((p, i) => ({
+    id: `patio-${i + 1}`,
+    kind: 'patio' as const,
+    label: p.label,
+    x: p.x * DEFAULT_PIXELS_PER_METER,
+    y: p.y * DEFAULT_PIXELS_PER_METER,
+    widthM: p.widthM,
+    heightM: p.depthM,
+    rotation: p.rotation,
+  }));
 }
 
 function withSnapshot(s: GardenState): Snapshot[] {
@@ -64,6 +78,7 @@ export const useGardenStore = create<GardenState>()(
           heightM: DEFAULT_BUILDING.depthM,
           rotation: DEFAULT_BUILDING.rotation,
         },
+        ...defaultPatios(),
       ],
       pixelsPerMeter: DEFAULT_PIXELS_PER_METER,
       currentMonth: new Date().getMonth() + 1,
@@ -94,6 +109,13 @@ export const useGardenStore = create<GardenState>()(
           ),
           placedBuildings: s.placedBuildings.map((b: PlacedBuilding) =>
             b.id === id ? { ...b, x, y } : b,
+          ),
+        })),
+
+      resizeBuilding: (id: string, widthM: number, heightM: number) =>
+        set((s: GardenState) => ({
+          placedBuildings: s.placedBuildings.map((b: PlacedBuilding) =>
+            b.id === id && b.kind === 'patio' ? { ...b, widthM, heightM } : b,
           ),
         })),
 
@@ -147,6 +169,15 @@ export const useGardenStore = create<GardenState>()(
     }),
     {
       name: 'garden-planner-state',
+      version: 1,
+      // v1 added two patios; give them to plans saved before that, leaving everything else as it was.
+      migrate: (persisted: unknown, version: number) => {
+        const state = persisted as Partial<GardenState>;
+        if (version < 1 && state.placedBuildings && !state.placedBuildings.some((b) => b.kind === 'patio')) {
+          state.placedBuildings = [...state.placedBuildings, ...defaultPatios()];
+        }
+        return state as GardenState;
+      },
       partialize: (state: GardenState) => ({
         placedPlants: state.placedPlants,
         placedBuildings: state.placedBuildings,

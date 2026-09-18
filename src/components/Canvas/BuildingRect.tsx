@@ -19,6 +19,8 @@ export default function BuildingRect({
   const setSelectedId = useGardenStore((s) => s.setSelectedId);
   const rotateBuilding = useGardenStore((s) => s.rotateBuilding);
   const checkpoint = useGardenStore((s) => s.checkpoint);
+  const resizeBuilding = useGardenStore((s) => s.resizeBuilding);
+  const isPatio = building.kind === 'patio';
 
   const w = building.widthM * pixelsPerMeter;
   const h = building.heightM * pixelsPerMeter;
@@ -57,9 +59,9 @@ export default function BuildingRect({
         height={h}
         offsetX={w / 2}
         offsetY={h / 2}
-        fill="#9CA3AF"
-        opacity={0.6}
-        stroke={isSelected ? '#2563EB' : '#4B5563'}
+        fill={isPatio ? '#8B5E3C' : '#9CA3AF'}
+        opacity={isPatio ? 0.55 : 0.6}
+        stroke={isSelected ? '#2563EB' : isPatio ? '#5C3D26' : '#4B5563'}
         strokeWidth={isSelected ? 3 / stageScale : 1 / stageScale}
       />
       <Text
@@ -86,6 +88,46 @@ export default function BuildingRect({
           listening={false}
         />
       )}
+      {/* Patio resize handles: right edge sets width, bottom edge sets depth */}
+      {isSelected && isPatio &&
+        (['width', 'depth'] as const).map((dim) => (
+          <Rect
+            key={dim}
+            x={dim === 'width' ? w / 2 - handleR : -handleR}
+            y={dim === 'width' ? -handleR : h / 2 - handleR}
+            width={handleR * 2}
+            height={handleR * 2}
+            fill="#2563EB"
+            stroke="white"
+            strokeWidth={2 / stageScale}
+            cornerRadius={2 / stageScale}
+            draggable
+            onDragStart={(e) => {
+              e.cancelBubble = true;
+              checkpoint();
+            }}
+            onDragMove={(e) => {
+              e.cancelBubble = true;
+              const half = (dim === 'width' ? e.target.x() : e.target.y()) + handleR;
+              const sizeM = Math.max(0.5, Math.round(((half * 2) / pixelsPerMeter) * 10) / 10);
+              if (dim === 'width') resizeBuilding(building.id, sizeM, building.heightM);
+              else resizeBuilding(building.id, building.widthM, sizeM);
+            }}
+            onDragEnd={(e) => {
+              e.cancelBubble = true;
+              const half = ((dim === 'width' ? building.widthM : building.heightM) * pixelsPerMeter) / 2;
+              e.target.position(dim === 'width' ? { x: half - handleR, y: -handleR } : { x: -handleR, y: half - handleR });
+            }}
+            onMouseEnter={(e) => {
+              const c = e.target.getStage()?.container();
+              if (c) c.style.cursor = dim === 'width' ? 'ew-resize' : 'ns-resize';
+            }}
+            onMouseLeave={(e) => {
+              const c = e.target.getStage()?.container();
+              if (c) c.style.cursor = 'default';
+            }}
+          />
+        ))}
       {/* Rotation handle — arm + circle above top edge */}
       {isSelected && (
         <>

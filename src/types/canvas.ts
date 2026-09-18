@@ -16,6 +16,8 @@ export interface PlacedBuilding {
   heightM: number;
   label: string;
   rotation?: number;
+  /** Patios are resizable; the building has a fixed size. */
+  kind?: 'building' | 'patio';
 }
 
 export interface PlotVertex {
