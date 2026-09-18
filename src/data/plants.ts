@@ -85,7 +85,7 @@ export const PLANTS: PlantDefinition[] = [
     plantingDepth: '40-50 cm',
     name: 'Hazelnut',
     botanicalName: 'Corylus avellana',
-    category: 'bush',
+    category: 'tree',
     tags: ['fruit', 'deciduous', 'edible'],
     matureRadiusM: 2.5,
     heightM: 5,
