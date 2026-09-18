@@ -1602,6 +1602,44 @@ export const PLANTS: PlantDefinition[] = [
       'Cyprus oak, native to the island\'s hills and the Troodos foothills. Mostly deciduous, with acorns in autumn. Very drought-tolerant and deep-rooted, so keep it well away from walls and pipes. Slow-growing but very long-lived.',
   },
 
+  // ─── Weeping Willow ────────────────────────────────────────────────
+  {
+    id: 'weeping-willow',
+    emoji: '🌳',
+    growth: 'fast',
+    plantingDepth: 'Root ball depth',
+    name: 'Weeping Willow',
+    botanicalName: 'Salix babylonica',
+    category: 'tree',
+    tags: ['deciduous', 'ornamental'],
+    matureRadiusM: 5,
+    heightM: 12,
+    sun: 'full',
+    water: 'high',
+    soil: 'moist, deep',
+    drainage: 'poor-tolerant',
+    monthlyStates: {
+      1: 'dormant',
+      2: 'dormant',
+      3: 'flowering',
+      4: 'leafing',
+      5: 'leafing',
+      6: 'leafing',
+      7: 'leafing',
+      8: 'leafing',
+      9: 'leafing',
+      10: 'autumn-color',
+      11: 'autumn-color',
+      12: 'dormant',
+    },
+    plantingMonths: [11, 12, 1, 2, 3],
+    flowerColor: '#D8D86A',
+    fruitColor: '#BFB38A',
+    foliageColor: '#8DB255',
+    cyprusNotes:
+      'Needs moisture all summer, which Prodromos does not give on its own: plant where water collects or can be supplied, such as by the doxameni overflow. Roots travel far to find water, so keep it about 15 m from the building, drains, pipes and the doxameni itself. Fast-growing and hardy to cold, but short-lived (30-50 years). Soft yellow-green catkins in March.',
+  },
+
   // ─── 42. Sweet Chestnut ─────────────────────────────────────────────
   {
     id: 'sweet-chestnut',
