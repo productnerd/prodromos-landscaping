@@ -263,6 +263,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#D4E157',
     fruitColor: '#8B7355',
     foliageColor: '#2E7D32',
+    leafColors: { 3: '#C9D84A', 4: '#8CC63F', 5: '#6FAF3A', 6: '#3F8A34', 7: '#2F7530', 8: '#2E6B2A', 9: '#4A7A2A', 10: '#E6B422', 11: '#F2C12E' },
     cyprusNotes:
       'Excellent autumn color — golden yellow. Dense canopy provides heavy shade. Suits mountain climate well.',
   },
@@ -605,6 +606,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#B22222',
     fruitColor: '#8B4513',
     foliageColor: '#8B0000',
+    leafColors: { 3: '#D9412B', 4: '#B22A2A', 5: '#8E1F2B', 6: '#7A1E2A', 7: '#6E1C28', 8: '#6B1F2A', 9: '#7E2230', 10: '#D7261E', 11: '#E4572E' },
     cyprusNotes:
       'Spectacular autumn color. Needs shelter from hot dry summer wind. Must have acidic soil and consistent moisture — high maintenance at Prodromos.',
   },
@@ -1593,6 +1595,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#CC3333',
     fruitColor: '#8B4513',
     foliageColor: '#4CAF50',
+    leafColors: { 3: '#B5533C', 4: '#7DB84A', 5: '#5FA03D', 6: '#3F8438', 7: '#387A35', 8: '#3A7434', 9: '#E8741A', 10: '#C62828' },
     cyprusNotes:
       'Hybrid of red maple and silver maple. Known for spectacular orange-red autumn foliage. Fast-growing, drought-tolerant once established. Adapts well to Mediterranean climates with cold winters like Prodromos. Needs some irrigation in summer.',
   },

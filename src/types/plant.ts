@@ -53,6 +53,8 @@ export interface PlantDefinition {
   foliageColor: string;
   /** Colour on the map in every month, instead of following the season. */
   mapColor?: string;
+  /** Leaf colour for each month the plant is in leaf (1 = Jan). */
+  leafColors?: Partial<Record<number, string>>;
   cyprusNotes: string;
 }
 

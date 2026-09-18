@@ -112,6 +112,28 @@ export function PlantInfoPanel() {
 
       {/* Planting months */}
       <div className="mb-3">
+        {plant.leafColors && (
+          <div className="mb-3">
+            <div className="text-xs font-medium text-[var(--ink-light)] mb-1">Leaf colour</div>
+            <div className="flex gap-1 flex-wrap">
+              {MONTH_NAMES.map((name, i) => {
+                const color = plant.leafColors?.[i + 1];
+                return (
+                  <span
+                    key={name}
+                    title={color ? name : `${name}: bare`}
+                    className={`text-[10px] w-7 text-center py-0.5 rounded-[4px] ${
+                      color ? 'text-white font-medium' : 'text-[var(--warm-gray)] border border-dashed border-[var(--divider)]'
+                    } ${i + 1 === currentMonth ? 'ring-2 ring-[var(--terracotta)]' : ''}`}
+                    style={color ? { backgroundColor: color, textShadow: '0 0 2px rgba(0,0,0,0.5)' } : undefined}
+                  >
+                    {name}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
         <div className="text-xs font-medium text-[var(--ink-light)] mb-1">Best planting months</div>
         <div className="flex gap-1 flex-wrap">
           {MONTH_NAMES.map((name, i) => {

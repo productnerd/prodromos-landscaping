@@ -5,7 +5,7 @@ import { STATE_COLORS } from '../../types/plant';
 import { PLANTS_MAP } from '../../data/plants';
 import { useGardenStore } from '../../stores/gardenStore';
 import { CLIMBER_DEPTH_M, climberLengthM } from '../../utils/staging';
-import { getFillColor } from './plantColors';
+import { mapFill } from './plantColors';
 import PlantBadges from './PlantBadges';
 
 interface Props {
@@ -27,7 +27,7 @@ export default function ClimberStrip({ placed, pixelsPerMeter, currentMonth, isS
   if (!plant) return null;
 
   const state: MonthlyState = plant.monthlyStates[currentMonth] ?? 'dormant';
-  const fill = plant.mapColor ?? getFillColor(plant, state);
+  const fill = mapFill(plant, state, currentMonth);
   const w = climberLengthM(plant, placed) * pixelsPerMeter;
   const h = CLIMBER_DEPTH_M * pixelsPerMeter;
   const handleR = 5 / stageScale;

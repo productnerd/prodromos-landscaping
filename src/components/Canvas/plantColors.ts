@@ -19,6 +19,11 @@ export const SOIL_COLORS: Record<string, string> = {
   'poor-tolerant': '#EF4444',
 };
 
+/** Colour on the map for a month: a fixed colour, the real leaf colour, or the season's. */
+export function mapFill(plant: PlantDefinition, state: MonthlyState, month: number): string {
+  return plant.mapColor ?? plant.leafColors?.[month] ?? getFillColor(plant, state);
+}
+
 export function getFillColor(plant: PlantDefinition, state: MonthlyState): string {
   switch (state) {
     case 'flowering':

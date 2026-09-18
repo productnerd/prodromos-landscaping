@@ -5,7 +5,7 @@ import { STATE_COLORS } from '../../types/plant';
 import { PLANTS_MAP } from '../../data/plants';
 import { useGardenStore } from '../../stores/gardenStore';
 import PlantBadges from './PlantBadges';
-import { WATER_COLORS, getFillColor } from './plantColors';
+import { WATER_COLORS, mapFill } from './plantColors';
 
 interface PlantCircleProps {
   placed: PlacedPlant;
@@ -34,7 +34,7 @@ export default function PlantCircle({
 
   const state: MonthlyState = plant.monthlyStates[currentMonth] ?? 'dormant';
   const radiusPx = (placed.radiusM ?? plant.matureRadiusM) * pixelsPerMeter;
-  const fill = plant.mapColor ?? getFillColor(plant, state);
+  const fill = mapFill(plant, state, currentMonth);
   const opacity = STATE_COLORS[state].opacity;
   const fontSize = Math.max(10, 12 / stageScale);
 
