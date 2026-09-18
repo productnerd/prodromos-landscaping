@@ -173,7 +173,7 @@ export const useGardenStore = create<GardenState>()(
     }),
     {
       name: 'garden-planner-state',
-      version: 2,
+      version: 3,
       // v1 added two patios; give them to plans saved before that, leaving everything else as it was.
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Partial<GardenState>;
@@ -182,11 +182,23 @@ export const useGardenStore = create<GardenState>()(
         }
         // v2 moved the patios out of the plot; only move ones still where v1 dropped them.
         if (version < 2 && state.placedBuildings) {
-          const fresh = defaultPatios();
+          const fresh = defaultPatios().slice(0, OLD_PATIO_SPOTS_PX.length);
           state.placedBuildings = state.placedBuildings.map((b) => {
             const i = OLD_PATIO_SPOTS_PX.findIndex((o) => Math.round(b.x) === o.x && Math.round(b.y) === o.y);
             return b.kind === 'patio' && i >= 0 ? { ...b, x: fresh[i].x, y: fresh[i].y } : b;
           });
+        }
+        // v3 added a third patio; put it in the free column beside the plot.
+        if (version < 3 && state.placedBuildings && !state.placedBuildings.some((b) => b.id === 'patio-3')) {
+          const patio = defaultPatios()[2];
+          const spot = stagingSpot(
+            patio.widthM / 2,
+            patio.heightM / 2,
+            state.placedPlants ?? [],
+            state.placedBuildings,
+            state.pixelsPerMeter ?? DEFAULT_PIXELS_PER_METER,
+          );
+          state.placedBuildings = [...state.placedBuildings, { ...patio, ...spot }];
         }
         return state as GardenState;
       },
