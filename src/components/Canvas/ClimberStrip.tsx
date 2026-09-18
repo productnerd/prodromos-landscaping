@@ -84,7 +84,10 @@ export default function ClimberStrip({ placed, pixelsPerMeter, currentMonth, isS
         fontFamily={NAME_FONT}
         text={plant.name}
         fontSize={fontSize}
-        fill="#1F2937"
+        fill="#FFFFFF"
+        shadowColor="#1F2937"
+        shadowBlur={3 / stageScale}
+        shadowOpacity={0.9}
         fontStyle="bold"
         align="center"
         offsetX={w / 2}

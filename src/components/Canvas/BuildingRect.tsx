@@ -1,4 +1,4 @@
-import { Group, Rect, Text, Circle, Line } from 'react-konva';
+import { Group, Rect, Text, Circle, Line, Shape } from 'react-konva';
 import type { PlacedBuilding } from '../../types/canvas';
 import { useGardenStore } from '../../stores/gardenStore';
 import { NAME_FONT, BODY_FONT } from './canvasFonts';
@@ -22,6 +22,8 @@ export default function BuildingRect({
   const checkpoint = useGardenStore((s) => s.checkpoint);
   const resizeBuilding = useGardenStore((s) => s.resizeBuilding);
   const isPatio = building.kind === 'patio';
+  const isWater = building.kind === 'doxameni';
+  const resizable = isPatio || isWater;
 
   const w = building.widthM * pixelsPerMeter;
   const h = building.heightM * pixelsPerMeter;
@@ -60,16 +62,42 @@ export default function BuildingRect({
         height={h}
         offsetX={w / 2}
         offsetY={h / 2}
-        fill={isPatio ? '#8B5E3C' : '#9CA3AF'}
-        opacity={isPatio ? 0.55 : 0.6}
-        stroke={isSelected ? '#2563EB' : isPatio ? '#5C3D26' : '#4B5563'}
+        fill={isWater ? '#3F8FCB' : isPatio ? '#8B5E3C' : '#9CA3AF'}
+        opacity={isWater ? 0.8 : isPatio ? 0.55 : 0.6}
+        cornerRadius={isWater ? 4 / stageScale : 0}
+        stroke={isSelected ? '#2563EB' : isWater ? '#24658F' : isPatio ? '#5C3D26' : '#4B5563'}
         strokeWidth={isSelected ? 3 / stageScale : 1 / stageScale}
       />
+      {isWater && (
+        <Shape
+          listening={false}
+          sceneFunc={(ctx) => {
+            const c = ctx._context;
+            c.save();
+            c.beginPath();
+            c.rect(-w / 2, -h / 2, w, h);
+            c.clip();
+            c.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            c.lineWidth = Math.max(pixelsPerMeter * 0.04, 0.8);
+            const amp = pixelsPerMeter * 0.08;
+            for (let y = -h / 2 + pixelsPerMeter * 0.4; y < h / 2; y += pixelsPerMeter * 0.5) {
+              c.beginPath();
+              for (let x = -w / 2; x <= w / 2; x += pixelsPerMeter * 0.1) {
+                const wy = y + Math.sin((x / pixelsPerMeter) * 4 + y) * amp;
+                if (x === -w / 2) c.moveTo(x, wy);
+                else c.lineTo(x, wy);
+              }
+              c.stroke();
+            }
+            c.restore();
+          }}
+        />
+      )}
       <Text
         fontFamily={NAME_FONT}
         text={building.label}
         fontSize={fontSize}
-        fill="#1F2937"
+        fill={isWater ? '#FFFFFF' : '#1F2937'}
         fontStyle="bold"
         align="center"
         verticalAlign="middle"
@@ -91,8 +119,8 @@ export default function BuildingRect({
           listening={false}
         />
       )}
-      {/* Patio resize handles: right edge sets width, bottom edge sets depth */}
-      {isSelected && isPatio &&
+      {/* Resize handles (patios and doxameni): right edge sets width, bottom edge sets depth */}
+      {isSelected && resizable &&
         (['width', 'depth'] as const).map((dim) => (
           <Rect
             key={dim}

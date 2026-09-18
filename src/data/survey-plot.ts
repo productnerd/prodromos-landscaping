@@ -32,4 +32,7 @@ export const OLD_PATIO_SPOTS_PX = [
   { x: 700, y: 1500 },
 ];
 
+/** The doxameni (water tank), starting beside the plot below the patios. */
+export const DEFAULT_DOXAMENI = { label: 'Doxameni', x: 29, y: 14, widthM: 4, depthM: 2, rotation: 0 };
+
 export const DEFAULT_BUILDING = { label: 'Building', x: 21.212, y: 13.044, widthM: 7.475, depthM: 3, rotation: 106.33 };

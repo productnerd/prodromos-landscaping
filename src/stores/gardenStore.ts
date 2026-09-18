@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuid } from 'uuid';
 import type { PlacedPlant, PlacedBuilding } from '../types/canvas';
-import { DEFAULT_BUILDING, DEFAULT_PATIOS, OLD_PATIO_SPOTS_PX } from '../data/survey-plot';
+import { DEFAULT_BUILDING, DEFAULT_PATIOS, DEFAULT_DOXAMENI, OLD_PATIO_SPOTS_PX } from '../data/survey-plot';
 import { PLANTS_MAP } from '../data/plants';
 import { stagingSpot, plantHalfExtents } from '../utils/staging';
 import { DEFAULT_PIXELS_PER_METER } from '../utils/scale';
@@ -64,6 +64,20 @@ function defaultPatios(): PlacedBuilding[] {
   }));
 }
 
+function defaultDoxameni(): PlacedBuilding {
+  const d = DEFAULT_DOXAMENI;
+  return {
+    id: 'doxameni-1',
+    kind: 'doxameni',
+    label: d.label,
+    x: d.x * DEFAULT_PIXELS_PER_METER,
+    y: d.y * DEFAULT_PIXELS_PER_METER,
+    widthM: d.widthM,
+    heightM: d.depthM,
+    rotation: d.rotation,
+  };
+}
+
 function withSnapshot(s: GardenState): Snapshot[] {
   return [...s.history, { placedPlants: s.placedPlants, placedBuildings: s.placedBuildings }].slice(-HISTORY_LIMIT);
 }
@@ -83,6 +97,7 @@ export const useGardenStore = create<GardenState>()(
           rotation: DEFAULT_BUILDING.rotation,
         },
         ...defaultPatios(),
+        defaultDoxameni(),
       ],
       pixelsPerMeter: DEFAULT_PIXELS_PER_METER,
       currentMonth: new Date().getMonth() + 1,
@@ -139,7 +154,7 @@ export const useGardenStore = create<GardenState>()(
       resizeBuilding: (id: string, widthM: number, heightM: number) =>
         set((s: GardenState) => ({
           placedBuildings: s.placedBuildings.map((b: PlacedBuilding) =>
-            b.id === id && b.kind === 'patio' ? { ...b, widthM, heightM } : b,
+            b.id === id && b.kind && b.kind !== 'building' ? { ...b, widthM, heightM } : b,
           ),
         })),
 
@@ -198,7 +213,7 @@ export const useGardenStore = create<GardenState>()(
     }),
     {
       name: 'garden-planner-state',
-      version: 4,
+      version: 5,
       // v1 added two patios; give them to plans saved before that, leaving everything else as it was.
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Partial<GardenState>;
@@ -224,6 +239,12 @@ export const useGardenStore = create<GardenState>()(
             state.pixelsPerMeter ?? DEFAULT_PIXELS_PER_METER,
           );
           state.placedBuildings = [...state.placedBuildings, { ...patio, ...spot }];
+        }
+        // v5 added the doxameni; put it in the first free spot beside the plot.
+        if (version < 5 && state.placedBuildings && !state.placedBuildings.some((b) => b.kind === 'doxameni')) {
+          const d = defaultDoxameni();
+          const spot = stagingSpot(d.widthM / 2, d.heightM / 2, state.placedPlants ?? [], state.placedBuildings, state.pixelsPerMeter ?? DEFAULT_PIXELS_PER_METER);
+          state.placedBuildings = [...state.placedBuildings, { ...d, ...spot }];
         }
         // v4: drop plants that have been removed from the plant list.
         if (version < 4 && state.placedPlants) {
