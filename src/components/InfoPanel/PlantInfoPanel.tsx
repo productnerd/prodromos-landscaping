@@ -14,6 +14,8 @@ export function PlantInfoPanel() {
   const removeElement = useGardenStore((s) => s.removeElement);
 
   const setSelectedId = useGardenStore((s) => s.setSelectedId);
+  const resizePlant = useGardenStore((s) => s.resizePlant);
+  const checkpoint = useGardenStore((s) => s.checkpoint);
 
   const placed = placedPlants.find((p) => p.id === selectedId);
   if (!placed) return null;
@@ -61,7 +63,25 @@ export function PlantInfoPanel() {
 
       {/* Dimensions */}
       <div className="text-sm text-[var(--ink-light)] mb-3">
-        <div>Spread: {(plant.matureRadiusM * 2).toFixed(1)}m diameter</div>
+        <div>
+          Spread: {((placed.radiusM ?? plant.matureRadiusM) * 2).toFixed(1)}m diameter
+          {placed.radiusM !== undefined && placed.radiusM !== plant.matureRadiusM && (
+            <>
+              {' '}
+              <span className="text-[var(--warm-gray)]">(mature {(plant.matureRadiusM * 2).toFixed(1)}m)</span>{' '}
+              <button
+                className="underline text-[var(--forest)]"
+                onClick={() => {
+                  checkpoint();
+                  resizePlant(placed.id, undefined);
+                }}
+              >
+                reset
+              </button>
+            </>
+          )}
+        </div>
+        <div className="text-xs italic text-[var(--warm-gray)]">Drag the blue dot on the circle's edge to resize.</div>
         <div>Height: {plant.heightM}m</div>
       </div>
 

@@ -3,6 +3,8 @@ export interface PlacedPlant {
   plantId: string;
   x: number;
   y: number;
+  /** Canopy radius set by hand; falls back to the species' mature radius. */
+  radiusM?: number;
 }
 
 

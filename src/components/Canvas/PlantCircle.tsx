@@ -54,6 +54,8 @@ export default function PlantCircle({
   stageScale,
 }: PlantCircleProps) {
   const moveElement = useGardenStore((s) => s.moveElement);
+  const resizePlant = useGardenStore((s) => s.resizePlant);
+  const checkpoint = useGardenStore((s) => s.checkpoint);
   const setSelectedId = useGardenStore((s) => s.setSelectedId);
   const overlayWater = useGardenStore((s) => s.overlayWater);
   const overlaySoil = useGardenStore((s) => s.overlaySoil);
@@ -62,7 +64,7 @@ export default function PlantCircle({
   if (!plant) return null;
 
   const state: MonthlyState = plant.monthlyStates[currentMonth] ?? 'dormant';
-  const radiusPx = plant.matureRadiusM * pixelsPerMeter;
+  const radiusPx = (placed.radiusM ?? plant.matureRadiusM) * pixelsPerMeter;
   const fill = getFillColor(plant, state);
   const opacity = STATE_COLORS[state].opacity;
   const fontSize = Math.max(10, 12 / stageScale);
@@ -74,7 +76,12 @@ export default function PlantCircle({
       x={placed.x}
       y={placed.y}
       draggable
+      onDragStart={(e) => {
+        if (e.target === e.currentTarget) checkpoint();
+      }}
       onDragEnd={(e) => {
+        // Ignore drags of the resize handle bubbling up from inside the group.
+        if (e.target !== e.currentTarget) return;
         moveElement(placed.id, e.target.x(), e.target.y());
       }}
       onClick={(e) => {
@@ -177,6 +184,39 @@ export default function PlantCircle({
           </Group>
         );
       })()}
+      {/* Resize handle on the circle's edge */}
+      {isSelected && (
+        <Circle
+          x={radiusPx}
+          y={0}
+          radius={6 / stageScale}
+          fill="#2563EB"
+          stroke="white"
+          strokeWidth={2 / stageScale}
+          draggable
+          onDragStart={(e) => {
+            e.cancelBubble = true;
+            checkpoint();
+          }}
+          onDragMove={(e) => {
+            e.cancelBubble = true;
+            const r = Math.hypot(e.target.x(), e.target.y()) / pixelsPerMeter;
+            resizePlant(placed.id, Math.max(0.1, Math.round(r * 10) / 10));
+            e.target.position({ x: Math.max(0.1, r) * pixelsPerMeter, y: 0 });
+          }}
+          onDragEnd={(e) => {
+            e.cancelBubble = true;
+          }}
+          onMouseEnter={(e) => {
+            const c = e.target.getStage()?.container();
+            if (c) c.style.cursor = 'ew-resize';
+          }}
+          onMouseLeave={(e) => {
+            const c = e.target.getStage()?.container();
+            if (c) c.style.cursor = 'default';
+          }}
+        />
+      )}
     </Group>
   );
 }

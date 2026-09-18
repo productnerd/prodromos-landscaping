@@ -18,6 +18,7 @@ export default function BuildingRect({
   const moveElement = useGardenStore((s) => s.moveElement);
   const setSelectedId = useGardenStore((s) => s.setSelectedId);
   const rotateBuilding = useGardenStore((s) => s.rotateBuilding);
+  const checkpoint = useGardenStore((s) => s.checkpoint);
 
   const w = building.widthM * pixelsPerMeter;
   const h = building.heightM * pixelsPerMeter;
@@ -34,7 +35,12 @@ export default function BuildingRect({
       y={building.y}
       rotation={rotation}
       draggable
+      onDragStart={(e) => {
+        if (e.target === e.currentTarget) checkpoint();
+      }}
       onDragEnd={(e) => {
+        // Ignore drags of the rotate handle bubbling up from inside the group.
+        if (e.target !== e.currentTarget) return;
         moveElement(building.id, e.target.x(), e.target.y());
       }}
       onClick={(e) => {
@@ -97,6 +103,10 @@ export default function BuildingRect({
             stroke="white"
             strokeWidth={2 / stageScale}
             draggable
+            onDragStart={(e) => {
+              e.cancelBubble = true;
+              checkpoint();
+            }}
             onDragMove={(e) => {
               const stage = e.target.getStage();
               if (!stage) return;

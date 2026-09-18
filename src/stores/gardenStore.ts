@@ -5,7 +5,13 @@ import type { PlacedPlant, PlacedBuilding } from '../types/canvas';
 import { DEFAULT_BUILDING } from '../data/survey-plot';
 import { DEFAULT_PIXELS_PER_METER } from '../utils/scale';
 
-type UndoEntry = { type: 'addPlant'; plantId: string };
+/** What undo restores: the full layout before a change. */
+interface Snapshot {
+  placedPlants: PlacedPlant[];
+  placedBuildings: PlacedBuilding[];
+}
+
+const HISTORY_LIMIT = 100;
 
 interface GardenState {
   placedPlants: PlacedPlant[];
@@ -16,12 +22,15 @@ interface GardenState {
   measureMode: boolean;
   measurePoints: { x: number; y: number }[];
   pendingPlantId: string | null;
-  undoStack: UndoEntry[];
+  history: Snapshot[];
   overlayWater: boolean;
   overlaySoil: boolean;
 
   addPlant: (plantId: string, x: number, y: number) => void;
+  /** Save the current layout so the next change can be undone. Call once at the start of a drag. */
+  checkpoint: () => void;
   moveElement: (id: string, x: number, y: number) => void;
+  resizePlant: (id: string, radiusM: number | undefined) => void;
   rotateBuilding: (id: string, rotation: number) => void;
   removeElement: (id: string) => void;
   setMonth: (month: number) => void;
@@ -35,6 +44,10 @@ interface GardenState {
   setOverlayWater: (on: boolean) => void;
   setOverlaySoil: (on: boolean) => void;
   undo: () => void;
+}
+
+function withSnapshot(s: GardenState): Snapshot[] {
+  return [...s.history, { placedPlants: s.placedPlants, placedBuildings: s.placedBuildings }].slice(-HISTORY_LIMIT);
 }
 
 export const useGardenStore = create<GardenState>()(
@@ -58,7 +71,7 @@ export const useGardenStore = create<GardenState>()(
       measureMode: false,
       measurePoints: [],
       pendingPlantId: null,
-      undoStack: [],
+      history: [],
       overlayWater: false,
       overlaySoil: false,
 
@@ -66,11 +79,13 @@ export const useGardenStore = create<GardenState>()(
         const id = uuid();
         set((s: GardenState) => ({
           placedPlants: [...s.placedPlants, { id, plantId, x, y }],
-          undoStack: [...s.undoStack, { type: 'addPlant' as const, plantId: id }],
+          history: withSnapshot(s),
           // Select what you just placed so its details come up straight away.
           selectedId: id,
         }));
       },
+
+      checkpoint: () => set((s: GardenState) => ({ history: withSnapshot(s) })),
 
       moveElement: (id: string, x: number, y: number) =>
         set((s: GardenState) => ({
@@ -89,8 +104,14 @@ export const useGardenStore = create<GardenState>()(
           ),
         })),
 
+      resizePlant: (id: string, radiusM: number | undefined) =>
+        set((s: GardenState) => ({
+          placedPlants: s.placedPlants.map((p: PlacedPlant) => (p.id === id ? { ...p, radiusM } : p)),
+        })),
+
       removeElement: (id: string) =>
         set((s: GardenState) => ({
+          history: withSnapshot(s),
           placedPlants: s.placedPlants.filter((p: PlacedPlant) => p.id !== id),
           selectedId: s.selectedId === id ? null : s.selectedId,
         })),
@@ -113,19 +134,15 @@ export const useGardenStore = create<GardenState>()(
 
       undo: () =>
         set((s: GardenState) => {
-          if (s.undoStack.length === 0) return {};
-          const entry = s.undoStack[s.undoStack.length - 1];
-          const newStack = s.undoStack.slice(0, -1);
-
-          switch (entry.type) {
-            case 'addPlant': {
-              return {
-                undoStack: newStack,
-                placedPlants: s.placedPlants.filter((p: PlacedPlant) => p.id !== entry.plantId),
-                selectedId: s.selectedId === entry.plantId ? null : s.selectedId,
-              };
-            }
-          }
+          const prev = s.history[s.history.length - 1];
+          if (!prev) return {};
+          const stillThere = (id: string | null) =>
+            !!id && (prev.placedPlants.some((p) => p.id === id) || prev.placedBuildings.some((b) => b.id === id));
+          return {
+            ...prev,
+            history: s.history.slice(0, -1),
+            selectedId: stillThere(s.selectedId) ? s.selectedId : null,
+          };
         }),
     }),
     {

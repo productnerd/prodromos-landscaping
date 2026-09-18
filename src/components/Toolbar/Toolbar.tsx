@@ -10,7 +10,7 @@ export default function Toolbar() {
     selectedId,
     placedPlants,
     pixelsPerMeter,
-    undoStack,
+    history,
     overlayWater,
     overlaySoil,
     removeElement,
@@ -59,7 +59,7 @@ export default function Toolbar() {
 
       <button
         className={`${BTN} disabled:opacity-40`}
-        disabled={undoStack.length === 0}
+        disabled={history.length === 0}
         onClick={undo}
         title="Undo (⌘Z)"
       >
