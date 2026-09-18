@@ -17,7 +17,6 @@ export default function BuildingRect({
 }: BuildingRectProps) {
   const moveElement = useGardenStore((s) => s.moveElement);
   const setSelectedId = useGardenStore((s) => s.setSelectedId);
-  const resizeBuilding = useGardenStore((s) => s.resizeBuilding);
   const rotateBuilding = useGardenStore((s) => s.rotateBuilding);
 
   const w = building.widthM * pixelsPerMeter;
@@ -79,66 +78,6 @@ export default function BuildingRect({
           y={h / 2 + 4 / stageScale}
           width={w}
           listening={false}
-        />
-      )}
-      {/* Right edge handle — width only */}
-      {isSelected && (
-        <Rect
-          x={w / 2 - handleR}
-          y={-handleR}
-          width={handleR * 2}
-          height={handleR * 2}
-          fill="#2563EB"
-          stroke="white"
-          strokeWidth={2 / stageScale}
-          cornerRadius={2 / stageScale}
-          draggable
-          onDragMove={(e) => {
-            const newW = Math.max(0.5, (e.target.x() + handleR) * 2 / pixelsPerMeter);
-            resizeBuilding(building.id, newW, building.heightM);
-          }}
-          onDragEnd={(e) => {
-            e.target.x(w / 2 - handleR);
-            e.target.y(-handleR);
-          }}
-          onMouseEnter={(e) => {
-            const c = e.target.getStage()?.container();
-            if (c) c.style.cursor = 'ew-resize';
-          }}
-          onMouseLeave={(e) => {
-            const c = e.target.getStage()?.container();
-            if (c) c.style.cursor = 'default';
-          }}
-        />
-      )}
-      {/* Bottom edge handle — height only */}
-      {isSelected && (
-        <Rect
-          x={-handleR}
-          y={h / 2 - handleR}
-          width={handleR * 2}
-          height={handleR * 2}
-          fill="#2563EB"
-          stroke="white"
-          strokeWidth={2 / stageScale}
-          cornerRadius={2 / stageScale}
-          draggable
-          onDragMove={(e) => {
-            const newH = Math.max(0.5, (e.target.y() + handleR) * 2 / pixelsPerMeter);
-            resizeBuilding(building.id, building.widthM, newH);
-          }}
-          onDragEnd={(e) => {
-            e.target.x(-handleR);
-            e.target.y(h / 2 - handleR);
-          }}
-          onMouseEnter={(e) => {
-            const c = e.target.getStage()?.container();
-            if (c) c.style.cursor = 'ns-resize';
-          }}
-          onMouseLeave={(e) => {
-            const c = e.target.getStage()?.container();
-            if (c) c.style.cursor = 'default';
-          }}
         />
       )}
       {/* Rotation handle — arm + circle above top edge */}

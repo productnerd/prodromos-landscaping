@@ -26,3 +26,6 @@ dist-ssr
 # Land survey drawing (real-world coordinates of the property)
 *.dwg
 *.dxf
+
+# Local copies of browser-saved plans
+backups/

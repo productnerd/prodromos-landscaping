@@ -21,17 +21,14 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     pixelsPerMeter,
     currentMonth,
     selectedId,
-    buildingMode,
     measureMode,
     measurePoints,
     addMeasurePoint,
     clearMeasure,
     setMeasureMode,
-    setBuildingMode,
     pendingPlantId,
     clearPendingPlant,
     addPlant,
-    addBuilding,
     setSelectedId,
   } = useGardenStore();
 
@@ -52,7 +49,6 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
       if (e.key === 'Escape') {
         if (measureMode && measurePoints.length > 0) clearMeasure();
         else if (measureMode) setMeasureMode(false);
-        else if (buildingMode) setBuildingMode(false);
         else setSelectedId(null);
       }
       if (e.key === 'z' && (e.metaKey || e.ctrlKey) && !e.shiftKey) {
@@ -68,7 +64,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [measureMode, measurePoints.length, clearMeasure, setMeasureMode, buildingMode, setBuildingMode, undo, selectedId, removeElement, setSelectedId]);
+  }, [measureMode, measurePoints.length, clearMeasure, setMeasureMode, undo, selectedId, removeElement, setSelectedId]);
 
   // Measure container size
   useEffect(() => {
@@ -197,16 +193,12 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         return;
       }
 
-      // Non-drawing modes: only fire on clicks directly on the stage (empty area)
+      // Only deselect on clicks on empty ground, not on a plant.
       if (e.target !== e.target.getStage()) return;
 
-      if (buildingMode) {
-        addBuilding(pos.x, pos.y, 5, 3, 'Building');
-      } else {
-        setSelectedId(null);
-      }
+      setSelectedId(null);
     },
-    [buildingMode, measureMode, addMeasurePoint, getCanvasPos, addBuilding, setSelectedId],
+    [measureMode, addMeasurePoint, getCanvasPos, setSelectedId],
   );
 
   const handleDragEnd = useCallback((e: Konva.KonvaEventObject<DragEvent>) => {
@@ -267,9 +259,18 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
 
         </Layer>
 
-        {/* Layer 2: plot boundary, plants, and buildings */}
+        {/* Layer 2: plot boundary, building and plants */}
         <Layer>
           <SurveyPlot pixelsPerMeter={pixelsPerMeter} stageScale={stageScale} />
+          {placedBuildings.map((b) => (
+            <BuildingRect
+              key={b.id}
+              building={b}
+              pixelsPerMeter={pixelsPerMeter}
+              isSelected={selectedId === b.id}
+              stageScale={stageScale}
+            />
+          ))}
           {placedPlants.map((p) => (
             <PlantCircle
               key={p.id}
@@ -277,15 +278,6 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
               pixelsPerMeter={pixelsPerMeter}
               currentMonth={currentMonth}
               isSelected={selectedId === p.id}
-              stageScale={stageScale}
-            />
-          ))}
-          {placedBuildings.map((b) => (
-            <BuildingRect
-              key={b.id}
-              building={b}
-              pixelsPerMeter={pixelsPerMeter}
-              isSelected={selectedId === b.id}
               stageScale={stageScale}
             />
           ))}

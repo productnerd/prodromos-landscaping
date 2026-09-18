@@ -8,13 +8,12 @@ const BTN_ACTIVE =
 export default function Toolbar() {
   const {
     selectedId,
-    buildingMode,
+    placedPlants,
     pixelsPerMeter,
     undoStack,
     overlayWater,
     overlaySoil,
     removeElement,
-    setBuildingMode,
     measureMode,
     setMeasureMode,
     clearMeasure,
@@ -24,18 +23,14 @@ export default function Toolbar() {
     setOverlaySoil,
   } = useGardenStore();
 
+  // Only plants can be deleted; the building is part of the setup.
+  const selectedPlant = placedPlants.find((p) => p.id === selectedId);
+
   return (
     <div className="h-12 bg-[var(--paper)] text-[var(--ink)] border-b border-[var(--divider)] flex items-center px-4 gap-3 shrink-0">
       <span className="font-[Fraunces,Georgia,serif] font-medium text-[15px] text-[var(--forest-deep)] mr-auto whitespace-nowrap">
         Garden Planner &mdash; Prodromos, Cyprus
       </span>
-
-      <button
-        className={buildingMode ? BTN_ACTIVE : BTN}
-        onClick={() => setBuildingMode(!buildingMode)}
-      >
-        Add Building
-      </button>
 
       <button
         className={measureMode ? BTN_ACTIVE : BTN}
@@ -56,8 +51,8 @@ export default function Toolbar() {
 
       <button
         className={`${BTN} disabled:opacity-40`}
-        disabled={!selectedId}
-        onClick={() => selectedId && removeElement(selectedId)}
+        disabled={!selectedPlant}
+        onClick={() => selectedPlant && removeElement(selectedPlant.id)}
       >
         Delete Selected
       </button>

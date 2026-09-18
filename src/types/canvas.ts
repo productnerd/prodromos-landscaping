@@ -5,6 +5,7 @@ export interface PlacedPlant {
   y: number;
 }
 
+
 export interface PlacedBuilding {
   id: string;
   x: number;

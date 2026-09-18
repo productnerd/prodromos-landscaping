@@ -14,3 +14,9 @@ export const SURVEY_BOUNDARY_M: PlotVertex[] = [
 ];
 
 export const SURVEY_AREA_M2 = 556;
+
+/**
+ * Existing building: fixed size, starting where it was placed against the
+ * boundary. Centre in metres on the same axes; rotation in degrees clockwise.
+ */
+export const DEFAULT_BUILDING = { label: 'Building', x: 21.212, y: 13.044, widthM: 7.475, depthM: 3, rotation: 106.33 };
