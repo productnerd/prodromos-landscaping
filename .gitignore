@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Land survey drawing (real-world coordinates of the property)
+*.dwg
+*.dxf

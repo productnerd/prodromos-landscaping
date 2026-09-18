@@ -1,30 +1,23 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuid } from 'uuid';
-import type { PlacedPlant, PlacedBuilding, PlotPolygon, PlotVertex } from '../types/canvas';
+import type { PlacedPlant, PlacedBuilding } from '../types/canvas';
 import { DEFAULT_PIXELS_PER_METER } from '../utils/scale';
 
 type UndoEntry =
-  | { type: 'addPlotVertex'; plotId: string }
   | { type: 'addPlant'; plantId: string }
-  | { type: 'addBuilding'; buildingId: string }
-  | { type: 'startPlot'; plotId: string };
+  | { type: 'addBuilding'; buildingId: string };
 
 interface GardenState {
   placedPlants: PlacedPlant[];
   placedBuildings: PlacedBuilding[];
-  plotPolygons: PlotPolygon[];
-  drawingPlotId: string | null;
   pixelsPerMeter: number;
   currentMonth: number;
   selectedId: string | null;
-  selectedVertex: { plotId: string; index: number } | null;
   buildingMode: boolean;
-  drawPlotMode: boolean;
   measureMode: boolean;
   measurePoints: { x: number; y: number }[];
   pendingPlantId: string | null;
-  pendingPlotShape: PlotVertex[] | null;
   undoStack: UndoEntry[];
   overlayWater: boolean;
   overlaySoil: boolean;
@@ -39,22 +32,11 @@ interface GardenState {
   setSelectedId: (id: string | null) => void;
   setPixelsPerMeter: (ppm: number) => void;
   setBuildingMode: (on: boolean) => void;
-  setDrawPlotMode: (on: boolean) => void;
   setMeasureMode: (on: boolean) => void;
   addMeasurePoint: (x: number, y: number) => void;
   clearMeasure: () => void;
   requestPlacePlant: (plantId: string) => void;
   clearPendingPlant: () => void;
-  requestImportPlot: (shapeM: PlotVertex[]) => void;
-  addImportedPlot: (vertices: PlotVertex[]) => void;
-  startPlot: () => void;
-  addPlotVertex: (x: number, y: number) => void;
-  closePlot: () => void;
-  cancelPlot: () => void;
-  moveVertex: (plotId: string, vertexIndex: number, x: number, y: number) => void;
-  removePlot: (plotId: string) => void;
-  setSelectedVertex: (v: { plotId: string; index: number } | null) => void;
-  removeVertex: (plotId: string, index: number) => void;
   setOverlayWater: (on: boolean) => void;
   setOverlaySoil: (on: boolean) => void;
   undo: () => void;
@@ -65,18 +47,13 @@ export const useGardenStore = create<GardenState>()(
     (set) => ({
       placedPlants: [],
       placedBuildings: [],
-      plotPolygons: [],
-      drawingPlotId: null,
       pixelsPerMeter: DEFAULT_PIXELS_PER_METER,
       currentMonth: new Date().getMonth() + 1,
       selectedId: null,
-      selectedVertex: null,
       buildingMode: false,
-      drawPlotMode: false,
       measureMode: false,
       measurePoints: [],
       pendingPlantId: null,
-      pendingPlotShape: null,
       undoStack: [],
       overlayWater: false,
       overlaySoil: false,
@@ -138,9 +115,8 @@ export const useGardenStore = create<GardenState>()(
       setSelectedId: (id: string | null) => set({ selectedId: id }),
       setPixelsPerMeter: (ppm: number) => set({ pixelsPerMeter: ppm }),
       setBuildingMode: (on: boolean) => set({ buildingMode: on, measureMode: false }),
-      setDrawPlotMode: (on: boolean) => set({ drawPlotMode: on, buildingMode: false, measureMode: false }),
       setMeasureMode: (on: boolean) =>
-        set({ measureMode: on, buildingMode: false, drawPlotMode: false, measurePoints: [] }),
+        set({ measureMode: on, buildingMode: false, measurePoints: [] }),
       addMeasurePoint: (x: number, y: number) =>
         set((st: GardenState) => ({
           // A third click starts a fresh measurement.
@@ -149,97 +125,8 @@ export const useGardenStore = create<GardenState>()(
       clearMeasure: () => set({ measurePoints: [] }),
       requestPlacePlant: (plantId: string) => set({ pendingPlantId: plantId }),
       clearPendingPlant: () => set({ pendingPlantId: null }),
-      requestImportPlot: (shapeM: PlotVertex[]) => set({ pendingPlotShape: shapeM }),
-      addImportedPlot: (vertices: PlotVertex[]) => {
-        const id = uuid();
-        set((s: GardenState) => ({
-          plotPolygons: [...s.plotPolygons, { id, vertices, closed: true }],
-          undoStack: [...s.undoStack, { type: 'startPlot' as const, plotId: id }],
-          pendingPlotShape: null,
-        }));
-      },
       setOverlayWater: (on: boolean) => set({ overlayWater: on }),
       setOverlaySoil: (on: boolean) => set({ overlaySoil: on }),
-
-      startPlot: () => {
-        const id = uuid();
-        set((s: GardenState) => ({
-          plotPolygons: [...s.plotPolygons, { id, vertices: [], closed: false }],
-          drawingPlotId: id,
-          undoStack: [...s.undoStack, { type: 'startPlot' as const, plotId: id }],
-        }));
-      },
-
-      addPlotVertex: (x: number, y: number) =>
-        set((s: GardenState) => {
-          if (!s.drawingPlotId) return {};
-          return {
-            plotPolygons: s.plotPolygons.map((p: PlotPolygon) =>
-              p.id === s.drawingPlotId
-                ? { ...p, vertices: [...p.vertices, { x, y }] }
-                : p,
-            ),
-            undoStack: [...s.undoStack, { type: 'addPlotVertex' as const, plotId: s.drawingPlotId }],
-          };
-        }),
-
-      closePlot: () =>
-        set((s: GardenState) => ({
-          plotPolygons: s.plotPolygons.map((p: PlotPolygon) =>
-            p.id === s.drawingPlotId ? { ...p, closed: true } : p,
-          ),
-          drawingPlotId: null,
-          drawPlotMode: false,
-        })),
-
-      cancelPlot: () =>
-        set((s: GardenState) => ({
-          plotPolygons: s.plotPolygons.filter((p: PlotPolygon) => p.id !== s.drawingPlotId),
-          drawingPlotId: null,
-          drawPlotMode: false,
-        })),
-
-      moveVertex: (plotId: string, vertexIndex: number, x: number, y: number) =>
-        set((s: GardenState) => ({
-          plotPolygons: s.plotPolygons.map((p: PlotPolygon) =>
-            p.id === plotId
-              ? {
-                  ...p,
-                  vertices: p.vertices.map((v: PlotVertex, i: number) =>
-                    i === vertexIndex ? { x, y } : v,
-                  ),
-                }
-              : p,
-          ),
-        })),
-
-      removePlot: (plotId: string) =>
-        set((s: GardenState) => ({
-          plotPolygons: s.plotPolygons.filter((p: PlotPolygon) => p.id !== plotId),
-          selectedVertex: s.selectedVertex?.plotId === plotId ? null : s.selectedVertex,
-        })),
-
-      setSelectedVertex: (v: { plotId: string; index: number } | null) =>
-        set({ selectedVertex: v }),
-
-      removeVertex: (plotId: string, index: number) =>
-        set((s: GardenState) => {
-          const plot = s.plotPolygons.find((p: PlotPolygon) => p.id === plotId);
-          if (!plot) return {};
-          const newVerts = plot.vertices.filter((_: PlotVertex, i: number) => i !== index);
-          if (newVerts.length < 2) {
-            return {
-              plotPolygons: s.plotPolygons.filter((p: PlotPolygon) => p.id !== plotId),
-              selectedVertex: null,
-            };
-          }
-          return {
-            plotPolygons: s.plotPolygons.map((p: PlotPolygon) =>
-              p.id === plotId ? { ...p, vertices: newVerts } : p,
-            ),
-            selectedVertex: null,
-          };
-        }),
 
       undo: () =>
         set((s: GardenState) => {
@@ -248,24 +135,6 @@ export const useGardenStore = create<GardenState>()(
           const newStack = s.undoStack.slice(0, -1);
 
           switch (entry.type) {
-            case 'addPlotVertex': {
-              return {
-                undoStack: newStack,
-                plotPolygons: s.plotPolygons.map((p: PlotPolygon) =>
-                  p.id === entry.plotId
-                    ? { ...p, vertices: p.vertices.slice(0, -1) }
-                    : p,
-                ),
-              };
-            }
-            case 'startPlot': {
-              return {
-                undoStack: newStack,
-                plotPolygons: s.plotPolygons.filter((p: PlotPolygon) => p.id !== entry.plotId),
-                drawingPlotId: null,
-                drawPlotMode: false,
-              };
-            }
             case 'addPlant': {
               return {
                 undoStack: newStack,
@@ -288,7 +157,6 @@ export const useGardenStore = create<GardenState>()(
       partialize: (state: GardenState) => ({
         placedPlants: state.placedPlants,
         placedBuildings: state.placedBuildings,
-        plotPolygons: state.plotPolygons,
         pixelsPerMeter: state.pixelsPerMeter,
         currentMonth: state.currentMonth,
         selectedId: state.selectedId,

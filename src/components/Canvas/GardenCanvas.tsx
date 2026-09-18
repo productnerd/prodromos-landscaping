@@ -5,7 +5,8 @@ import { useGardenStore } from '../../stores/gardenStore';
 import { checkCompatibility } from '../../utils/compatibility-checker';
 import PlantCircle from './PlantCircle';
 import BuildingRect from './BuildingRect';
-import PlotShape from './PlotShape';
+import SurveyPlot from './SurveyPlot';
+import { SURVEY_BOUNDARY_M } from '../../data/survey-plot';
 
 interface GardenCanvasProps {
   stageRef: React.RefObject<Konva.Stage | null>;
@@ -17,13 +18,10 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   const {
     placedPlants,
     placedBuildings,
-    plotPolygons,
-    drawingPlotId,
     pixelsPerMeter,
     currentMonth,
     selectedId,
     buildingMode,
-    drawPlotMode,
     measureMode,
     measurePoints,
     addMeasurePoint,
@@ -32,19 +30,12 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     setBuildingMode,
     pendingPlantId,
     clearPendingPlant,
-    addImportedPlot,
     addPlant,
     addBuilding,
     setSelectedId,
-    startPlot,
-    addPlotVertex,
-    closePlot,
   } = useGardenStore();
 
-  const cancelPlot = useGardenStore.getState().cancelPlot;
   const undo = useGardenStore((s) => s.undo);
-  const selectedVertex = useGardenStore((s) => s.selectedVertex);
-  const removeVertex = useGardenStore((s) => s.removeVertex);
   const removeElement = useGardenStore((s) => s.removeElement);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,8 +50,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Escape backs out of whatever is in progress, one step at a time.
       if (e.key === 'Escape') {
-        if (drawPlotMode) cancelPlot();
-        else if (measureMode && measurePoints.length > 0) clearMeasure();
+        if (measureMode && measurePoints.length > 0) clearMeasure();
         else if (measureMode) setMeasureMode(false);
         else if (buildingMode) setBuildingMode(false);
         else setSelectedId(null);
@@ -70,10 +60,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         undo();
       }
       if (e.key === 'Backspace' || e.key === 'Delete') {
-        if (selectedVertex) {
-          e.preventDefault();
-          removeVertex(selectedVertex.plotId, selectedVertex.index);
-        } else if (selectedId) {
+        if (selectedId) {
           e.preventDefault();
           removeElement(selectedId);
         }
@@ -81,18 +68,33 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [drawPlotMode, cancelPlot, measureMode, measurePoints.length, clearMeasure, setMeasureMode, buildingMode, setBuildingMode, undo, selectedVertex, removeVertex, selectedId, removeElement, setSelectedId]);
+  }, [measureMode, measurePoints.length, clearMeasure, setMeasureMode, buildingMode, setBuildingMode, undo, selectedId, removeElement, setSelectedId]);
 
   // Measure container size
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    let fitted = false;
     const measure = () => {
-      setDimensions({
-        width: container.clientWidth,
-        height: container.clientHeight,
-      });
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      setDimensions({ width, height });
+
+      // Open with the whole plot in view.
+      if (!fitted && width > 0 && height > 0) {
+        fitted = true;
+        const ppm = useGardenStore.getState().pixelsPerMeter;
+        const xs = SURVEY_BOUNDARY_M.map((v) => v.x * ppm);
+        const ys = SURVEY_BOUNDARY_M.map((v) => v.y * ppm);
+        const [minX, maxX, minY, maxY] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+        const scale = Math.min((width * 0.85) / (maxX - minX), (height * 0.85) / (maxY - minY));
+        setStageScale(scale);
+        setStagePos({
+          x: width / 2 - ((minX + maxX) / 2) * scale,
+          y: height / 2 - ((minY + maxY) / 2) * scale,
+        });
+      }
     };
     measure();
 
@@ -111,31 +113,6 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
     );
     clearPendingPlant();
   }, [pendingPlantId, dimensions, stagePos, stageScale, addPlant, clearPendingPlant]);
-
-  // An imported plot outline (in metres, centred on 0,0) lands in the middle of the view,
-  // zoomed out if needed so the whole outline is visible.
-  useEffect(
-    () =>
-      useGardenStore.subscribe((s, prev) => {
-        const shape = s.pendingPlotShape;
-        if (!shape || shape === prev.pendingPlotShape) return;
-        const cx = (dimensions.width / 2 - stagePos.x) / stageScale;
-        const cy = (dimensions.height / 2 - stagePos.y) / stageScale;
-        const vertices = shape.map((v) => ({ x: cx + v.x * pixelsPerMeter, y: cy + v.y * pixelsPerMeter }));
-        addImportedPlot(vertices);
-
-        const xs = vertices.map((v) => v.x);
-        const ys = vertices.map((v) => v.y);
-        const fit = Math.min(
-          (dimensions.width * 0.85) / (Math.max(...xs) - Math.min(...xs) || 1),
-          (dimensions.height * 0.85) / (Math.max(...ys) - Math.min(...ys) || 1),
-        );
-        const nextScale = Math.min(stageScale, fit);
-        setStageScale(nextScale);
-        setStagePos({ x: dimensions.width / 2 - cx * nextScale, y: dimensions.height / 2 - cy * nextScale });
-      }),
-    [dimensions, stagePos, stageScale, pixelsPerMeter, addImportedPlot],
-  );
 
   // Compatibility warnings
   const warnings = useMemo(
@@ -220,28 +197,6 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         return;
       }
 
-      if (drawPlotMode) {
-        if (!drawingPlotId) {
-          startPlot();
-          setTimeout(() => addPlotVertex(pos.x, pos.y), 0);
-        } else {
-          const currentPlot = plotPolygons.find((p) => p.id === drawingPlotId);
-          if (currentPlot && currentPlot.vertices.length >= 3) {
-            const first = currentPlot.vertices[0];
-            const dx = pos.x - first.x;
-            const dy = pos.y - first.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const closeThreshold = 15 / stageScale;
-            if (dist < closeThreshold) {
-              closePlot();
-              return;
-            }
-          }
-          addPlotVertex(pos.x, pos.y);
-        }
-        return;
-      }
-
       // Non-drawing modes: only fire on clicks directly on the stage (empty area)
       if (e.target !== e.target.getStage()) return;
 
@@ -251,7 +206,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         setSelectedId(null);
       }
     },
-    [drawPlotMode, buildingMode, measureMode, addMeasurePoint, drawingPlotId, plotPolygons, stageScale, getCanvasPos, startPlot, addPlotVertex, closePlot, addBuilding, setSelectedId],
+    [buildingMode, measureMode, addMeasurePoint, getCanvasPos, addBuilding, setSelectedId],
   );
 
   const handleDragEnd = useCallback((e: Konva.KonvaEventObject<DragEvent>) => {
@@ -260,26 +215,13 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   }, []);
 
   const handleMouseMove = useCallback(() => {
-    const measuring = measureMode && measurePoints.length === 1;
-    if (!measuring && (!drawPlotMode || !drawingPlotId)) {
+    if (!measureMode || measurePoints.length !== 1) {
       setCursorPos(null);
       return;
     }
     const pos = getCanvasPos();
     if (pos) setCursorPos(pos);
-  }, [drawPlotMode, drawingPlotId, measureMode, measurePoints.length, getCanvasPos]);
-
-  const previewLine = useMemo(() => {
-    if (!cursorPos || !drawingPlotId) return null;
-    const plot = plotPolygons.find((p) => p.id === drawingPlotId);
-    if (!plot || plot.vertices.length === 0) return null;
-    const last = plot.vertices[plot.vertices.length - 1];
-    const dx = cursorPos.x - last.x;
-    const dy = cursorPos.y - last.y;
-    const lengthPx = Math.sqrt(dx * dx + dy * dy);
-    const lengthM = lengthPx / pixelsPerMeter;
-    return { from: last, to: cursorPos, lengthM };
-  }, [cursorPos, drawingPlotId, plotPolygons, pixelsPerMeter]);
+  }, [measureMode, measurePoints.length, getCanvasPos]);
 
   return (
     <div
@@ -296,12 +238,12 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         scaleY={stageScale}
         x={stagePos.x}
         y={stagePos.y}
-        draggable={!drawPlotMode && !measureMode}
+        draggable={!measureMode}
         onWheel={handleWheel}
         onClick={handleStageClick}
         onDragEnd={handleDragEnd}
         onMouseMove={handleMouseMove}
-        style={{ cursor: drawPlotMode || measureMode ? 'crosshair' : undefined }}
+        style={{ cursor: measureMode ? 'crosshair' : undefined }}
       >
         {/* Layer 1: grid */}
         <Layer listening={false}>
@@ -325,16 +267,9 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
 
         </Layer>
 
-        {/* Layer 2: Interactive plots, plants, and buildings */}
+        {/* Layer 2: plot boundary, plants, and buildings */}
         <Layer>
-          {plotPolygons.map((plot) => (
-            <PlotShape
-              key={plot.id}
-              plot={plot}
-              pixelsPerMeter={pixelsPerMeter}
-              stageScale={stageScale}
-            />
-          ))}
+          <SurveyPlot pixelsPerMeter={pixelsPerMeter} stageScale={stageScale} />
           {placedPlants.map((p) => (
             <PlantCircle
               key={p.id}
@@ -356,56 +291,8 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
           ))}
         </Layer>
 
-        {/* Layer 3: Preview line + compatibility warning lines */}
+        {/* Layer 3: measurement + compatibility warning lines */}
         <Layer>
-          {previewLine && previewLine.lengthM > 0.05 && (() => {
-            const { from, to, lengthM } = previewLine;
-            const midX = (from.x + to.x) / 2;
-            const midY = (from.y + to.y) / 2;
-            const angle = Math.atan2(to.y - from.y, to.x - from.x);
-            const offsetX = -Math.sin(angle) * (16 / stageScale);
-            const offsetY = Math.cos(angle) * (16 / stageScale);
-            const fontSize = 11 / stageScale;
-            const label = `${lengthM.toFixed(1)}m`;
-            const labelW = label.length * fontSize * 0.65;
-            const labelH = fontSize * 1.6;
-            return (
-              <Group>
-                <Line
-                  points={[from.x, from.y, to.x, to.y]}
-                  stroke="#2563EB"
-                  strokeWidth={2 / stageScale}
-                  dash={[6 / stageScale, 4 / stageScale]}
-                />
-                <Rect
-                  x={midX + offsetX - labelW / 2}
-                  y={midY + offsetY - labelH / 2}
-                  width={labelW}
-                  height={labelH}
-                  fill="white"
-                  cornerRadius={3 / stageScale}
-                  stroke="#2563EB"
-                  strokeWidth={1 / stageScale}
-                  opacity={0.9}
-                />
-                <Text
-                  x={midX + offsetX}
-                  y={midY + offsetY}
-                  text={label}
-                  fontSize={fontSize}
-                  fontStyle="bold"
-                  fill="#1E40AF"
-                  align="center"
-                  verticalAlign="middle"
-                  offsetX={labelW / 2}
-                  offsetY={labelH / 2}
-                  width={labelW}
-                  height={labelH}
-                />
-              </Group>
-            );
-          })()}
-
           {/* Measurement: fixed first point, live second point until the click lands */}
           {measureMode && measurePoints.length > 0 && (() => {
             const from = measurePoints[0];

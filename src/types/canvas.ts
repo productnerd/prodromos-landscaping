@@ -20,9 +20,3 @@ export interface PlotVertex {
   y: number;
 }
 
-export interface PlotPolygon {
-  id: string;
-  vertices: PlotVertex[];
-  closed: boolean;
-}
-
