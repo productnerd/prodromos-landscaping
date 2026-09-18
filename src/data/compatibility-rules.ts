@@ -637,7 +637,7 @@ export const COMPATIBILITY_RULES: CompatibilityRule[] = [
 // Plants that tolerate walnut juglone
 export const WALNUT_TOLERANT = new Set([
   'cedar', 'hazelnut', 'beans', 'japanese-silver-grass', 'ground-covers',
-  'maple-sycamore', 'maple-norway', 'maple-field', 'golden-oak', 'pine',
+  'maple-norway', 'maple-field', 'golden-oak', 'pine',
 ]);
 
 // Plants that tolerate Norway maple shade/roots

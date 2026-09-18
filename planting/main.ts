@@ -99,13 +99,16 @@ const ID_MIGRATIONS: Record<string, string> = {
   silvergrass: 'japanese-silver-grass',
   groundcover: 'ground-covers',
   lemonbalm: 'lemon-balm',
-  maple: 'maple-sycamore',
   iris: 'iris',
 };
 
 function migrate<T>(rec: Record<string, T>): Record<string, T> {
   const out: Record<string, T> = {};
-  for (const [k, v] of Object.entries(rec)) out[ID_MIGRATIONS[k] ?? k] = v;
+  for (const [k, v] of Object.entries(rec)) {
+    const id = ID_MIGRATIONS[k] ?? k;
+    // Drop picks and notes for plants no longer on the list.
+    if (PLANTS_MAP[id]) out[id] = v;
+  }
   return out;
 }
 

@@ -229,44 +229,6 @@ export const PLANTS: PlantDefinition[] = [
       'Flowers very early (Feb) — late frost at 1400m can damage blossoms. Choose late-flowering varieties for Prodromos. Traditional Cyprus crop.',
   },
 
-  // ─── 7. Maple - Sycamore ───────────────────────────────────────────
-  {
-    id: 'maple-sycamore',
-    emoji: '🍁',
-    growth: 'medium',
-    plantingDepth: 'Root ball depth',
-    name: 'Maple - Sycamore',
-    botanicalName: 'Acer pseudoplatanus',
-    category: 'tree',
-    tags: ['ornamental', 'deciduous'],
-    matureRadiusM: 5,
-    heightM: 20,
-    sun: 'partial',
-    water: 'medium',
-    soil: 'any well-drained',
-    drainage: 'good',
-    monthlyStates: {
-      1: 'dormant',
-      2: 'dormant',
-      3: 'sprouting',
-      4: 'leafing',
-      5: 'flowering',
-      6: 'leafing',
-      7: 'leafing',
-      8: 'leafing',
-      9: 'leafing',
-      10: 'autumn-color',
-      11: 'autumn-color',
-      12: 'dormant',
-    },
-    plantingMonths: [11, 12, 1, 2],
-    flowerColor: '#C8D674',
-    fruitColor: '#8B7355',
-    foliageColor: '#3E8B2F',
-    cyprusNotes:
-      'Large shade tree. Self-seeds readily — may need to control seedlings. Good wind resistance for exposed mountain sites.',
-  },
-
   // ─── 8. Maple - Norway ─────────────────────────────────────────────
   {
     id: 'maple-norway',

@@ -173,7 +173,7 @@ export const useGardenStore = create<GardenState>()(
     }),
     {
       name: 'garden-planner-state',
-      version: 3,
+      version: 4,
       // v1 added two patios; give them to plans saved before that, leaving everything else as it was.
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Partial<GardenState>;
@@ -199,6 +199,10 @@ export const useGardenStore = create<GardenState>()(
             state.pixelsPerMeter ?? DEFAULT_PIXELS_PER_METER,
           );
           state.placedBuildings = [...state.placedBuildings, { ...patio, ...spot }];
+        }
+        // v4: drop plants that have been removed from the plant list.
+        if (version < 4 && state.placedPlants) {
+          state.placedPlants = state.placedPlants.filter((p) => PLANTS_MAP[p.plantId]);
         }
         return state as GardenState;
       },
