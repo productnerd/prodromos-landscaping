@@ -1,4 +1,4 @@
-import { Group, Circle, Text, Ring } from 'react-konva';
+import { Group, Circle, Text, Ring, Shape } from 'react-konva';
 import type { PlacedPlant } from '../../types/canvas';
 import type { MonthlyState } from '../../types/plant';
 import { STATE_COLORS } from '../../types/plant';
@@ -6,6 +6,8 @@ import { PLANTS_MAP } from '../../data/plants';
 import { useGardenStore } from '../../stores/gardenStore';
 import PlantBadges from './PlantBadges';
 import { WATER_COLORS, mapFill } from './plantColors';
+import { drawPlantTexture } from './textures';
+import { NAME_FONT } from './canvasFonts';
 
 interface PlantCircleProps {
   placed: PlacedPlant;
@@ -37,6 +39,8 @@ export default function PlantCircle({
   const fill = mapFill(plant, state, currentMonth);
   const opacity = STATE_COLORS[state].opacity;
   const fontSize = Math.max(10, 12 / stageScale);
+  // Small plants get a label wider than their circle rather than one letter per line.
+  const labelW = radiusPx * 2 < fontSize * 6 ? Math.max(radiusPx * 2, plant.name.length * fontSize * 0.62) : radiusPx * 2;
 
   return (
     <Group
@@ -78,16 +82,22 @@ export default function PlantCircle({
         strokeWidth={isSelected ? 3 / stageScale : 1 / stageScale}
         dash={state === 'dormant' && isSelected ? [6, 3] : undefined}
       />
+      <Shape
+        listening={false}
+        opacity={0.75}
+        sceneFunc={(ctx) => drawPlantTexture(ctx._context, plant, state, fill, radiusPx, placed.id)}
+      />
       <Text
+        fontFamily={NAME_FONT}
         text={plant.name}
         fontSize={fontSize}
         fill="#1F2937"
         fontStyle="bold"
         align="center"
         verticalAlign="middle"
-        offsetX={radiusPx}
+        offsetX={labelW / 2}
         offsetY={fontSize / 2}
-        width={radiusPx * 2}
+        width={labelW}
         listening={false}
       />
       <PlantBadges plant={plant} stageScale={stageScale} offsetY={radiusPx} />

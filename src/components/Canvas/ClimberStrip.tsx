@@ -1,4 +1,4 @@
-import { Group, Rect, Text, Line, Circle } from 'react-konva';
+import { Group, Rect, Text, Line, Circle, Shape } from 'react-konva';
 import type { PlacedPlant } from '../../types/canvas';
 import type { MonthlyState } from '../../types/plant';
 import { STATE_COLORS } from '../../types/plant';
@@ -6,7 +6,9 @@ import { PLANTS_MAP } from '../../data/plants';
 import { useGardenStore } from '../../stores/gardenStore';
 import { CLIMBER_DEPTH_M, climberLengthM } from '../../utils/staging';
 import { mapFill } from './plantColors';
+import { drawVineTexture } from './textures';
 import PlantBadges from './PlantBadges';
+import { NAME_FONT } from './canvasFonts';
 
 interface Props {
   placed: PlacedPlant;
@@ -73,7 +75,13 @@ export default function ClimberStrip({ placed, pixelsPerMeter, currentMonth, isS
         stroke={isSelected ? '#2563EB' : '#374151'}
         strokeWidth={isSelected ? 3 / stageScale : 1 / stageScale}
       />
+      <Shape
+        listening={false}
+        opacity={0.8}
+        sceneFunc={(ctx) => drawVineTexture(ctx._context, plant, state, fill, w, h, placed.id)}
+      />
       <Text
+        fontFamily={NAME_FONT}
         text={plant.name}
         fontSize={fontSize}
         fill="#1F2937"

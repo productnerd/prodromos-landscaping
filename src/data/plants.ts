@@ -35,6 +35,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#A8B860',
     fruitColor: '#8B7355',
     foliageColor: '#2D5A27',
+    mapColor: '#163A17',
     cyprusNotes:
       'Endemic Cyprus cedar. Thrives at Prodromos elevation. Slow-growing, long-lived. National treasure species.',
   },
@@ -570,6 +571,45 @@ export const PLANTS: PlantDefinition[] = [
     foliageColor: '#4CAF50',
     cyprusNotes:
       'Fragrant spring blooms. Prodromos cold winters provide needed chill hours. Deadhead after flowering to promote next year bloom.',
+  },
+
+  // ─── Androuklia ────────────────────────────────────────────────────
+  {
+    id: 'androuklia',
+    emoji: '🌿',
+    growth: 'slow',
+    plantingDepth: 'Root ball depth',
+    name: 'Androuklia',
+    botanicalName: 'Arbutus andrachne',
+    category: 'bush',
+    tags: ['flower', 'fruit', 'evergreen', 'ornamental'],
+    matureRadiusM: 2,
+    heightM: 5,
+    sun: 'full',
+    water: 'low',
+    soil: 'rocky, well-drained',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'evergreen-foliage',
+      2: 'evergreen-foliage',
+      3: 'flowering',
+      4: 'flowering',
+      5: 'evergreen-foliage',
+      6: 'evergreen-foliage',
+      7: 'evergreen-foliage',
+      8: 'evergreen-foliage',
+      9: 'fruiting',
+      10: 'fruit-ripe',
+      11: 'fruit-ripe',
+      12: 'evergreen-foliage',
+    },
+    plantingMonths: [10, 11, 12, 1, 2],
+    flowerColor: '#F4F1E1',
+    fruitColor: '#E0561B',
+    foliageColor: '#2F5D34',
+    mapColor: '#2F5D34',
+    cyprusNotes:
+      'Greek strawberry tree, native to the Troodos. Smooth red-brown bark that peels in summer, creamy bell flowers in spring and orange-red fruit in autumn. Very drought-tolerant once established and hates wet feet. Slow-growing: keep it as a large bush or let it become a small tree.',
   },
 
   // ─── 17. Japanese Maple ─────────────────────────────────────────────
@@ -1481,6 +1521,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#D4A843',
     fruitColor: '#8B6914',
     foliageColor: '#1B5E20',
+    mapColor: '#2E6B34',
     cyprusNotes:
       'Pinus brutia (Turkish/Calabrian pine) is the dominant native pine of Cyprus, covering the Troodos foothills including the Prodromos area. Extremely drought-tolerant and hardy. Fast-growing, aromatic resin. Provides excellent windbreak and shade.',
   },
@@ -1521,6 +1562,44 @@ export const PLANTS: PlantDefinition[] = [
     foliageColor: '#2E7D32',
     cyprusNotes:
       'Endemic Cyprus golden oak — the national tree. Leaves have distinctive golden underside. Thrives on igneous rock of Troodos range at Prodromos elevation. Slow-growing, very long-lived. Drought-resistant once established. Produces acorns in autumn.',
+  },
+
+  // ─── Latzia ────────────────────────────────────────────────────────
+  {
+    id: 'latzia',
+    emoji: '🌳',
+    growth: 'slow',
+    plantingDepth: 'Root ball depth',
+    name: 'Latzia',
+    botanicalName: 'Quercus infectoria subsp. veneris',
+    category: 'tree',
+    tags: ['deciduous', 'ornamental'],
+    matureRadiusM: 4,
+    heightM: 10,
+    sun: 'full',
+    water: 'low',
+    soil: 'deep or rocky, well-drained',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'dormant',
+      2: 'dormant',
+      3: 'sprouting',
+      4: 'flowering',
+      5: 'leafing',
+      6: 'leafing',
+      7: 'leafing',
+      8: 'leafing',
+      9: 'fruiting',
+      10: 'fruit-ripe',
+      11: 'autumn-color',
+      12: 'dormant',
+    },
+    plantingMonths: [11, 12, 1, 2],
+    flowerColor: '#C9B458',
+    fruitColor: '#7A5230',
+    foliageColor: '#4E7A3A',
+    cyprusNotes:
+      'Cyprus oak, native to the island\'s hills and the Troodos foothills. Mostly deciduous, with acorns in autumn. Very drought-tolerant and deep-rooted, so keep it well away from walls and pipes. Slow-growing but very long-lived.',
   },
 
   // ─── 42. Sweet Chestnut ─────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import { Group, Line, Rect, Text } from 'react-konva';
 import { SURVEY_BOUNDARY_M, SURVEY_AREA_M2 } from '../../data/survey-plot';
+import { BODY_FONT } from './canvasFonts';
 
 interface Props {
   pixelsPerMeter: number;
@@ -22,7 +23,7 @@ export default function SurveyPlot({ pixelsPerMeter, stageScale }: Props) {
         closed
         stroke="#2563EB"
         strokeWidth={2 / stageScale}
-        fill="rgba(37, 99, 235, 0.06)"
+        fill="rgba(110, 80, 45, 0.13)"
       />
 
       {SURVEY_BOUNDARY_M.map((a, i) => {
@@ -49,6 +50,7 @@ export default function SurveyPlot({ pixelsPerMeter, stageScale }: Props) {
               opacity={0.9}
             />
             <Text
+              fontFamily={BODY_FONT}
               x={midX - w / 2}
               y={midY - h / 2}
               width={w}
@@ -79,6 +81,8 @@ export default function SurveyPlot({ pixelsPerMeter, stageScale }: Props) {
       ))}
 
       <Text
+
+        fontFamily={BODY_FONT}
         x={cx - 60 / stageScale}
         y={cy - fontSize}
         width={120 / stageScale}

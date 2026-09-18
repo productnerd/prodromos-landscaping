@@ -24,12 +24,16 @@ interface GardenState {
   measureMode: boolean;
   measurePoints: { x: number; y: number }[];
   history: Snapshot[];
+  /** A plant copied with Cmd+C, and how many times it has been pasted. */
+  clipboard: { plant: PlacedPlant; pastes: number } | null;
   overlayWater: boolean;
   overlaySoil: boolean;
 
   addPlant: (plantId: string, x: number, y: number) => void;
   /** Save the current layout so the next change can be undone. Call once at the start of a drag. */
   checkpoint: () => void;
+  copyPlant: (id: string) => void;
+  pastePlant: () => void;
   moveElement: (id: string, x: number, y: number) => void;
   updatePlant: (id: string, patch: Partial<Pick<PlacedPlant, 'radiusM' | 'lengthM' | 'rotation'>>) => void;
   rotateBuilding: (id: string, rotation: number) => void;
@@ -86,6 +90,7 @@ export const useGardenStore = create<GardenState>()(
       measureMode: false,
       measurePoints: [],
       history: [],
+      clipboard: null,
       overlayWater: false,
       overlaySoil: false,
 
@@ -100,6 +105,26 @@ export const useGardenStore = create<GardenState>()(
       },
 
       checkpoint: () => set((s: GardenState) => ({ history: withSnapshot(s) })),
+
+      copyPlant: (id: string) => {
+        const plant = get().placedPlants.find((p) => p.id === id);
+        if (plant) set({ clipboard: { plant, pastes: 0 } });
+      },
+
+      pastePlant: () => {
+        const clip = get().clipboard;
+        if (!clip) return;
+        // Each paste steps 1.5 m further down and right of the copied plant.
+        const step = (clip.pastes + 1) * 1.5 * get().pixelsPerMeter;
+        const { plantId, radiusM, lengthM, rotation } = clip.plant;
+        const id = uuid();
+        set((s: GardenState) => ({
+          history: withSnapshot(s),
+          placedPlants: [...s.placedPlants, { id, plantId, radiusM, lengthM, rotation, x: clip.plant.x + step, y: clip.plant.y + step }],
+          selectedId: id,
+          clipboard: { plant: clip.plant, pastes: clip.pastes + 1 },
+        }));
+      },
 
       moveElement: (id: string, x: number, y: number) =>
         set((s: GardenState) => ({

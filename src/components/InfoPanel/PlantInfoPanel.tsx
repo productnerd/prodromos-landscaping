@@ -105,7 +105,8 @@ export function PlantInfoPanel() {
         <div className="text-xs italic text-[var(--warm-gray)]">
           {isClimber(plant)
             ? 'Drag the blue square to change the length, the green dot to turn it to a wall.'
-            : "Drag the blue dot on the circle's edge to resize."}
+            : "Drag the blue dot on the circle's edge to resize."}{' '}
+          Cmd+C / Cmd+V to copy.
         </div>
         <div>Height: {plant.heightM}m</div>
       </div>

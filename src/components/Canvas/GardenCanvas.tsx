@@ -10,6 +10,8 @@ import BuildingRect from './BuildingRect';
 import SurveyPlot from './SurveyPlot';
 import { SURVEY_BOUNDARY_M } from '../../data/survey-plot';
 import { STAGING_LEFT_M } from '../../utils/staging';
+import { SOIL_BASE, soilTile } from './soilPattern';
+import { BODY_FONT } from './canvasFonts';
 
 interface GardenCanvasProps {
   stageRef: React.RefObject<Konva.Stage | null>;
@@ -42,10 +44,32 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null);
   const [hoveredWarning, setHoveredWarning] = useState<number | null>(null);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  // Escape key cancels drawing
+  useEffect(() => {
+    document.fonts.ready.then(() => setFontsLoaded(true));
+  }, []);
+
+  // Keyboard shortcuts: Escape, undo, delete, copy and paste.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Leave keys alone while typing in the search box or a note.
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key === 'c' && selectedId) {
+        const { placedPlants, copyPlant } = useGardenStore.getState();
+        if (placedPlants.some((p) => p.id === selectedId)) {
+          e.preventDefault();
+          copyPlant(selectedId);
+        }
+      }
+      if (mod && e.key === 'v' && useGardenStore.getState().clipboard) {
+        e.preventDefault();
+        useGardenStore.getState().pastePlant();
+      }
+
       // Escape backs out of whatever is in progress, one step at a time.
       if (e.key === 'Escape') {
         if (measureMode && measurePoints.length > 0) clearMeasure();
@@ -209,7 +233,8 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
   return (
     <div
       ref={containerRef}
-      className="h-full w-full overflow-hidden bg-[var(--cream)]"
+      className="h-full w-full overflow-hidden"
+      style={{ backgroundColor: SOIL_BASE }}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
@@ -228,14 +253,22 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         onMouseMove={handleMouseMove}
         style={{ cursor: measureMode ? 'crosshair' : undefined }}
       >
-        {/* Layer 1: grid */}
+        {/* Layer 1: soil ground and grid */}
         <Layer listening={false}>
+          <Rect
+            x={-5000}
+            y={-5000}
+            width={15000}
+            height={15000}
+            fillPatternImage={soilTile() as unknown as HTMLImageElement}
+            fillPatternScale={{ x: 1 / stageScale, y: 1 / stageScale }}
+          />
           {/* Grid */}
           {Array.from({ length: Math.ceil(dimensions.width / stageScale / pixelsPerMeter) + 20 }, (_, i) => (
             <Line
               key={`gv-${i}`}
               points={[i * pixelsPerMeter, -1000, i * pixelsPerMeter, 5000]}
-              stroke="#E5E7EB"
+              stroke="rgba(120, 95, 60, 0.12)"
               strokeWidth={0.5}
             />
           ))}
@@ -243,7 +276,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
             <Line
               key={`gh-${i}`}
               points={[-1000, i * pixelsPerMeter, 5000, i * pixelsPerMeter]}
-              stroke="#E5E7EB"
+              stroke="rgba(120, 95, 60, 0.12)"
               strokeWidth={0.5}
             />
           ))}
@@ -251,7 +284,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         </Layer>
 
         {/* Layer 2: plot boundary, building and plants */}
-        <Layer>
+        <Layer key={`labels-${fontsLoaded}`}>
           <SurveyPlot pixelsPerMeter={pixelsPerMeter} stageScale={stageScale} />
           {placedBuildings.map((b) => (
             <BuildingRect
@@ -278,7 +311,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
         </Layer>
 
         {/* Layer 3: measurement + compatibility warning lines */}
-        <Layer>
+        <Layer key={`lines-${fontsLoaded}`}>
           {/* Measurement: fixed first point, live second point until the click lands */}
           {measureMode && measurePoints.length > 0 && (() => {
             const from = measurePoints[0];
@@ -328,6 +361,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
                   strokeWidth={1 / stageScale}
                 />
                 <Text
+                  fontFamily={BODY_FONT}
                   x={midX + offsetX}
                   y={midY + offsetY}
                   text={label}
@@ -398,6 +432,7 @@ export default function GardenCanvas({ stageRef }: GardenCanvasProps) {
                   opacity={0.95}
                 />
                 <Text
+                  fontFamily={BODY_FONT}
                   x={midX - tooltipW / 2}
                   y={midY - tooltipH - 10 / stageScale + 4 / stageScale}
                   text={text}

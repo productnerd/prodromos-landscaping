@@ -2,6 +2,7 @@ import { Group, Rect, Text } from 'react-konva';
 import type { PlantDefinition } from '../../types/plant';
 import { useGardenStore } from '../../stores/gardenStore';
 import { WATER_COLORS, WATER_LABELS, SOIL_COLORS } from './plantColors';
+import { BODY_FONT } from './canvasFonts';
 
 /** Water and soil badges shown under a plant when those overlays are on. */
 export default function PlantBadges({
@@ -38,6 +39,7 @@ export default function PlantBadges({
               opacity={0.9}
             />
             <Text
+              fontFamily={BODY_FONT}
               text={label}
               fontSize={badgeFontSize}
               fontStyle="bold"
@@ -69,6 +71,7 @@ export default function PlantBadges({
               opacity={0.9}
             />
             <Text
+              fontFamily={BODY_FONT}
               text={label}
               fontSize={badgeFontSize}
               fontStyle="bold"

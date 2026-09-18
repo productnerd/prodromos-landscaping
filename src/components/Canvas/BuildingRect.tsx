@@ -1,6 +1,7 @@
 import { Group, Rect, Text, Circle, Line } from 'react-konva';
 import type { PlacedBuilding } from '../../types/canvas';
 import { useGardenStore } from '../../stores/gardenStore';
+import { NAME_FONT, BODY_FONT } from './canvasFonts';
 
 interface BuildingRectProps {
   building: PlacedBuilding;
@@ -65,6 +66,7 @@ export default function BuildingRect({
         strokeWidth={isSelected ? 3 / stageScale : 1 / stageScale}
       />
       <Text
+        fontFamily={NAME_FONT}
         text={building.label}
         fontSize={fontSize}
         fill="#1F2937"
@@ -78,6 +80,7 @@ export default function BuildingRect({
       />
       {isSelected && (
         <Text
+          fontFamily={BODY_FONT}
           text={dimLabel}
           fontSize={fontSize * 0.85}
           fill="#2563EB"
