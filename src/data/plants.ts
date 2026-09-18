@@ -1,18 +1,18 @@
 import type { PlantDefinition } from '../types/plant';
 
 export const PLANTS: PlantDefinition[] = [
-  // ─── 1. Cedar ───────────────────────────────────────────────────────
+  // ─── 1. Lebanese Cedar ──────────────────────────────────────────────
   {
     id: 'cedar',
     emoji: '🌲',
     growth: 'slow',
     plantingDepth: 'Root ball depth',
-    name: 'Cedar',
-    botanicalName: 'Cedrus libani brevifolia',
+    name: 'Lebanese Cedar',
+    botanicalName: 'Cedrus libani',
     category: 'tree',
     tags: ['evergreen', 'ornamental'],
-    matureRadiusM: 3,
-    heightM: 15,
+    matureRadiusM: 5,
+    heightM: 25,
     sun: 'full',
     water: 'medium',
     soil: 'well-drained rocky or loamy',
@@ -37,7 +37,7 @@ export const PLANTS: PlantDefinition[] = [
     foliageColor: '#2D5A27',
     mapColor: '#163A17',
     cyprusNotes:
-      'Endemic Cyprus cedar. Thrives at Prodromos elevation. Slow-growing, long-lived. National treasure species.',
+      'Lebanese cedar: a mountain tree that suits the Prodromos altitude and cold winters. Grows into a large, flat-topped crown, so give it plenty of room. Slow-growing and very long-lived. Close relative of the smaller Cyprus cedar (Cedrus libani subsp. brevifolia), native to the nearby Troodos.',
   },
 
   // ─── 2. Walnut ──────────────────────────────────────────────────────
