@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useGardenStore } from '../../stores/gardenStore';
 import { PLANTS } from '../../data/plants';
+import { plantPhotoUrl, PLANT_PHOTOS } from '../../data/plant-photos';
 import { CATEGORY_LABELS } from '../../types/plant';
 import type { PlantCategory, PlantTag, PlantDefinition } from '../../types/plant';
 
@@ -43,6 +44,7 @@ const SUN_LABEL: Record<PlantDefinition['sun'], string> = {
 function PlantCard({ plant }: { plant: PlantDefinition }) {
   const brandColor = getBrandColor(plant);
   const requestPlacePlant = useGardenStore((s) => s.requestPlacePlant);
+  const photo = plantPhotoUrl(plant.id);
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('plantId', plant.id);
@@ -58,13 +60,25 @@ function PlantCard({ plant }: { plant: PlantDefinition }) {
       className="flex items-start gap-3 py-2 px-3 border-b border-[var(--divider)] cursor-pointer hover:brightness-95"
       style={{ backgroundColor: hexToRgba(brandColor, 0.08) }}
     >
-      <div
-        className="w-5 h-5 rounded-full flex-shrink-0 mt-1 ring-2"
-        style={{
-          backgroundColor: brandColor,
-          ['--tw-ring-color' as string]: hexToRgba(brandColor, 0.35),
-        }}
-      />
+      {photo ? (
+        <img
+          src={photo}
+          alt={plant.name}
+          title={`Photo: ${PLANT_PHOTOS[plant.id].artist}`}
+          loading="lazy"
+          draggable={false}
+          className="w-16 h-16 flex-shrink-0 rounded-[4px] object-cover ring-2"
+          style={{ ['--tw-ring-color' as string]: hexToRgba(brandColor, 0.5) }}
+        />
+      ) : (
+        <div
+          className="w-5 h-5 rounded-full flex-shrink-0 mt-1 ring-2"
+          style={{
+            backgroundColor: brandColor,
+            ['--tw-ring-color' as string]: hexToRgba(brandColor, 0.35),
+          }}
+        />
+      )}
       <div className="min-w-0 flex-1">
         <div className="font-[Fraunces,Georgia,serif] font-medium text-sm text-[var(--forest-deep)] truncate">{plant.name}</div>
         <div className="text-xs italic text-[var(--ink-light)] truncate">{plant.botanicalName}</div>

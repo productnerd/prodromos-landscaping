@@ -1,5 +1,6 @@
 import { useGardenStore } from '../../stores/gardenStore';
 import { PLANTS_MAP } from '../../data/plants';
+import { plantPhotoUrl, PLANT_PHOTOS } from '../../data/plant-photos';
 import { isClimber, climberLengthM, CLIMBER_DEPTH_M } from '../../utils/staging';
 import { STATE_LABELS, STATE_COLORS } from '../../types/plant';
 
@@ -28,6 +29,18 @@ export function PlantInfoPanel() {
 
   return (
     <div className="absolute bottom-3 left-3 z-20 w-80 max-h-[60%] overflow-y-auto rounded-md border border-[var(--divider)] bg-[var(--paper)] shadow-[0_8px_28px_rgba(42,63,43,0.22)] p-4">
+      {plantPhotoUrl(plant.id) && (
+        <figure className="-mx-4 -mt-4 mb-3">
+          <img src={plantPhotoUrl(plant.id)!} alt={plant.name} className="w-full h-44 object-cover rounded-t-md" />
+          <figcaption className="px-4 pt-1 text-[10px] text-[var(--warm-gray)]">
+            Photo:{' '}
+            <a href={PLANT_PHOTOS[plant.id].pageUrl} target="_blank" rel="noreferrer" className="underline">
+              {PLANT_PHOTOS[plant.id].artist}
+            </a>
+            , {PLANT_PHOTOS[plant.id].license}, via Wikimedia Commons
+          </figcaption>
+        </figure>
+      )}
       <button
         onClick={() => setSelectedId(null)}
         aria-label="Close details"
