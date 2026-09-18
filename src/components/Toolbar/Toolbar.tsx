@@ -9,7 +9,6 @@ export default function Toolbar() {
   const {
     selectedId,
     placedPlants,
-    pixelsPerMeter,
     history,
     overlayWater,
     overlaySoil,
@@ -17,7 +16,6 @@ export default function Toolbar() {
     measureMode,
     setMeasureMode,
     clearMeasure,
-    setPixelsPerMeter,
     undo,
     setOverlayWater,
     setOverlaySoil,
@@ -95,22 +93,6 @@ export default function Toolbar() {
           title="Show soil drainage"
         >
           Soil
-        </button>
-      </div>
-
-      <div className="flex items-center gap-1 text-xs ml-2">
-        <button
-          className="w-6 h-6 rounded-[4px] border border-[var(--divider)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--cream)] flex items-center justify-center transition-colors"
-          onClick={() => setPixelsPerMeter(Math.max(10, pixelsPerMeter - 5))}
-        >
-          -
-        </button>
-        <span className="w-16 text-center text-[var(--ink-light)]">{pixelsPerMeter} px/m</span>
-        <button
-          className="w-6 h-6 rounded-[4px] border border-[var(--divider)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--cream)] flex items-center justify-center transition-colors"
-          onClick={() => setPixelsPerMeter(pixelsPerMeter + 5)}
-        >
-          +
         </button>
       </div>
     </div>

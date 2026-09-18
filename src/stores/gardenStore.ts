@@ -41,7 +41,6 @@ interface GardenState {
   removeElement: (id: string) => void;
   setMonth: (month: number) => void;
   setSelectedId: (id: string | null) => void;
-  setPixelsPerMeter: (ppm: number) => void;
   setMeasureMode: (on: boolean) => void;
   addMeasurePoint: (x: number, y: number) => void;
   clearMeasure: () => void;
@@ -179,7 +178,6 @@ export const useGardenStore = create<GardenState>()(
 
       setMonth: (month: number) => set({ currentMonth: month }),
       setSelectedId: (id: string | null) => set({ selectedId: id }),
-      setPixelsPerMeter: (ppm: number) => set({ pixelsPerMeter: ppm }),
       setMeasureMode: (on: boolean) =>
         set({ measureMode: on, measurePoints: [] }),
       addMeasurePoint: (x: number, y: number) =>
