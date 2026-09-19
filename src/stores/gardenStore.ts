@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 import type { PlacedPlant, PlacedBuilding } from '../types/canvas';
 import { DEFAULT_BUILDING, DEFAULT_PATIOS, DEFAULT_DOXAMENI, OLD_PATIO_SPOTS_PX } from '../data/survey-plot';
 import { PLANTS_MAP } from '../data/plants';
-import { stagingSpot, plantHalfExtents } from '../utils/staging';
+import { stagingSpot } from '../utils/staging';
 import { DEFAULT_PIXELS_PER_METER } from '../utils/scale';
 
 /** What undo restores: the full layout before a change. */
@@ -21,6 +21,7 @@ interface GardenState {
   pixelsPerMeter: number;
   currentMonth: number;
   selectedId: string | null;
+  previewPlantId: string | null;
   measureMode: boolean;
   measurePoints: { x: number; y: number }[];
   history: Snapshot[];
@@ -28,6 +29,7 @@ interface GardenState {
   clipboard: { plant: PlacedPlant; pastes: number } | null;
   overlayWater: boolean;
   overlaySoil: boolean;
+  overlaySun: boolean;
 
   addPlant: (plantId: string, x: number, y: number) => void;
   /** Save the current layout so the next change can be undone. Call once at the start of a drag. */
@@ -44,9 +46,11 @@ interface GardenState {
   setMeasureMode: (on: boolean) => void;
   addMeasurePoint: (x: number, y: number) => void;
   clearMeasure: () => void;
-  requestPlacePlant: (plantId: string) => void;
+  /** Show a plant's details from the list without adding it to the plan. */
+  setPreviewPlant: (plantId: string | null) => void;
   setOverlayWater: (on: boolean) => void;
   setOverlaySoil: (on: boolean) => void;
+  setOverlaySun: (on: boolean) => void;
   undo: () => void;
 }
 
@@ -101,12 +105,14 @@ export const useGardenStore = create<GardenState>()(
       pixelsPerMeter: DEFAULT_PIXELS_PER_METER,
       currentMonth: new Date().getMonth() + 1,
       selectedId: null,
+      previewPlantId: null,
       measureMode: false,
       measurePoints: [],
       history: [],
       clipboard: null,
       overlayWater: false,
       overlaySoil: false,
+      overlaySun: false,
 
       addPlant: (plantId: string, x: number, y: number) => {
         const id = uuid();
@@ -177,7 +183,7 @@ export const useGardenStore = create<GardenState>()(
         })),
 
       setMonth: (month: number) => set({ currentMonth: month }),
-      setSelectedId: (id: string | null) => set({ selectedId: id }),
+      setSelectedId: (id: string | null) => set({ selectedId: id, previewPlantId: null }),
       setMeasureMode: (on: boolean) =>
         set({ measureMode: on, measurePoints: [] }),
       addMeasurePoint: (x: number, y: number) =>
@@ -186,15 +192,10 @@ export const useGardenStore = create<GardenState>()(
           measurePoints: st.measurePoints.length >= 2 ? [{ x, y }] : [...st.measurePoints, { x, y }],
         })),
       clearMeasure: () => set({ measurePoints: [] }),
-      requestPlacePlant: (plantId: string) => {
-        const s = get();
-        const plant = PLANTS_MAP[plantId];
-        const [halfW, halfH] = plant ? plantHalfExtents(plant) : [1, 1];
-        const spot = stagingSpot(halfW, halfH, s.placedPlants, s.placedBuildings, s.pixelsPerMeter);
-        s.addPlant(plantId, spot.x, spot.y);
-      },
+      setPreviewPlant: (plantId: string | null) => set({ previewPlantId: plantId, selectedId: null }),
       setOverlayWater: (on: boolean) => set({ overlayWater: on }),
       setOverlaySoil: (on: boolean) => set({ overlaySoil: on }),
+      setOverlaySun: (on: boolean) => set({ overlaySun: on }),
 
       undo: () =>
         set((s: GardenState) => {

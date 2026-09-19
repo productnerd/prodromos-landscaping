@@ -20,6 +20,18 @@ export const SOIL_COLORS: Record<string, string> = {
 };
 
 /** Colour on the map for a month: a fixed colour, the real leaf colour, or the season's. */
+export const SUN_COLORS: Record<PlantDefinition['sun'], string> = {
+  full: '#D98E04',
+  partial: '#8C8A3E',
+  shade: '#4B5A6B',
+};
+
+export const SUN_LABELS: Record<PlantDefinition['sun'], string> = {
+  full: 'FULL SUN',
+  partial: 'PART SHADE',
+  shade: 'SHADE',
+};
+
 export function mapFill(plant: PlantDefinition, state: MonthlyState, month: number): string {
   return plant.mapColor ?? plant.leafColors?.[month] ?? getFillColor(plant, state);
 }

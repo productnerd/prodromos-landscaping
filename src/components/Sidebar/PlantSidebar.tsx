@@ -43,7 +43,8 @@ const SUN_LABEL: Record<PlantDefinition['sun'], string> = {
 
 function PlantCard({ plant }: { plant: PlantDefinition }) {
   const brandColor = getBrandColor(plant);
-  const requestPlacePlant = useGardenStore((s) => s.requestPlacePlant);
+  const setPreviewPlant = useGardenStore((s) => s.setPreviewPlant);
+  const isOpen = useGardenStore((s) => s.previewPlantId === plant.id);
   const photo = plantPhotoUrl(plant.id);
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -55,49 +56,35 @@ function PlantCard({ plant }: { plant: PlantDefinition }) {
     <div
       draggable="true"
       onDragStart={handleDragStart}
-      onClick={() => requestPlacePlant(plant.id)}
-      title={`Click to place ${plant.name} on the plan, or drag it where you want it`}
-      className="flex items-start gap-3 py-2 px-3 border-b border-[var(--divider)] cursor-pointer hover:brightness-95"
+      onClick={() => setPreviewPlant(plant.id)}
+      title={`Click to see ${plant.name}; drag it onto the plan to add it`}
+      className={`flex items-stretch border-b border-[var(--divider)] cursor-pointer hover:brightness-95 ${
+        isOpen ? 'ring-2 ring-inset ring-[var(--forest)]' : ''
+      }`}
       style={{ backgroundColor: hexToRgba(brandColor, 0.08) }}
     >
       {photo ? (
-        <img
-          src={photo}
-          alt={plant.name}
-          title={`Photo: ${PLANT_PHOTOS[plant.id].artist}`}
-          loading="lazy"
-          draggable={false}
-          className="w-16 h-16 flex-shrink-0 rounded-[4px] object-cover ring-2"
-          style={{ ['--tw-ring-color' as string]: hexToRgba(brandColor, 0.5) }}
-        />
+        // The card's text sets its height; the photo fills it without stretching the card.
+        <div className="relative w-20 flex-shrink-0 self-stretch overflow-hidden">
+          <img
+            src={photo}
+            alt={plant.name}
+            title={`Photo: ${PLANT_PHOTOS[plant.id].artist}`}
+            loading="lazy"
+            draggable={false}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
       ) : (
-        <div
-          className="w-5 h-5 rounded-full flex-shrink-0 mt-1 ring-2"
-          style={{
-            backgroundColor: brandColor,
-            ['--tw-ring-color' as string]: hexToRgba(brandColor, 0.35),
-          }}
-        />
+        <div className="w-20 flex-shrink-0 self-stretch" style={{ backgroundColor: hexToRgba(brandColor, 0.45) }} />
       )}
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 py-2 px-3">
         <div className="font-[Fraunces,Georgia,serif] font-medium text-sm text-[var(--forest-deep)] truncate">{plant.name}</div>
         <div className="text-xs italic text-[var(--ink-light)] truncate">{plant.botanicalName}</div>
-        <div className="flex flex-wrap gap-1 mt-1">
+        <div className="mt-1">
           <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-[var(--cream)] text-[var(--ink-light)] border border-[var(--divider)]">
             {SUN_LABEL[plant.sun]}
           </span>
-          {plant.tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-[10px] px-1.5 py-0.5 rounded"
-              style={{
-                backgroundColor: hexToRgba(brandColor, 0.12),
-                color: brandColor,
-              }}
-            >
-              {tag}
-            </span>
-          ))}
         </div>
       </div>
     </div>

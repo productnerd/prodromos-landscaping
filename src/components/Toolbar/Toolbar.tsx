@@ -12,6 +12,7 @@ export default function Toolbar() {
     history,
     overlayWater,
     overlaySoil,
+    overlaySun,
     removeElement,
     measureMode,
     setMeasureMode,
@@ -19,6 +20,7 @@ export default function Toolbar() {
     undo,
     setOverlayWater,
     setOverlaySoil,
+    setOverlaySun,
   } = useGardenStore();
 
   // Only plants can be deleted; the building is part of the setup.
@@ -93,6 +95,17 @@ export default function Toolbar() {
           title="Show soil drainage"
         >
           Soil
+        </button>
+        <button
+          className={`px-2 py-1 rounded-[4px] border text-[10px] transition-colors ${
+            overlaySun
+              ? 'border-[#D98E04] bg-[#D98E04] text-[var(--paper)]'
+              : 'border-[var(--divider)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--cream)]'
+          }`}
+          onClick={() => setOverlaySun(!overlaySun)}
+          title="Show sun needs"
+        >
+          Sun
         </button>
       </div>
     </div>

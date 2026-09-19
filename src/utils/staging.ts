@@ -17,10 +17,6 @@ export const isClimber = (plant: PlantDefinition) => plant.category === 'climber
 export const climberLengthM = (plant: PlantDefinition, placed?: PlacedPlant) =>
   placed?.lengthM ?? plant.matureRadiusM * 2;
 
-/** Half the width and height a freshly placed plant takes up, unrotated. */
-export function plantHalfExtents(plant: PlantDefinition): [number, number] {
-  return isClimber(plant) ? [climberLengthM(plant) / 2, CLIMBER_DEPTH_M / 2] : [plant.matureRadiusM, plant.matureRadiusM];
-}
 const GAP_M = 1;
 
 /**

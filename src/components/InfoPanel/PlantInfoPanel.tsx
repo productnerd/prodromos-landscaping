@@ -18,10 +18,12 @@ export function PlantInfoPanel() {
   const updatePlant = useGardenStore((s) => s.updatePlant);
   const checkpoint = useGardenStore((s) => s.checkpoint);
 
-  const placed = placedPlants.find((p) => p.id === selectedId);
-  if (!placed) return null;
+  const previewPlantId = useGardenStore((s) => s.previewPlantId);
+  const setPreviewPlant = useGardenStore((s) => s.setPreviewPlant);
 
-  const plant = PLANTS_MAP[placed.plantId];
+  // Either a plant placed on the plan, or one opened from the list to look at.
+  const placed = placedPlants.find((p) => p.id === selectedId);
+  const plant = PLANTS_MAP[placed?.plantId ?? previewPlantId ?? ''];
   if (!plant) return null;
 
   const state = plant.monthlyStates[currentMonth];
@@ -42,7 +44,10 @@ export function PlantInfoPanel() {
         </figure>
       )}
       <button
-        onClick={() => setSelectedId(null)}
+        onClick={() => {
+          setSelectedId(null);
+          setPreviewPlant(null);
+        }}
         aria-label="Close details"
         className="absolute top-2 right-2 w-6 h-6 rounded-[4px] border border-[var(--divider)] bg-[var(--paper)] text-[var(--ink-light)] hover:bg-[var(--cream)] leading-none"
       >
@@ -79,7 +84,7 @@ export function PlantInfoPanel() {
         {isClimber(plant) ? (
           <div>
             Along the wall: {climberLengthM(plant, placed).toFixed(1)}m × {CLIMBER_DEPTH_M}m deep
-            {placed.lengthM !== undefined && placed.lengthM !== plant.matureRadiusM * 2 && (
+            {placed?.lengthM !== undefined && placed.lengthM !== plant.matureRadiusM * 2 && (
               <>
                 {' '}
                 <button
@@ -96,8 +101,8 @@ export function PlantInfoPanel() {
           </div>
         ) : (
           <div>
-            Spread: {((placed.radiusM ?? plant.matureRadiusM) * 2).toFixed(1)}m diameter
-            {placed.radiusM !== undefined && placed.radiusM !== plant.matureRadiusM && (
+            Spread: {((placed?.radiusM ?? plant.matureRadiusM) * 2).toFixed(1)}m diameter
+            {placed?.radiusM !== undefined && placed.radiusM !== plant.matureRadiusM && (
               <>
                 {' '}
                 <span className="text-[var(--warm-gray)]">(mature {(plant.matureRadiusM * 2).toFixed(1)}m)</span>{' '}
@@ -115,10 +120,11 @@ export function PlantInfoPanel() {
           </div>
         )}
         <div className="text-xs italic text-[var(--warm-gray)]">
-          {isClimber(plant)
-            ? 'Drag the blue square to change the length, the green dot to turn it to a wall.'
-            : "Drag the blue dot on the circle's edge to resize."}{' '}
-          Cmd+C / Cmd+V to copy.
+          {!placed
+            ? 'Drag it from the list onto the plan to add it.'
+            : isClimber(plant)
+              ? 'Drag the blue square to change the length, the green dot to turn it to a wall. Cmd+C / Cmd+V to copy.'
+              : "Drag the blue dot on the circle's edge to resize. Cmd+C / Cmd+V to copy."}
         </div>
         <div>Height: {plant.heightM}m</div>
       </div>

@@ -1,7 +1,7 @@
 import type { PlantDefinition, MonthlyState } from '../../types/plant';
 
 /** Needle trees get starbursts rather than a leafy canopy. */
-const CONIFERS = new Set(['cedar', 'pine']);
+const CONIFERS = new Set(['cedar', 'pine', 'black-pine']);
 
 /** Small seeded random generator, so each plant keeps the same pattern. */
 function rng(seed: string) {
