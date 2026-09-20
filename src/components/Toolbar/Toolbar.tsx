@@ -1,4 +1,5 @@
 import { useGardenStore } from '../../stores/gardenStore';
+import PlanFile from './PlanFile';
 
 const BTN =
   'px-3 py-1 text-xs rounded-[4px] border border-[var(--divider)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--cream)] hover:border-[var(--warm-gray)] transition-colors';
@@ -65,6 +66,8 @@ export default function Toolbar() {
       >
         Undo
       </button>
+
+      <PlanFile />
 
       <a
         className={BTN}

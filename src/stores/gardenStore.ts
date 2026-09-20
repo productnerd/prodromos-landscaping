@@ -34,6 +34,8 @@ interface GardenState {
   addPlant: (plantId: string, x: number, y: number) => void;
   /** Save the current layout so the next change can be undone. Call once at the start of a drag. */
   checkpoint: () => void;
+  /** Replace the whole plan, e.g. when loading it from a file. */
+  loadPlan: (plan: { placedPlants: PlacedPlant[]; placedBuildings: PlacedBuilding[] }) => void;
   copyPlant: (id: string) => void;
   pastePlant: () => void;
   moveElement: (id: string, x: number, y: number) => void;
@@ -125,6 +127,9 @@ export const useGardenStore = create<GardenState>()(
       },
 
       checkpoint: () => set((s: GardenState) => ({ history: withSnapshot(s) })),
+
+      loadPlan: (plan) =>
+        set({ placedPlants: plan.placedPlants, placedBuildings: plan.placedBuildings, history: [], selectedId: null, previewPlantId: null }),
 
       copyPlant: (id: string) => {
         const plant = get().placedPlants.find((p) => p.id === id);
