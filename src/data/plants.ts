@@ -1609,6 +1609,45 @@ export const PLANTS: PlantDefinition[] = [
       'Big orange trumpets from July to September, on a vigorous climber that clings to walls by itself with aerial roots. Hardy well below the Prodromos winter. Two cautions: those roots get into render, gutters and roof tiles, so grow it on a sturdy pergola or a wall you do not mind, and it suckers freely from the roots and can run away from you. Flowers on new growth, so prune hard in winter. Needs little water once established.',
   },
 
+  // ─── Honeysuckle ───────────────────────────────────────────────────
+  {
+    id: 'honeysuckle',
+    emoji: '🌸',
+    growth: 'medium',
+    plantingDepth: 'Root ball depth',
+    name: 'Honeysuckle',
+    botanicalName: 'Lonicera etrusca',
+    category: 'climber',
+    tags: ['flower', 'ornamental', 'evergreen'],
+    matureRadiusM: 2,
+    heightM: 4,
+    sun: 'full',
+    water: 'low',
+    soil: 'any well-drained',
+    drainage: 'good',
+    treeRisk: { level: 'caution', note: 'Twining stems can bite into a young sapling and leave it ridged, though they do no harm to a mature trunk. Give it a pergola, fence or an established tree.' },
+    monthlyStates: {
+      1: 'evergreen-foliage',
+      2: 'evergreen-foliage',
+      3: 'leafing',
+      4: 'leafing',
+      5: 'flowering',
+      6: 'flowering',
+      7: 'flowering',
+      8: 'leafing',
+      9: 'fruiting',
+      10: 'fruit-ripe',
+      11: 'evergreen-foliage',
+      12: 'evergreen-foliage',
+    },
+    plantingMonths: [10, 11, 12, 1, 2, 3],
+    flowerColor: '#F2D9A8',
+    fruitColor: '#C1272D',
+    foliageColor: '#5E8A55',
+    cyprusNotes:
+      'The Mediterranean honeysuckle, native to Cyprus and the one you meet on Troodos paths. Cream flowers ageing to yellow and pink from May, scented in the evening, then red berries. Semi-evergreen, drought-tolerant and happy on poor ground, unlike the northern honeysuckles that want damp soil. Roots like shade, top likes sun.',
+  },
+
   // ─── 40. Pine ──────────────────────────────────────────────────────
   {
     id: 'pine',
