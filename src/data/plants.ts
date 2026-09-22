@@ -1190,7 +1190,7 @@ export const PLANTS: PlantDefinition[] = [
     emoji: '🌼',
     growth: 'fast',
     plantingDepth: 'Shallow (surface)',
-    name: 'Chamomile',
+    name: 'German Chamomile',
     botanicalName: 'Matricaria chamomilla',
     category: 'herb',
     tags: ['flower', 'herb', 'edible'],
@@ -1220,6 +1220,44 @@ export const PLANTS: PlantDefinition[] = [
     foliageColor: '#90EE90',
     cyprusNotes:
       'Annual — resow each spring or let self-seed. Harvest flowers for tea when petals fold back. Attracts beneficial insects.',
+  },
+
+  // ─── Roman Chamomile ───────────────────────────────────────────────
+  {
+    id: 'roman-chamomile',
+    emoji: '🌼',
+    growth: 'medium',
+    plantingDepth: 'Surface, firm in',
+    name: 'Roman Chamomile',
+    botanicalName: 'Chamaemelum nobile',
+    category: 'groundcover',
+    tags: ['flower', 'herb', 'evergreen'],
+    matureRadiusM: 0.25,
+    heightM: 0.1,
+    sun: 'full',
+    water: 'medium',
+    soil: 'light, well-drained',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'evergreen-foliage',
+      2: 'evergreen-foliage',
+      3: 'sprouting',
+      4: 'leafing',
+      5: 'leafing',
+      6: 'flowering',
+      7: 'flowering',
+      8: 'flowering',
+      9: 'leafing',
+      10: 'evergreen-foliage',
+      11: 'evergreen-foliage',
+      12: 'evergreen-foliage',
+    },
+    plantingMonths: [3, 4, 9, 10],
+    flowerColor: '#F7F3E3',
+    fruitColor: '#8B7355',
+    foliageColor: '#7FA05A',
+    cyprusNotes:
+      'The perennial chamomile that makes a mat rather than a bush: about 10 cm high, evergreen in mild winters, and it smells of apples when you walk on it. This is the chamomile lawn plant; the non-flowering form Treneague is the one usually used for that. Takes light footfall, not a path. Wants sun and light, well-drained soil, and some water through the dry months. Hardy at Prodromos. For tea, use German chamomile instead.',
   },
 
   // ─── 33. Ground Covers ──────────────────────────────────────────────

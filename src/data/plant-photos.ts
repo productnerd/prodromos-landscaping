@@ -50,6 +50,7 @@ export const PLANT_PHOTOS: Record<string, PhotoCredit> = {
   raspberry: {"artist": "Acabashi", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Raspberry_canes_Easton_Lodge_Gardens_walled_garden_01.jpg"},
   rhododendron: {"artist": "Rasbak", "license": "CC BY-SA 3.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Pontische_rododendron_struik_(Rhododendron_ponticum).jpg"},
   "silk-tree": {"artist": "Famartin", "license": "CC BY-SA 3.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:2013-08-26_14_19_55_Mimosa_viewed_from_the_southeast_on_Pennington_Road_near_Stuart_Avenue_in_Ewing,_New_Jersey.jpg"},
+  "roman-chamomile": {"artist": "Krzysztof Ziarnek, Kenraiz", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Chamaemelum_nobile_kz03.jpg"},
   "smoke-tree": {"artist": "Acabashi", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Cotinus_coggygria_smoke_tree_Harlow_Museum_%26_Walled_Gardens,_Essex.jpg"},
   spearmint: {"artist": "Kolforn (Kolforn) I'd appreciate if you could mail me (Kolforn@gmail.com) if you", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:-2018-05-13_Garden_mint_plants,_Northrepps,_Cromer.JPG"},
   strawberries: {"artist": "Sandy Gerrard", "license": "CC BY-SA 2.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Sloping_strawberry_bed_at_Trengwainton_Gardens_-_geograph.org.uk_-_6637357.jpg"},
