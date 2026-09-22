@@ -79,6 +79,12 @@ export function PlantInfoPanel() {
         <div>🚿 {plant.drainage}</div>
       </div>
 
+      {plant.replant && (
+        <div className="text-xs mb-3 p-2 rounded-[4px] bg-[var(--terracotta-light)]/40 text-[var(--terracotta)]">
+          ↻ {plant.replant.note}
+        </div>
+      )}
+
       {plant.category === 'climber' && (
         <div
           className={`text-xs mb-3 p-2 rounded-[4px] ${

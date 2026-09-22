@@ -53,6 +53,8 @@ export interface PlantDefinition {
   foliageColor: string;
   /** Colour on the map in every month, instead of following the season. */
   mapColor?: string;
+  /** Plants that do not simply carry on year after year. */
+  replant?: { every: 'year' | 'few-years'; note: string };
   /** For climbers: what happens if it grows into a tree. Absent means no particular risk. */
   treeRisk?: { level: 'harmful' | 'caution'; note: string };
   /** Leaf colour for each month the plant is in leaf (1 = Jan). */

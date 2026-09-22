@@ -761,6 +761,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#FF2400',
     fruitColor: '#5E4B3B',
     foliageColor: '#558B2F',
+    replant: { every: 'few-years', note: 'Bulbs last a few years here, helped by the cold winters, but flowering weakens. Plan to replace them every 3-4 years.' },
     cyprusNotes:
       'Prodromos cold winters provide excellent chilling. Plant bulbs 15cm deep in autumn. Lift bulbs after foliage dies or treat as annual.',
   },
@@ -1218,6 +1219,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#FFFDD0',
     fruitColor: '#5E4B3B',
     foliageColor: '#90EE90',
+    replant: { every: 'year', note: 'Annual: resow each spring, or leave a few flowers to set seed and it will come back on its own.' },
     cyprusNotes:
       'Annual — resow each spring or let self-seed. Harvest flowers for tea when petals fold back. Attracts beneficial insects.',
   },
@@ -1408,6 +1410,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#FFFFFF',
     fruitColor: '#228B22',
     foliageColor: '#3B7A2C',
+    replant: { every: 'year', note: 'Annual: sow fresh seed each spring, after the last frost (about mid-April at 1,400 m).' },
     cyprusNotes:
       'Annual. Sow after last frost (mid-Apr at 1400m). Bush and climbing varieties available. Climbing types need support. Fix nitrogen in soil.',
   },
@@ -1446,6 +1449,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#FFA500',
     fruitColor: '#FF8C00',
     foliageColor: '#2E7D32',
+    replant: { every: 'year', note: 'Annual: sow fresh seed each spring, after the last frost. Start indoors to gain time at this altitude.' },
     cyprusNotes:
       'Annual. Needs lots of space — vines spread 3m+. Heavy feeder — amend soil with compost. Shorter season at 1400m — start indoors if needed.',
   },
@@ -1484,6 +1488,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#FFFFFF',
     fruitColor: '#FF1744',
     foliageColor: '#4CAF50',
+    replant: { every: 'few-years', note: 'Plants tire after about 3 years. Replace them with runners taken from the best plants.' },
     cyprusNotes:
       'Mountain strawberries are sweeter due to cool nights. Mulch with straw to keep fruit clean. Replace plants every 3 years. Net against birds.',
   },

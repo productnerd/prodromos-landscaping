@@ -92,6 +92,11 @@ function PlantCard({ plant }: { plant: PlantDefinition }) {
           <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-[var(--cream)] text-[var(--ink-light)] border border-[var(--divider)]">
             {SUN_LABEL[plant.sun]}
           </span>
+          {plant.replant && (
+            <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded font-medium bg-[var(--terracotta-light)] text-[var(--terracotta)]">
+              {plant.replant.every === 'year' ? '↻ Replant yearly' : '↻ Replace in a few years'}
+            </span>
+          )}
           {plant.category === 'climber' && <span className={`ml-1 text-[10px] px-1.5 py-0.5 rounded font-medium ${TREE_RISK[plant.treeRisk?.level ?? 'safe'].className}`}>{TREE_RISK[plant.treeRisk?.level ?? 'safe'].label}</span>}
         </div>
       </div>

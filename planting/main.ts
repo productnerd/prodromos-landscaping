@@ -19,7 +19,7 @@ const SUN_LABEL = { full: '☀️ Full Sun', partial: '🌤 Partial Shade', shad
 const WATER_LABEL = { low: 'Every 10-14 days', medium: 'Weekly', high: '2x weekly' } as const;
 
 function isAnnual(p: PlantDefinition) {
-  return p.category === 'vegetable' || p.id === 'chamomile';
+  return p.replant?.every === 'year';
 }
 
 function spacing(p: PlantDefinition) {
