@@ -91,3 +91,34 @@ export async function readPlanFromBlob(file: File): Promise<Plan | null> {
   if (!Array.isArray(data?.placedPlants) || !Array.isArray(data?.placedBuildings)) return null;
   return { placedPlants: data.placedPlants, placedBuildings: data.placedBuildings };
 }
+
+/** The dev server keeps the plan on disk for us; the live site has no server. */
+const PLAN_URL = `${import.meta.env.BASE_URL}__plan`;
+export const hasPlanServer = import.meta.env.DEV;
+
+export async function loadPlanFromServer(): Promise<Plan | null> {
+  try {
+    const res = await fetch(PLAN_URL);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data?.placedPlants) || !Array.isArray(data?.placedBuildings)) return null;
+    return { placedPlants: data.placedPlants, placedBuildings: data.placedBuildings };
+  } catch {
+    return null;
+  }
+}
+
+/** Returns the message to show: empty when saved, otherwise what went wrong. */
+export async function savePlanToServer(plan: Plan): Promise<string> {
+  try {
+    const res = await fetch(PLAN_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(plan),
+    });
+    if (res.status === 409) return 'Not saved: the plan looks empty. Reload the page.';
+    return res.ok ? '' : 'Could not save to disk';
+  } catch {
+    return 'Could not reach the dev server';
+  }
+}

@@ -12,6 +12,9 @@ import {
   rememberedFile,
   writePlan,
   wouldWipePlants,
+  hasPlanServer,
+  loadPlanFromServer,
+  savePlanToServer,
   type Plan,
 } from '../../utils/planFile';
 
@@ -30,10 +33,40 @@ const planOf = (): Plan => {
 export default function PlanFile() {
   const loadPlan = useGardenStore((s) => s.loadPlan);
   const [handle, setHandle] = useState<FileSystemFileHandle | null>(null);
+  const [serverStatus, setServerStatus] = useState('');
   const [status, setStatus] = useState<string>('');
   const [needsPermission, setNeedsPermission] = useState(false);
   const savedRef = useRef<string>('');
   const importRef = useRef<HTMLInputElement>(null);
+
+  // While developing, the dev server keeps the plan on disk for us.
+  useEffect(() => {
+    if (!hasPlanServer) return;
+    let timer: number | undefined;
+    let loaded = false;
+    (async () => {
+      const plan = await loadPlanFromServer();
+      if (plan) {
+        loadPlan(plan);
+        setServerStatus(`Loaded from backups/plan.json (${plan.placedPlants.length} plants)`);
+      }
+      loaded = true;
+    })();
+
+    const unsubscribe = useGardenStore.subscribe((s, prev) => {
+      if (!loaded || (s.placedPlants === prev.placedPlants && s.placedBuildings === prev.placedBuildings)) return;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(async () => {
+        const { placedPlants, placedBuildings } = useGardenStore.getState();
+        const problem = await savePlanToServer({ placedPlants, placedBuildings });
+        setServerStatus(problem || `Saved to backups/plan.json at ${new Date().toLocaleTimeString()}`);
+      }, 600);
+    });
+    return () => {
+      window.clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [loadPlan]);
 
   // Reconnect to the file chosen last time, and load whatever it holds.
   useEffect(() => {
@@ -173,7 +206,11 @@ export default function PlanFile() {
           📄 {handle.name}
         </button>
       )}
-      {status && <span className="text-[var(--ink-light)] max-w-56 truncate" title={status}>{status}</span>}
+      {(status || serverStatus) && (
+        <span className="text-[var(--ink-light)] max-w-56 truncate" title={status || serverStatus}>
+          {status || serverStatus}
+        </span>
+      )}
     </div>
   );
 }
