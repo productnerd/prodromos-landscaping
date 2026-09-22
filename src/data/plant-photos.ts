@@ -33,6 +33,7 @@ export const PLANT_PHOTOS: Record<string, PhotoCredit> = {
   iris: {"artist": "David Anstiss", "license": "CC BY-SA 2.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Bearded_Irises_at_Kiln_Court_-_geograph.org.uk_-_2380420.jpg"},
   "japanese-maple": {"artist": "Acabashi", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Acer_palmatum_Atropurpureum_at_Myddelton_House,_Enfield,_London.jpg"},
   "japanese-silver-grass": {"artist": "Michael Garlick", "license": "CC BY-SA 2.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Goodnestone_House_and_Gardens,_Chinese_silver_grass_%27Miscanthus_sinensis%27_1_-_geograph.org.uk_-_7426666.jpg"},
+  jasmine: {"artist": "Dinesh Valke from Thane, India", "license": "CC BY-SA 2.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Jasminum_officinale_(2464481307).jpg"},
   "judas-tree": {"artist": "Rundvald", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Eglise-Saint-Ouen-de-Rots-arbre-de-Judee-rose-byRundvald.jpg"},
   latzia: {"artist": "Michal Klajban", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Quercus_infectoria_subsp._veneris,_Akamas_Paninsula,_Cyprus.jpg"},
   lavender: {"artist": "Neptuul", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Lavandula_fields.jpg"},

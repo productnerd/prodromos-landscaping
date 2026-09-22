@@ -1648,6 +1648,45 @@ export const PLANTS: PlantDefinition[] = [
       'The Mediterranean honeysuckle, native to Cyprus and the one you meet on Troodos paths. Cream flowers ageing to yellow and pink from May, scented in the evening, then red berries. Semi-evergreen, drought-tolerant and happy on poor ground, unlike the northern honeysuckles that want damp soil. Roots like shade, top likes sun.',
   },
 
+  // ─── Jasmine ───────────────────────────────────────────────────────
+  {
+    id: 'jasmine',
+    emoji: '🤍',
+    growth: 'fast',
+    plantingDepth: 'Root ball depth',
+    name: 'Jasmine',
+    botanicalName: 'Jasminum officinale',
+    category: 'climber',
+    tags: ['flower', 'ornamental', 'deciduous'],
+    matureRadiusM: 2,
+    heightM: 5,
+    sun: 'full',
+    water: 'medium',
+    soil: 'well-drained',
+    drainage: 'good',
+    treeRisk: { level: 'caution', note: 'Twines, so keep it off young stems; on a pergola, wall or fence it is no trouble.' },
+    monthlyStates: {
+      1: 'dormant',
+      2: 'dormant',
+      3: 'sprouting',
+      4: 'leafing',
+      5: 'leafing',
+      6: 'flowering',
+      7: 'flowering',
+      8: 'flowering',
+      9: 'flowering',
+      10: 'leafing',
+      11: 'autumn-color',
+      12: 'dormant',
+    },
+    plantingMonths: [10, 11, 3, 4],
+    flowerColor: '#FBF7EC',
+    fruitColor: '#2F2F2F',
+    foliageColor: '#4E8A4A',
+    cyprusNotes:
+      'Common jasmine, the hardy one: white flowers scenting the evening from June to September, and hardy to about -10C, so it takes a Prodromos winter where the Arabian and Spanish jasmines of the coast would die. Plant it by a doorway or seating area where you will smell it. Prune after flowering; it can run to 5 m and wants a strong support.',
+  },
+
   // ─── 40. Pine ──────────────────────────────────────────────────────
   {
     id: 'pine',
