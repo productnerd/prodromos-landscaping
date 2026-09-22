@@ -18,6 +18,7 @@ export const PLANT_PHOTOS: Record<string, PhotoCredit> = {
   chamomile: {"artist": "Vacant0", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Polje_kamilica,_Plo%C4%8Dica_01.jpg"},
   cherry: {"artist": "Benjamin Gimmel, BenHur", "license": "CC BY-SA 3.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Fr%C3%BChling_bl%C3%BChender_Kirschenbaum.jpg"},
   "climbing-maple": {"artist": "Daderot", "license": "CC0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Schizophragma_hydrangeoides_-_Savill_Garden_-_Windsor_Great_Park,_England_-_DSC06116.jpg"},
+  cyclamen: {"artist": "Юкатан", "license": "CC BY-SA 3.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Wild_Cyclamen_cyprium,_Israel.jpg"},
   daffodils: {"artist": "citytransportinfo", "license": "CC0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Drift-Daffodil-Narcissus-P1370596_(37176254960).jpg"},
   "damaskina-plum": {"artist": "Gerda Arendt", "license": "CC0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Plum_tree_blossoming,_Ehrenbach,_to_west.jpg"},
   ferns: {"artist": "H. Zell", "license": "CC BY-SA 3.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Lothar_Path_-_Black_Forest_National_Park_-_Pteridium_aquilinum_01.jpg"},

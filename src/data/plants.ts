@@ -1071,6 +1071,44 @@ export const PLANTS: PlantDefinition[] = [
       'Naturalizes well at mountain elevation. Plant bulbs 15cm deep. Leave foliage to die back naturally — feeds the bulb. Deer and rodent resistant.',
   },
 
+  // ─── Cyclamen ──────────────────────────────────────────────────────
+  {
+    id: 'cyclamen',
+    emoji: '🌸',
+    growth: 'slow',
+    plantingDepth: 'Tuber just below the surface',
+    name: 'Cyprus Cyclamen',
+    botanicalName: 'Cyclamen cyprium',
+    category: 'bulb',
+    tags: ['flower', 'ornamental'],
+    matureRadiusM: 0.15,
+    heightM: 0.15,
+    sun: 'shade',
+    water: 'low',
+    soil: 'stony, free-draining, leafy',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'leafing',
+      2: 'leafing',
+      3: 'leafing',
+      4: 'dormant',
+      5: 'dormant',
+      6: 'dormant',
+      7: 'dormant',
+      8: 'dormant',
+      9: 'flowering',
+      10: 'flowering',
+      11: 'flowering',
+      12: 'leafing',
+    },
+    plantingMonths: [8, 9, 10],
+    flowerColor: '#F3C9DD',
+    fruitColor: '#8B7355',
+    foliageColor: '#3E6B45',
+    cyprusNotes:
+      'Endemic to Cyprus and one of the island\'s emblems. Scented white-to-pink flowers from September, then marbled leaves through winter, and it disappears underground all summer. Plant it in shade under the trees, in stony ground with leaf litter, where nothing else wants to grow. Never dig up wild plants: buy nursery-raised tubers. Slow to settle, then long-lived and it seeds itself around.',
+  },
+
   // ─── 29. Mint ───────────────────────────────────────────────────────
   {
     id: 'mint',
