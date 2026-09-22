@@ -35,6 +35,13 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+/** What a climber does to a tree it grows into. */
+const TREE_RISK = {
+  harmful: { label: '⚠️ Strangles trees', className: 'bg-[#B3261E] text-white' },
+  caution: { label: '⚠️ Keep off trees', className: 'bg-[#D98E04] text-white' },
+  safe: { label: '🌳 Safe on trees', className: 'bg-[var(--sage-light)] text-[var(--forest-deep)]' },
+} as const;
+
 const SUN_LABEL: Record<PlantDefinition['sun'], string> = {
   full: '☀️ Full sun',
   partial: '⛅ Part shade',
@@ -85,6 +92,7 @@ function PlantCard({ plant }: { plant: PlantDefinition }) {
           <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-[var(--cream)] text-[var(--ink-light)] border border-[var(--divider)]">
             {SUN_LABEL[plant.sun]}
           </span>
+          {plant.category === 'climber' && <span className={`ml-1 text-[10px] px-1.5 py-0.5 rounded font-medium ${TREE_RISK[plant.treeRisk?.level ?? 'safe'].className}`}>{TREE_RISK[plant.treeRisk?.level ?? 'safe'].label}</span>}
         </div>
       </div>
     </div>

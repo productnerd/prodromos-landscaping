@@ -79,6 +79,22 @@ export function PlantInfoPanel() {
         <div>🚿 {plant.drainage}</div>
       </div>
 
+      {plant.category === 'climber' && (
+        <div
+          className={`text-xs mb-3 p-2 rounded-[4px] ${
+            plant.treeRisk
+              ? plant.treeRisk.level === 'harmful'
+                ? 'bg-[#B3261E]/10 text-[#8C1D18]'
+                : 'bg-[#D98E04]/10 text-[#8A5A02]'
+              : 'bg-[var(--sage-light)]/40 text-[var(--forest-deep)]'
+          }`}
+        >
+          {plant.treeRisk
+            ? `${plant.treeRisk.level === 'harmful' ? '⚠️ Harmful to trees. ' : '⚠️ Take care near trees. '}${plant.treeRisk.note}`
+            : '🌳 Safe to let it climb a tree: it holds on without strangling the trunk.'}
+        </div>
+      )}
+
       {/* Dimensions */}
       <div className="text-sm text-[var(--ink-light)] mb-3">
         {isClimber(plant) ? (

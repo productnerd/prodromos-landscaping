@@ -54,6 +54,7 @@ export const PLANT_PHOTOS: Record<string, PhotoCredit> = {
   spearmint: {"artist": "Kolforn (Kolforn) I'd appreciate if you could mail me (Kolforn@gmail.com) if you", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:-2018-05-13_Garden_mint_plants,_Northrepps,_Cromer.JPG"},
   strawberries: {"artist": "Sandy Gerrard", "license": "CC BY-SA 2.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Sloping_strawberry_bed_at_Trengwainton_Gardens_-_geograph.org.uk_-_6637357.jpg"},
   "sweet-chestnut": {"artist": "Ramón Durán", "license": "CC BY 2.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Casta%C3%B1o_com%C3%BAn_(Castanea_sativa).jpg"},
+  "trumpet-vine": {"artist": "Agbarto", "license": "CC0", "pageUrl": "https://commons.wikimedia.org/wiki/File:2024.06.24_Trumpet_Vine_(Campsis_radicans)_in_Belarus_01.jpg"},
   tulips: {"artist": "David Dixon", "license": "CC BY-SA 2.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:Tulip_Bed,_RHS_Bridgewater_-_geograph.org.uk_-_7168296.jpg"},
   walnut: {"artist": "AnRo0002", "license": "CC0", "pageUrl": "https://commons.wikimedia.org/wiki/File:20150722Juglans_regia1.jpg"},
   "weeping-cherry": {"artist": "Beyond My Ken", "license": "CC BY-SA 4.0", "pageUrl": "https://commons.wikimedia.org/wiki/File:2018_Fort_Tryon_Park_-_weeping_cherry_tree_in_early_spring.jpg"},

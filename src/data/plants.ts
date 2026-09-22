@@ -837,6 +837,7 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#C8D674',
     fruitColor: '#4B0082',
     foliageColor: '#3E8B2F',
+    treeRisk: { level: 'caution', note: 'Left loose it climbs into a canopy and shades out the leaves. Trained on a pergola or wires it is no threat to a tree.' },
     cyprusNotes:
       'Traditional Cyprus crop. Needs strong trellis or pergola. Prune hard in winter dormancy. Commandaria grape varieties suit mountain elevation.',
   },
@@ -1483,8 +1484,48 @@ export const PLANTS: PlantDefinition[] = [
     flowerColor: '#8A7DC8',
     fruitColor: '#5E4B3B',
     foliageColor: '#4CAF50',
+    treeRisk: { level: 'harmful', note: 'Twines tightly around trunks and branches and strangles them as it thickens, and it can kill a mature tree. Keep it on a pergola, wall or its own post, never up a tree you care about.' },
     cyprusNotes:
       'Spectacular cascading blooms appear BEFORE leaves in Apr-May. Needs very strong support — can damage weak structures. Prune twice yearly (summer and winter).',
+  },
+
+  // ─── Trumpet Vine ──────────────────────────────────────────────────
+  {
+    id: 'trumpet-vine',
+    emoji: '🌺',
+    growth: 'fast',
+    plantingDepth: 'Root ball depth',
+    name: 'Trumpet Vine',
+    botanicalName: 'Campsis radicans',
+    category: 'climber',
+    tags: ['flower', 'deciduous', 'ornamental'],
+    matureRadiusM: 3,
+    heightM: 8,
+    sun: 'full',
+    water: 'low',
+    soil: 'any well-drained',
+    drainage: 'good',
+    monthlyStates: {
+      1: 'dormant',
+      2: 'dormant',
+      3: 'dormant',
+      4: 'sprouting',
+      5: 'leafing',
+      6: 'leafing',
+      7: 'flowering',
+      8: 'flowering',
+      9: 'flowering',
+      10: 'autumn-color',
+      11: 'dormant',
+      12: 'dormant',
+    },
+    plantingMonths: [11, 12, 1, 2, 3],
+    flowerColor: '#E2571E',
+    fruitColor: '#8B6A4A',
+    foliageColor: '#3E7A32',
+    treeRisk: { level: 'caution', note: 'Clings with aerial roots rather than strangling, but it smothers and weighs down anything small, and suckers around the base. Fine on a pergola or a wall; keep it off young trees.' },
+    cyprusNotes:
+      'Big orange trumpets from July to September, on a vigorous climber that clings to walls by itself with aerial roots. Hardy well below the Prodromos winter. Two cautions: those roots get into render, gutters and roof tiles, so grow it on a sturdy pergola or a wall you do not mind, and it suckers freely from the roots and can run away from you. Flowers on new growth, so prune hard in winter. Needs little water once established.',
   },
 
   // ─── 40. Pine ──────────────────────────────────────────────────────
