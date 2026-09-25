@@ -305,6 +305,74 @@ function renderShoppingList() {
   body.innerHTML = html;
 }
 
+// ─── Shopping list ───────────────────────────────────────────────────
+const BOUGHT_KEY = 'prodromos-bought';
+let bought: Record<string, boolean> = {};
+
+try {
+  bought = JSON.parse(localStorage.getItem(BOUGHT_KEY) ?? '{}');
+} catch {
+  bought = {};
+}
+
+/** Every plant to buy, with how many the map says you need. */
+function shoppingRows() {
+  const onMap = placedCounts();
+  const picked = pickedPlants();
+  return picked.map((p) => ({ plant: p, qty: onMap.get(p.id) ?? 1, onMap: onMap.has(p.id) }));
+}
+
+function renderShoppingModal() {
+  const rows = shoppingRows();
+  const body = document.getElementById('shopBody')!;
+  const summary = document.getElementById('shopSummary')!;
+  const now = new Date().getMonth() + 1;
+
+  if (rows.length === 0) {
+    summary.textContent = '';
+    body.innerHTML =
+      '<p class="cal-empty">Nothing to buy yet — place plants on the garden map or tick them in the list.</p>';
+    return;
+  }
+
+  const total = rows.reduce((n, r) => n + r.qty, 0);
+  const left = rows.filter((r) => !bought[r.plant.id]).reduce((n, r) => n + r.qty, 0);
+  summary.textContent = `${total} plant${total !== 1 ? 's' : ''} in ${rows.length} kind${rows.length !== 1 ? 's' : ''} · ${left} still to buy`;
+
+  let html = '';
+  for (const { section, plants } of ORDERED) {
+    const mine = rows.filter((r) => plants.includes(r.plant));
+    if (mine.length === 0) continue;
+    html += `<div class="buy-section" style="background:${SECTION_COLORS[section.key]}">${esc(section.label)}</div>`;
+    for (const { plant, qty, onMap } of mine) {
+      html += `<label class="buy-row${bought[plant.id] ? ' bought' : ''}">
+        <input type="checkbox" data-buy="${plant.id}"${bought[plant.id] ? ' checked' : ''}>
+        <span class="buy-qty">×${qty}</span>
+        <span>${plant.emoji} ${esc(plant.name)}</span>
+        ${deadlinePill(plant, now)}
+        <span class="buy-meta">${onMap ? 'on the map' : 'picked in list'} · ${spacing(plant)} apart</span>
+      </label>`;
+    }
+  }
+  html += `<p class="buy-total">Total: ${total} plants${left !== total ? ` · ${total - left} already bought` : ''}</p>`;
+  body.innerHTML = html;
+}
+
+function openShopping() {
+  renderShoppingModal();
+  document.getElementById('shopModal')!.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeShopping() {
+  document.getElementById('shopModal')!.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function isShoppingOpen() {
+  return !document.getElementById('shopModal')!.classList.contains('hidden');
+}
+
 // ─── Calendar view ───────────────────────────────────────────────────
 let calTab: 'windows' | 'deadlines' | 'timeline' = 'windows';
 
@@ -907,7 +975,9 @@ document.getElementById('calModal')!.addEventListener('click', (e) => {
   if (e.target === e.currentTarget) closeCalendar();
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && isCalendarOpen()) closeCalendar();
+  if (e.key !== 'Escape') return;
+  if (isCalendarOpen()) closeCalendar();
+  if (isShoppingOpen()) closeShopping();
 });
 document.getElementById('tabWindows')!.addEventListener('click', () => {
   calTab = 'windows';
@@ -922,6 +992,27 @@ document.getElementById('tabTimeline')!.addEventListener('click', () => {
   renderCalendar();
 });
 
+document.getElementById('navShopping')!.addEventListener('click', (e) => {
+  e.preventDefault();
+  openShopping();
+});
+document.getElementById('navCalendar')!.addEventListener('click', (e) => {
+  e.preventDefault();
+  openCalendar();
+});
+document.getElementById('shopClose')!.addEventListener('click', closeShopping);
+document.getElementById('shopModal')!.addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeShopping();
+});
+document.getElementById('shopBody')!.addEventListener('change', (e) => {
+  const t = e.target as HTMLInputElement;
+  const id = t.dataset.buy;
+  if (!id) return;
+  bought[id] = t.checked;
+  localStorage.setItem(BOUGHT_KEY, JSON.stringify(bought));
+  renderShoppingModal();
+});
+
 document.getElementById('filterToggle')!.addEventListener('change', render);
 document.getElementById('searchBox')!.addEventListener('input', render);
 document.getElementById('btnCSV')!.addEventListener('click', exportCSV);
@@ -929,3 +1020,8 @@ document.getElementById('btnCSV')!.addEventListener('click', exportCSV);
 loadState();
 renderSoilPrep();
 render();
+
+// The garden map links here with ?view=calendar / ?view=shopping.
+const view = new URLSearchParams(location.search).get('view');
+if (view === 'calendar') openCalendar();
+if (view === 'shopping') openShopping();

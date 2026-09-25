@@ -543,6 +543,43 @@ footer {
 }
 .cal-legend span { display: flex; align-items: center; gap: 0.35rem; }
 
+.shop-summary { font-size: 0.8rem; color: var(--ink-light); }
+
+.buy-section {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #fff;
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  margin: 0.9rem 0 0.4rem;
+}
+
+.buy-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.35rem 0.2rem;
+  border-bottom: 1px solid var(--divider);
+  font-size: 0.88rem;
+}
+.buy-row input { accent-color: var(--forest); width: 16px; height: 16px; cursor: pointer; }
+.buy-row.bought { opacity: 0.5; text-decoration: line-through; text-decoration-color: var(--warm-gray); }
+.buy-row.bought input { text-decoration: none; }
+.buy-qty {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  color: var(--terracotta);
+  min-width: 2.2rem;
+}
+.buy-meta { margin-left: auto; font-size: 0.75rem; font-style: italic; color: var(--warm-gray); text-align: right; }
+.buy-total {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--forest-deep);
+  padding-top: 0.6rem;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1007,6 +1044,8 @@ footer {
   <nav class="page-nav">
     <a href="../">🗺️ Garden Map</a>
     <a href="./" aria-current="page">📋 Plant List</a>
+    <a href="?view=calendar" id="navCalendar">📅 Calendar</a>
+    <a href="?view=shopping" id="navShopping">🛒 Shopping List</a>
   </nav>
 </header>
 
@@ -1020,6 +1059,17 @@ footer {
   <button class="btn" id="btnViewCalendar">📅 Calendar</button>
   <div class="toolbar-spacer"></div>
   <button class="btn" id="btnCSV" title="Export checked rows as CSV">📥 Export CSV</button>
+</div>
+
+<div class="modal-backdrop hidden" id="shopModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+    <div class="modal-head">
+      <h2 id="shopTitle">🛒 Shopping List</h2>
+      <span id="shopSummary" class="shop-summary"></span>
+      <button class="modal-close" id="shopClose" aria-label="Close shopping list">&times;</button>
+    </div>
+    <div class="modal-body" id="shopBody"></div>
+  </div>
 </div>
 
 <div class="modal-backdrop hidden" id="calModal">

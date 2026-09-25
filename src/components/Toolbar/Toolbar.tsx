@@ -6,6 +6,18 @@ const BTN =
 const BTN_ACTIVE =
   'px-3 py-1 text-xs rounded-[4px] border border-[var(--forest)] bg-[var(--forest)] text-[var(--paper)] transition-colors';
 
+const NAV =
+  'px-2.5 py-1 text-xs rounded-[4px] text-[var(--ink-light)] hover:bg-[var(--cream)] hover:text-[var(--forest-deep)] transition-colors whitespace-nowrap';
+const NAV_ACTIVE =
+  'px-2.5 py-1 text-xs rounded-[4px] bg-[var(--sage-light)] text-[var(--forest-deep)] font-medium whitespace-nowrap';
+
+const PAGES = [
+  { href: '.', label: '\u{1F5FA}\uFE0F Garden Map', current: true },
+  { href: 'planting/', label: '\u{1F4CB} Plant List', current: false },
+  { href: 'planting/?view=calendar', label: '\u{1F4C5} Calendar', current: false },
+  { href: 'planting/?view=shopping', label: '\u{1F6D2} Shopping List', current: false },
+];
+
 export default function Toolbar() {
   const {
     selectedId,
@@ -29,9 +41,23 @@ export default function Toolbar() {
 
   return (
     <div className="h-12 bg-[var(--paper)] text-[var(--ink)] border-b border-[var(--divider)] flex items-center px-4 gap-3 shrink-0">
-      <span className="font-[Fraunces,Georgia,serif] font-medium text-[15px] text-[var(--forest-deep)] mr-auto whitespace-nowrap">
+      <span className="font-[Fraunces,Georgia,serif] font-medium text-[15px] text-[var(--forest-deep)] whitespace-nowrap">
         Garden Planner &mdash; Prodromos, Cyprus
       </span>
+
+      {/* Same four links as the top of the plant list, so the two pages feel like one app. */}
+      <nav className="flex items-center gap-1 mr-auto border-l border-[var(--divider)] pl-3">
+        {PAGES.map(({ href, label, current }) => (
+          <a
+            key={label}
+            className={current ? NAV_ACTIVE : NAV}
+            href={href}
+            aria-current={current ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
 
       <button
         className={measureMode ? BTN_ACTIVE : BTN}
@@ -68,13 +94,6 @@ export default function Toolbar() {
       </button>
 
       <PlanFile />
-
-      <a
-        className={BTN}
-        href="planting/"
-      >
-        List View
-      </a>
 
       <div className="flex items-center gap-1 text-xs ml-2 border-l border-[var(--divider)] pl-3">
         <button
